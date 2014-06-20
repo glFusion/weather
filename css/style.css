@@ -1,0 +1,44 @@
+/*   Styles for the weather plugin */
+#piWeatherBlock {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    width: 100%;
+}
+
+#piWeatherEmbedLinkBack {
+    margin-right: 32px;
+}
+
+#piWeatherBlockLinkBack {
+    font-size: smaller;
+}
+
+.piWeatherLinkback {
+    font-style: italic;
+    text-align: right;
+    margin-top: 8px;
+    font-size: smaller;
+}
+
+div.piWeatherRemoveIcon {
+    position: relative;
+    float: right;
+    width: 18px;
+    margin-top: 24px;
+}
+
+div.piWeatherItemRow {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    width:100%;
+}
+
+div.piWeatherSearchForm {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    width:100%;
+}
+

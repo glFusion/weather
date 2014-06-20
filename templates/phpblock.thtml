@@ -1,0 +1,16 @@
+{# begin {templatelocation} #}
+<div id="piWeatherBlock">
+  <a href="{site_url}/weather/index.php" class="piWeatherLink">
+  {!if city}
+    <b>{city}</b><br />
+  {!endif}
+  <img class="piWeatherBlock" src="{icon_url}" alt="{curr_cond}" /><br />
+  {temp_f} F / {temp_c} C<br />
+  {curr_cond}<br />
+  {curr_wind}<br />
+  </a>
+  {!if linkback}
+  <span id="piWeatherBlockLinkBack" style="piWeatherLinkback">{linkback}</span>
+  {!endif}
+</div>
+{# end {templatelocation} #}

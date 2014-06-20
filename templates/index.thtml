@@ -1,0 +1,53 @@
+{# begin {templatelocation} #}
+<script type="text/javascript">
+function WEAgetXmlHttpObject()
+{
+  var objXMLHttp=null
+  if (window.XMLHttpRequest)
+  {
+    objXMLHttp=new XMLHttpRequest()
+  }
+  else if (window.ActiveXObject)
+  {
+    objXMLHttp=new ActiveXObject("Microsoft.XMLHTTP")
+  }
+  return objXMLHttp
+}
+function WEAremoveElement(divNum)
+{
+  var xmlHttp;
+  var divId = 'wDiv' + divNum;
+  var d = document.getElementById('MainDiv');
+  var olddiv = document.getElementById(divId);
+  d.removeChild(olddiv);
+
+  xmlHttp=WEAgetXmlHttpObject();
+  if (xmlHttp==null) {
+    //alert ("Browser does not support HTTP Request");
+    return;
+  }
+  var url="{site_url}/weather/ajax.php?remsess=" + divNum;
+  //xmlHttp.onreadystatechange=WEAstateChanged;
+  xmlHttp.open("GET",url,true);
+  xmlHttp.send(null);
+}
+</script>
+<div id="MainDiv" class="piWeatherItemRow">
+  <!-- BEGIN EmbedBlock -->
+  <div id="wDiv{divid}">
+    <div class="piWeatherRemoveIcon">
+      <a href="#" onclick="WEAremoveElement({divid})">
+        <img src="{layout_url}/images/admin/delete.png" 
+            title="{$LANG_WEATHER['rem_this_item']}" class="gl_mootip" />
+      </a>
+    </div>
+    {embed}
+  </div>
+  <!-- END EmbedBlock -->
+</div>
+{!if linkback}
+<div id="piWeatherEmbedLinkBack" class="piWeatherLinkback">
+  {$LANG_WEATHER['powered_by']} {linkback}
+</div>
+{!endif}
+{# end {templatelocation} #}
