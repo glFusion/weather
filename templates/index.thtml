@@ -38,7 +38,8 @@ function WEAremoveElement(divNum)
     <div class="piWeatherRemoveIcon">
       <a href="#" onclick="WEAremoveElement({divid})">
         <img src="{layout_url}/images/admin/delete.png" 
-            title="{$LANG_WEATHER['rem_this_item']}" class="gl_mootip" />
+            title="{$LANG_WEATHER['rem_this_item']}" class="gl_mootip"
+            alt="{$LANG_WEATHER['rem_this_item']}" />
       </a>
     </div>
     {embed}

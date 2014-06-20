@@ -219,6 +219,7 @@ class Weather
                 'temp_c'  => (string)$this->current->temp_C,
                 'condition' => (string)$this->current->weatherDesc[0]->value,
                 'icon'  => (string)$this->current->weatherIconUrl[0]->value,
+                'icon_name' => (string)$this->current->weatherDesc[0]->value,
                 'humidity' => (string)$this->current->humidity,
                 'wind_M' => (string)$this->current->windspeedMiles . 'mph ' .
                         (string)$this->current->winddir16Point,
@@ -237,6 +238,7 @@ class Weather
                     'highC'  => (string)$fc->tempMaxC,
                     'condition' => (string)$fc->weatherDesc[0]->value,
                     'icon'  => (string)$fc->weatherIconUrl[0]->value,
+                    'icon_name' => (string)$fc->weatherDesc[0]->value,
                     'wind_M' => (string)$fc->windspeedMiles . 'mph ' .
                                 (string)$fc->winddir16Point,
                     'wind_K' => (string)$fc->windspeedKmph . 'kph ' .
@@ -260,6 +262,7 @@ class Weather
         return '<a class="piWeatherLinkback" ' .
             'href="http://www.worldweatheronline.com/" ' .
             'title="Free local weather content provider" ' .
+            'alt="World Weather Online" ' .
             'target="_blank">World Weather Online</a>';
     }
 

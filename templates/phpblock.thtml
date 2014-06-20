@@ -10,7 +10,7 @@
   {curr_wind}<br />
   </a>
   {!if linkback}
-  <span id="piWeatherBlockLinkBack" style="piWeatherLinkback">{linkback}</span>
+  <span id="piWeatherBlockLinkBack" class="piWeatherLinkback">{linkback}</span>
   {!endif}
 </div>
 {# end {templatelocation} #}

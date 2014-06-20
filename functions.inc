@@ -20,7 +20,7 @@ $_CONF_WEATHER = $w_config->get_config('weather');
 require_once dirname(__FILE__) . '/weather.php';
 
 // Sessions are used to track which weather info a user requested
-if (!isset($_SESSION)) session_start();
+//if (!isset($_SESSION)) session_start();
 
 // Define commonly-used paths
 define('WEATHER_PI_PATH', 
@@ -234,6 +234,7 @@ function phpblock_weather_current($A=array(), $loc='')
         'curr_cond' => $A['current']['condition'],
         'city'      => $A['info']['city'],
         'icon_url'  => Weather::getIcon($A['current']['icon']),
+        'icon_name' => $A['current']['icon_name'],
         'date'      => $dt[0],
         'linkback'  => Weather::linkback('block'),
     ) );
@@ -314,6 +315,7 @@ function plugin_autotags_weather($op, $content = '', $autotag = '')
                     'curr_cond' => $A['current']['condition'],
                     'city'      => $A['info']['city'],
                     'icon_url'  => Weather::getIcon($A['current']['icon']),
+                    'icon_name' => $A['current']['icon_name'],
                     'date'      => $dt[0],
                 ) );
                 $T->parse('output', 'block');
@@ -448,12 +450,12 @@ function WEATHER_embed($loc, $linkback = true)
         $T->set_var(array(
             'curr_wind' => $A['current']['wind_' . $KM],
             'curr_icon_url' => Weather::getIcon($A['current']['icon']),
+            'curr_icon_naem' => $A['current']['icon_name'],
             'temp_f'    => $A['current']['temp_f'],
             'temp_c'    => $A['current']['temp_c'],
             'curr_cond' => $A['current']['condition'],
             'city'      => $A['info']['city'],
             'date'      => $dt[0],
-            'time'      => strftime($_CONF['timeonly'], $dt[1]),
             'curr_humidity' => $A['current']['humidity'],
             'linkback'  => $linkback ? Weather::linkback() : '',
         ) );
@@ -464,6 +466,7 @@ function WEATHER_embed($loc, $linkback = true)
                 'low'   => $day['low' . $FC],
                 'day'   => $day['day'],
                 'condition' => $day['condition'],
+                'icon_name' => $day['icon_name'],
                 'icon_url' => Weather::getIcon($day['icon']),
                 'wind'  => $day['wind_' . $KM],
                 'humidity' => $day['humidity'],

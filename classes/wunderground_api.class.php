@@ -213,6 +213,7 @@ class Weather
                 'temp_c'  => (string)$this->current->temp_c,
                 'condition' => (string)$this->current->weather,
                 'icon'  => (string)$this->current->icon_url,
+                'icon_name' => (string)$this->current->icon,
                 'humidity' => (string)$this->current->relative_humidity,
                 'wind_M' => (string)$this->current->wind_mph. 'mph ' .
                         (string)$this->current->wind_dir,
@@ -236,6 +237,7 @@ class Weather
                     'highC'  => (string)$fc->high->celsius,
                     'condition' => (string)$fc->conditions,
                     'icon'  => (string)$fc->icon_url,
+                    'icon_name' => (string)$this->current->icon,
                     'wind_M' => (string)$fc->avewind->mph . 'mph ' .
                                 (string)$fc->avewind->dir,
                     'wind_K' => (string)$fc->avewind->kph . 'kph ' .
@@ -262,6 +264,7 @@ class Weather
     public static function linkback($format='page')
     {
         global $_CONF_WEATHER;
+
         if (isset($_CONF_WEATHER['ref_key_wu'])
             && !empty($_CONF_WEATHER['ref_key_wu'])
         ) {
@@ -270,20 +273,21 @@ class Weather
             $refkey = '';
         }
 
-        if ($format == 'block') {
+        /*if ($format == 'block') {
             $img = '<img src="' . WEATHER_URL .
-                '/images/wunderground_logo_4c_vert_75.jpg" ' .
-                'width="75" height="45" />';
-        } else {
+                '/images/wunderground_logo_4c_vert_107.jpg" ' .
+                'width="107" height="64" />';
+        } else {*/
             $img = '<img src="' . WEATHER_URL .
-                '/images/wunderground_logo_4c_horiz_126.jpg" ' .
-                'width="126" height="17" />';
-        }
+                '/images/wunderground_logo_4c_horiz_90.jpg" ' .
+                'width="90" height="21" alt="Wunderground Logo" />';
+        //}
 
-        return '<a class="piWeatherLinkback" ' .
-            'href="http://www.wunderground.com/' . $refkey . '" ' .
-            'title="Powered by Weather Underground" ' .
-            'target="_blank">' . $img . '</a>';
+        $retval = '<a class="piWeatherLinkback" ' .
+                'href="http://www.wunderground.com/' . $refkey . '" ' .
+                'title="Powered by Weather Underground" ' .
+                'target="_blank">' . $img . '</a>';
+        return $retval;
     }
 
 

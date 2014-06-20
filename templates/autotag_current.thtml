@@ -2,7 +2,7 @@
   {!if city}
     <b>{city}</b><br />
   {!endif}
-  <img src="{icon_url}" /><br />
+  <img src="{icon_url}" alt="{icon_name}" /><br />
   {temp_f} F / {temp_c} C<br />
   {curr_cond},<br />
   {curr_wind}<br />

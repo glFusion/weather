@@ -42,3 +42,7 @@ div.piWeatherSearchForm {
     width:100%;
 }
 
+span.piWeatherDateTime {
+    font-size:smaller;
+}
+

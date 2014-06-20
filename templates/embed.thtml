@@ -1,9 +1,9 @@
 {# begin {templatelocation} #}
 <table border="0" align="center" width="80%">
   <tr>
-    <td valign="center" width="64px">
+    <td valign="middle" width="64px">
       {!if curr_icon_url}
-      <img src="{curr_icon_url}" />
+      <img src="{curr_icon_url}" alt="{curr_icon_name}" />
       {!endif}
     </td>
     <td align="left">
@@ -12,12 +12,12 @@
       {!endif}
       {temp_f} F / {temp_c} C<br />
       {curr_cond}, {$LANG_WEATHER['wind']} {curr_wind}<br />
-      <span style="font-size:smaller;"><i>{date} {time}</i></span>
+      <span class="piWeatherDateTime"><i>{date}</i></span>
     </td>
     <!-- BEGIN ForeCastItem -->
     <td width="64px" valign="top">
       <b>{day}</b><br />
-      <img src="{icon_url}"
+      <img src="{icon_url}" alt="{icon_name}"
       {!if fc_text}
       title="{fc_text}" class="gl_mootip"
       {!endif}
