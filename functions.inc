@@ -731,6 +731,24 @@ function plugin_getadminoption_weather()
 
 
 /**
+*   Support merging local accounts into remote accounts
+*
+*   @param  integer $origUID    Original (remote) user ID
+*   @param  integer $destUID    Merged (local) user ID
+*/
+function plugin_user_move_weather($origUID, $destUID)
+{
+    global $_TABLES;
+
+    $origUID = (int)$origUID;
+    $destUID = (int)$destUID;
+
+    DB_query("UPDATE {$_TABLES['weather_cache']}
+            SET uid = $destUID WHERE uid = $origUID", 1);
+}
+
+
+/**
 *   Return the URL for a give icon string.
 *   If the provide string is a relative URL, then www.google.com is prepended.
 *
