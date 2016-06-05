@@ -1,12 +1,12 @@
 {# begin {templatelocation} #}
 <table border="0" align="center" width="80%">
   <tr>
-    <td valign="middle" width="64px">
+    <td valign="middle" width="64px" class="uk-hidden-small">
       {!if curr_icon_url}
       <img src="{curr_icon_url}" alt="{curr_icon_name}" />
       {!endif}
     </td>
-    <td align="left">
+    <td align="left" class="uk-hidden-small">
       {!if city}
         {$LANG_WEATHER['curr_cond_for']} <b>{city}</b><br />
       {!endif}
