@@ -31,7 +31,7 @@ $_WEA_DEFAULT = array(
     'default_loc'       => 'Los Angeles, CA',
     'blk_show_loc'      => '3', // Personal, fallback to default
     'usermenu_option'   => '1',
-    'provider'          => 'wwo',
+    'provider'          => 'wu',
     'k_m'               => 'M',     // Windspeed: M = MPH, K = KPH
     'f_c'               => 'F',     // F = Farenheit, C = Celsius
 );
