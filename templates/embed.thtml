@@ -19,7 +19,7 @@
       <b>{day}</b><br />
       <img src="{icon_url}" alt="{icon_name}"
       {!if fc_text}
-      title="{fc_text}" class="gl_mootip"
+      title="{fc_text}" class="gl_mootip" data-uk-tooltip
       {!endif}
       /><br />
       {low}/{high}<br />

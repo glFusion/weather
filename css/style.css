@@ -46,3 +46,6 @@ span.piWeatherDateTime {
     font-size:smaller;
 }
 
+.wea-icon-danger {
+    color: red;
+}

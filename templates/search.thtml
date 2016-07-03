@@ -2,7 +2,7 @@
 <div class="piWeatherSearchForm">
 <form action="{site_url}/weather/index.php" method="POST">
   <input type="text" name="loc" size="60" maxlen="255" />
-  <input type="submit" name="submit" value="{$LANG_ACCESS['search']}" /><br />
+  <input class="uk-button uk-button-primary" type="submit" name="submit" value="{$LANG_ACCESS['search']}" /><br />
   <i>{$LANG_WEATHER['search_instr']}</i>
 </form>
 </div>
