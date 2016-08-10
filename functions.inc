@@ -301,6 +301,7 @@ function plugin_autotags_weather($op, $content = '', $autotag = '')
         case 'current':
             $loc = $autotag['parm2'];
             if (!empty($loc)) {
+                USES_weather_class_api();
                 $A = WEATHER_getWeather($loc);
                 if (!is_array($A))
                     return $content;
