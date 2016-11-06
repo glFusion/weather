@@ -38,7 +38,7 @@ class Weather
     *
     *   @param  string  $loc    Optional location to retrieve.
     */
-    function __construct($loc = '')
+    public function __construct($loc = '')
     {
         global $_CONF, $_CONF_WEATHER;
 
