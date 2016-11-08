@@ -94,7 +94,14 @@ class Weather
             return false;
         }
 
-        $url = $this->url . trim(rawurlencode($this->location)) . '.json';
+        $loc = explode(',', $this->location);
+        foreach ($loc as $idx=>$loc_elem) {
+            $loc_elem = trim($loc_elem);
+            $loc[$idx] = str_replace(' ', '_', $loc_elem);
+        }
+        $loc = array_reverse($loc);
+        $loc = implode('/', $loc);
+        $url = $this->url . $loc . '.json';
         $json = $this->GetWeather($url);
         if (empty($json)) {
             $this->error = WEATHER_ERR_API;
