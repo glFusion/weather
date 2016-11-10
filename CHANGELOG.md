@@ -1,5 +1,8 @@
 # Changelog - Weather plugin for glFusion
 
+## Version 1.0.4 -
+- Add apixu.com weather provider
+
 ## Version 1.0.3 - 2016-11-06
 - Hide large description from display on small viewports
 - Remove World Weather Online as preferred provider

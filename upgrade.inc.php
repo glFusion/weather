@@ -23,7 +23,18 @@ require_once "{$_CONF['path']}plugins/{$_CONF_WEATHER['pi_name']}/install_defaul
 */
 function weather_do_upgrade($current_ver)
 {
+    global $_CONF_WEATHER;
+
     $error = 0;
+
+    // Get the config instance, several upgrades might need it
+    $c = config::get_instance();
+
+    if ($current_ver < '1.0.4') {
+        // Provider - axpiu.com
+        $c->add('fs_provider_axpiu', NULL, 'fieldset', 0, 10, NULL, 0, true, $_CONF_WEATHER['pi_name']);
+        $c->add('api_key_axpiu', '', 'text', 0, 10, 0, 100, true, $_CONF_WEATHER['pi_name']);
+    }
 
     if ($current_ver < '0.1.3') {
         $error = weather_upgrade_0_1_3();

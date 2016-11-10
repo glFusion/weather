@@ -19,9 +19,6 @@ $_CONF_WEATHER = $w_config->get_config('weather');
 // Get the static config items
 require_once dirname(__FILE__) . '/weather.php';
 
-// Sessions are used to track which weather info a user requested
-//if (!isset($_SESSION)) session_start();
-
 // Define commonly-used paths
 define('WEATHER_PI_PATH', 
         $_CONF['path'] . 'plugins/' . $_CONF_WEATHER['pi_name']);
@@ -83,6 +80,7 @@ function USES_weather_class_api()
 
     switch ($_CONF_WEATHER['provider']) {
     case 'wu':
+    default:    // wwo no longer supported
         require_once WEATHER_CLASSPATH . '/wunderground_api.class.php';
         break;
     case 'goog':
@@ -90,8 +88,10 @@ function USES_weather_class_api()
         require_once WEATHER_CLASSPATH . '/google_api.inc.php';
         break;
     case 'wwo':
-    default:        // default since it's the only provider in version 0.1.3
         require_once WEATHER_CLASSPATH . '/worldweather_api.class.php';
+        break;
+    case 'apixu':
+        require_once WEATHER_CLASSPATH . '/apixu_api.class.php';
         break;
     }
 }

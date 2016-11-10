@@ -26,6 +26,9 @@ $LANG_configsubgroups['weather'] = array(
 
 $LANG_fs['weather'] = array(
     'fs_main'               => 'Algemene Instellingen',
+    'fs_provider_wwo'       => 'World Weather Online',
+    'fs_provider_wu'        => 'Weather Underground',
+    'fs_provider_axpiu'     => 'AXPIU',
 );
 
 $LANG_configsections['weather'] = array(
