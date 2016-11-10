@@ -11,13 +11,15 @@
 *   @filesource
 */
 
-if (!isset($_SESSION)) session_start();
+require_once '../lib-common.php';
 
-if (!isset($_SESSION['glWeather']) || !is_array($_SESSION['glWeather']))
+$Session = SESS_getVar('glWeather');
+if (!is_array($Session))
     exit;
 
 $sessid = (int)$_GET['remsess'];
-unset($_SESSION['glWeather'][$sessid]);
+unset($Session[$sessid]);
+SESS_setVar('glWeather', $Session);
 exit;
 
 ?>
