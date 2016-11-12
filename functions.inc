@@ -10,6 +10,9 @@
 *               GNU Public License v2 or later
 *   @filesource
 */
+if (!defined ('GVERSION')) {
+    die ('This file can not be used on its own.');
+}
 
 // Initialize the configuration
 require_once $_CONF['path_system'] . 'classes/config.class.php';
@@ -573,15 +576,20 @@ function WEATHER_sanitize($var)
 */
 function WEATHER_getDocURL($file='', $doclang='english')
 {
+    global $_SYSTEM;
+
     $doc_path = WEATHER_PI_PATH . "/docs/$doclang/";
     $doc_url = '';
 
     if ($file != '') {
+        if ($_SYSTEM['framework'] != 'uikit') $file .= '.legacy';
+        $file .= '.html';
         if (!file_exists($doc_path . $file)) {
             $doclang = 'english';
         }
         $doc_url = WEATHER_URL . "/docs/$doclang/$file";
     } else {
+        // Just return the URL to the directory
         if (!is_dir($doc_path)) {
             $doclang = 'english';
         }
@@ -602,14 +610,13 @@ function WEATHER_getDocURL($file='', $doclang='english')
 */
 function plugin_getconfigelementhelp_weather($option, $doclang='english')
 {
-    $doc_url = WEATHER_getDocURL('config.html', $doclang);
+    $doc_url = WEATHER_getDocURL('config', $doclang);
     if (empty($doc_url))
         return false;
 
     if (!empty($option)) {
         $file .= '#desc_' . $option;
     }
-
     return array($doc_url . $file, 0);
 }
 
