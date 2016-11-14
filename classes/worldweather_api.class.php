@@ -54,7 +54,8 @@ class Weather
         //$iso_lang = empty($_CONF['iso_lang']) ? 'en' : 
         //            rawurlencode($_CONF['iso_lang']);
         //$this->url = 'http://free.worldweatheronline.com/feed/weather.ashx?format=json&num_of_days=5&key=' . $_CONF_WEATHER['api_key_wwo'];
-        $this->url = 'http://api.worldweatheronline.com/free/v2/weather.ashx?format=json&tp=24&includeLocation=yes&extra=localObsTime&num_of_days=5&key=' . $_CONF_WEATHER['api_key_wwo'];
+        $this->url = 'http://api.worldweatheronline.com/free/v2/weather.ashx?format=json&tp=24&includeLocation=yes&extra=localObsTime&num_of_days=' .
+            $this->fc_days . '&key=' . $_CONF_WEATHER['api_key_wwo'];
         //$this->locUrl = 'http://www.worldweatheronline.com/feed/search.ashx?format=json&num_of_results=3&popular=yes&key=' . $_CONF_WEATHER['api_key_wwo'];
         $this->locUrl = 'http://api.worldweatheronline.com/free/v2/search.ashx?format=json&num_of_results=3&popular=yes&key=' . $_CONF_WEATHER['api_key_wwo'];
  

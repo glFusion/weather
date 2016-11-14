@@ -31,9 +31,11 @@ function weather_do_upgrade($current_ver)
     $c = config::get_instance();
 
     if ($current_ver < '1.0.4') {
-        // Provider - axpiu.com
-        $c->add('fs_provider_axpiu', NULL, 'fieldset', 0, 10, NULL, 0, true, $_CONF_WEATHER['pi_name']);
-        $c->add('api_key_axpiu', '', 'text', 0, 10, 0, 100, true, $_CONF_WEATHER['pi_name']);
+        // Provider - apixu.com
+        $c->add('fs_provider_apixu', NULL, 'fieldset',
+                0, 30, NULL, 0, true, $_CONF_WEATHER['pi_name']);
+        $c->add('api_key_apixu', '', 'text',
+                0, 10, 0, 100, true, $_CONF_WEATHER['pi_name']);
     }
 
     if ($current_ver < '0.1.3') {
