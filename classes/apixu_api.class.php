@@ -15,7 +15,7 @@ require_once dirname(__FILE__) . '/base_api.class.php';
 
 /**
 *   Class to use apixu.com weather provider
-*   @since  version 1.0.r40
+*   @since  version 1.0.4
 *   @package weather
 */
 class Weather extends WeatherBase
@@ -60,7 +60,7 @@ class Weather extends WeatherBase
         return $this->url . rawurlencode($this->location);
     }
 
-         
+
     /**
     *   Parse the returned weather information.
     *   This function just puts the forecast info into some "shortcut"
@@ -90,7 +90,7 @@ class Weather extends WeatherBase
             return true;
         }
     }
-    
+
 
     /**
     *   Get the data into standard arrays for cache storage and display.
@@ -106,7 +106,6 @@ class Weather extends WeatherBase
     {
         global $_USER, $_CONF_WEATHER;
 
-        //list($city, $country) = explode(', ', $this->info->query);
         $this->data = array(
             'info' => array(
                 'city'  => $this->info,
@@ -117,8 +116,8 @@ class Weather extends WeatherBase
                 'temp_f'   => (string)$this->current->temp_f,
                 'temp_c'  => (string)$this->current->temp_c,
                 'condition' => (string)$this->current->condition->text,
-                'icon'  => (string)$this->current->icon,
-                'icon_name' => (string)$this->current->icon,
+                'icon'  => (string)$this->current->condition->icon,
+                'icon_name' => (string)$this->current->condition->text,
                 'humidity' => (string)$this->current->humidity,
                 'wind_M' => (string)$this->current->wind_mph. 'mph ' .
                         (string)$this->current->wind_dir,
@@ -127,6 +126,7 @@ class Weather extends WeatherBase
             ),
             'forecast' => array(),
         );
+
         if (is_array($this->forecast)) {
             // Hack to make sure there's a valid timezone. Use the local
             // timezone if available, otherwise the user timezone.
