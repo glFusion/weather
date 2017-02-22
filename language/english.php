@@ -38,8 +38,9 @@ $LANG_configsubgroups['weather'] = array(
 
 $LANG_fs['weather'] = array(
     'fs_main'               => 'General Settings',
-    'fs_provider_wwo'       => 'Provider: World Weather Online',
-    'fs_provider_wu'        => 'Provider: Weather Underground',
+    'fs_provider_wwo'       => 'World Weather Online',
+    'fs_provider_wu'        => 'Weather Underground',
+    'fs_provider_apixu'     => 'APIXU',
 );
 
 $LANG_configsections['weather'] = array(
@@ -61,6 +62,7 @@ $LANG_confignames['weather'] = array(
     'api_key_wwo'       => 'API Key',
     'api_key_wu'        => 'API Key',
     'ref_key_wu'        => 'Referrer Key',
+    'api_key_apixu'     => 'API Key',
 );
 
 $LANG_configselects['weather'] = array(
@@ -83,6 +85,7 @@ $LANG_configselects['weather'] = array(
     15  => array(   'Farenheit' => 'F', 'Celsius' => 'C'),
     16  => array(   'World Weather Online' => 'wwo',
                     'Weather Underground' => 'wu',
+                    'APIXU' => 'apixu',
             ),
 );
 

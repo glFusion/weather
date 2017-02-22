@@ -54,9 +54,10 @@ class Weather
         //$iso_lang = empty($_CONF['iso_lang']) ? 'en' : 
         //            rawurlencode($_CONF['iso_lang']);
         //$this->url = 'http://free.worldweatheronline.com/feed/weather.ashx?format=json&num_of_days=5&key=' . $_CONF_WEATHER['api_key_wwo'];
-        $this->url = 'http://api.worldweatheronline.com/free/v1/weather.ashx?format=json&num_of_days=5&key=' . $_CONF_WEATHER['api_key_wwo'];
+        $this->url = 'http://api.worldweatheronline.com/free/v2/weather.ashx?format=json&tp=24&includeLocation=yes&extra=localObsTime&num_of_days=' .
+            $this->fc_days . '&key=' . $_CONF_WEATHER['api_key_wwo'];
         //$this->locUrl = 'http://www.worldweatheronline.com/feed/search.ashx?format=json&num_of_results=3&popular=yes&key=' . $_CONF_WEATHER['api_key_wwo'];
-        $this->locUrl = 'http://api.worldweatheronline.com/free/v1/search.ashx?format=json&num_of_results=3&popular=yes&key=' . $_CONF_WEATHER['api_key_wwo'];
+        $this->locUrl = 'http://api.worldweatheronline.com/free/v2/search.ashx?format=json&num_of_results=3&popular=yes&key=' . $_CONF_WEATHER['api_key_wwo'];
  
         if (in_array('curl', get_loaded_extensions())) {
             // CURL is preferred since it handles other character sets better.
@@ -140,7 +141,7 @@ class Weather
     private function Parse()
     {
         $this->info = $this->response->request[0];
-        $this->info->city = $this->city;
+        $this->area = $this->response->nearest_area[0];
         $this->current = $this->response->current_condition[0];
         $this->forecast = $this->response->weather;
         if (!is_object($this->current) || !is_array($this->forecast)) {
@@ -209,9 +210,9 @@ class Weather
         //list($city, $country) = explode(', ', $this->info->query);
         $data = array(
             'info' => array(
-                'city'  => $this->info->city,
+                'city'  => $this->area->areaName[0]->value.', '.$this->area->country[0]->value,
                 //'postal' => (string)$w->info->postal_code['data'],
-                'date_time' => date('Y-m-d') . (string)$this->current->observation_time,
+                'date_time' => date('d.M.Y - ') . (string)$this->current->observation_time,
                 'ts' => time(),
             ),
             'current' => array(
@@ -232,17 +233,17 @@ class Weather
             foreach ($this->forecast as $fc) {
                 $data['forecast'][] = array(
                     'day'    => date('D', strtotime($fc->date)),
-                    'lowF'   => (string)$fc->tempMinF,
-                    'highF'  => (string)$fc->tempMaxF,
-                    'lowC'   => (string)$fc->tempMinC,
-                    'highC'  => (string)$fc->tempMaxC,
-                    'condition' => (string)$fc->weatherDesc[0]->value,
-                    'icon'  => (string)$fc->weatherIconUrl[0]->value,
-                    'icon_name' => (string)$fc->weatherDesc[0]->value,
-                    'wind_M' => (string)$fc->windspeedMiles . 'mph ' .
-                                (string)$fc->winddir16Point,
-                    'wind_K' => (string)$fc->windspeedKmph . 'kph ' .
-                                (string)$fc->winddir16Point,
+                    'lowF'   => (string)$fc->mintempF,
+                    'highF'  => (string)$fc->maxtempF,
+                    'lowC'   => (string)$fc->mintempC,
+                    'highC'  => (string)$fc->maxtempC,
+                    'condition' => (string)$fc->hourly[0]->weatherDesc[0]->value,
+                    'icon'  => (string)$fc->hourly[0]->weatherIconUrl[0]->value,
+                    'icon_name' => (string)$fc->hourly[0]->weatherDesc[0]->value,
+                    'wind_M' => (string)$fc->hourly[0]->windspeedMiles . 'mph ' .
+                                (string)$fc->hourly[0]->winddir16Point,
+                    'wind_K' => (string)$fc->hourly[0]->windspeedKmph . 'kph ' .
+                                (string)$fc->hourly[0]->winddir16Point,
                 );
             }
         }

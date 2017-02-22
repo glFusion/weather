@@ -1,149 +1,102 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1" />
-  <link href="../../../docs/docstyle.css" type="text/css" rel="stylesheet" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="apple-touch-icon-precomposed" href="../../layout/cms/images/apple-touch-icon.png">
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/2.26.3/css/uikit.almost-flat.min.css">
   <meta name="robots" content="noindex,nofollow" />
-  <title>Weather Plugin - glFusion CMS</title>
+  <title>glFusion Membership Plugin Configuration</title>
+  <style>
+    html{background:#f9f9f9}.tm-dropdown,.tm-navbar{background:#325482!important}.uk-form label{font-weight:700}.tm-navbar{border-radius:0!important;padding:1px 0 6px!important;border:none!important}.tm-navbar-brand{color:#eee!important}.tm-navbar-brand a{text-shadow:none;color:#fff}.tm-navbar-brand a:hover{color:#ababab;text-decoration:none}.tm-navbar-brand-oc a{text-shadow:none;color:#fff}.tm-navbar-brand-oc a:hover{color:#ababab;text-decoration:none}.tm-navbar-nav>li>a{border:none;border-radius:3px!important;font-size:15px!important;height:40px!important;margin:0!important}.tm-dropdown{color:#000;border-radius:0!important;border:0!important}.tm-nav-navbar>li>a{color:#fff!important}.tm-navbar::after,.tm-navbar::before{margin-top:7px!important}.tm-navbar-nav>li.uk-open>a,.tm-navbar-nav>li:hover>a,.tm-navbar-nav>li>a:focus{color:#fff;outline:0;background:#35B3EE!important}.tm-navbar-nav>li>a{color:#fff!important;text-shadow:none!important}.tm-navbar-toggle{color:#ccc!important;text-shadow:none!important}.tm-navbar-toggle:focus,.tm-navbar-toggle:hover{color:#fff!important}.tm-footer{background:#252525;border-top:1px solid #232425;margin-bottom:0;bottom:0;padding:10px;color:#fff}.tm-wrapper{min-height:100%;margin:0 auto -51px!important}.tm-push,footer{height:51px}.uk-navbar-content > a {color:#fff !important;}
+  </style>
 </head>
 
-<body style="direction: ltr;">
-<div id="gl_container_fluid">
-  <div id="gl_header"><span style="color: rgb(255, 255, 255); float: left; padding-left: 10px; padding-top: 5px; vertical-align: middle;">glFusion Documentation Project
-  </span><a style="float: right; padding-right: 10px; padding-top: 5px; vertical-align: middle;" href="http://www.glfusion.org/wiki/doku.php">glFusion Wiki</a>
-</div>
-<div id="gl_wrapper">
-<div class="body-container">
-<h1><a name="advt_plugin" id="advt_plugin">Weather Plugin</a></h1>
+<body class="uk-height-1-1">
+  <div class="tm-wrapper">
+    <nav class="uk-navbar uk-navbar-attached tm-navbar uk-margin-bottom">
+      <div class="uk-navbar-brand tm-navbar-brand">
+        glFusion Membership Plugin Configuration
+      </div>
+      <div class="uk-navbar-flip uk-hidden-small">
+        <div class="uk-navbar-content tm-navbar-content" style="text-shadow:none;">
+          <a href="https://www.glfusion.org/wiki/">glFusion Wiki</a>
+        </div>
+      </div>
+    </nav>
 
-<div class="level1">
-<p>
-  The Weather Plugin allows you to display weather information from wunderground.com or worldweatheronline.com.  Included is a PHP block to show current conditions, and current or forecasted weather can be displayed in other content via autotags.  Additionally, API functions are available to embed weather information into other plugins.
-</p>
-<p>This version requires GLFusion 1.2.0 or higher.</p>
-<h1><a name="weather_plugin_configuration_options" id="weather_plugin_configuration_options">Weather Plugin Configuration Options</a></h1>
+    <div class="uk-container uk-container-center uk-margin-bottom">
+      <h1>glFusion Weather Plugin Configuration</h1>
+      <h2>Main Settings</h2>
 
-<table class="inline">
-  <tbody>
-    <tr>
-      <th class="col0 leftalign" colspan="2">Main Weather Settings</th>
-    </tr>
+      <dl id="desc_anon_access">
+        <dt>Anonymous Access</dt>
+        <dd>Select the access for Anonymous users. Default is view only, if you set this to View &amp; Search be aware that you might exceed your API search quotas.
+      </dl>
 
-    <tr class="row0">
-      <th class="col0 leftalign">Option </th>
-      <th class="col1 leftalign">Description </th>
-    </tr>
+      <dl id="desc_displayblocks">
+        <dt>Display glFusion Blocks</dt>
+        <dd>Select the glFusion blocks that will be displayed when the plugin page is displayed.</dd>
+      </dl>
 
-    <tr class="row0">
-      <td class="col0 leftalign" valign="top"><a name="desc_anon_access"></a>Anonymous Access</td>
-      <td class="col1 leftalign">Select the plugin access to give anonymous visitors.
-<ul>
-  <li><b>None</b> - The plugin page is not available.  This does not affect the visibility of the PHP block; see <a href="#desc_blk_show_loc">Locations to show in block</a>.</li>
-  <li><b>View</b> - Visitors may view the forecast page.</li>
-  <li><b>View & Search</b> - Anonymous visitors may view the weather page and submit locations to search.</li>
-</ul>
-      </td>
-    </tr>
+      <dl id="desc_cache_minutes">
+        <dt>Minutes to cache weather data</dt>
+        <dd>Enter the number of minutes to cache weather data.  When data is retrieved from the provider, it is cached in a database table to reduce the number of lookups made.  This number should be set to a reasonable value based on how frequently the weather is expected to change. 120 minutes (2 hours) is a good start.</dd>
+      </dl>
 
-    <tr class="row0">
-      <td class="col0 leftalign" valign="top"><a name="desc_displayblocks"></a>Display glFusion Blocks</td>
-      <td class="col1 leftalign">
-Select the glFusion blocks that will be displayed when the plugin page is displayed.
-      </td>
-    </tr>
+      <dl id="desc_default_loc">
+        <dt>Default Location</dt>
+        <dd>Enter a location to be used as the default.  If a user does not have a persional location value filled in, or if the <a href="#desc_blk_show_loc">Locations to show in block</a> is "Default Only", this location will be used.</dd>
+      </dl>
 
-    <tr class="row0">
-      <td class="col0 leftalign" valign="top"><a name="desc_cache_minutes"></a>Minutes to cache weather data</td>
-      <td class="col1 leftalign">
-Enter the number of minutes to cache weather data.  When data is retrieved from the provider, it is cached in a database table to reduce the number of lookups made.  This number should be set to a reasonable value based on how frequently the weather is expected to change. 120 minutes (2 hours) is a good start.
-      </td>
-    </tr>
+      <dl id="desc_blk_show_loc">
+        <dt>Location for PHP Block</dt>
+        <dd>Select which location will be shown in the PHP block (if used). Either the default location (above) or the user&apos;s personal location (if available) can be shown.</dd>
+      </dl>
 
-    <tr class="row0">
-      <td class="col0 leftalign" valign="top"><a name="desc_default_loc"></a>Default Location</td>
-      <td class="col1 leftalign">
-Enter a location to be used as the default.  If a user does not have a persional location value filled in, or if the <a href="#desc_blk_show_loc">Locations to show in block</a> is "Default Only", this location will be used.
-      </td>
-    </tr>
+      <dl id="desc_usermenu_option">
+        <dt>Show the plugin on the "Plugins" menu?</dt>
+        <dd>Select "Yes" to have a menu option for this plugin page added to the default "Plugins" menu.  If this is "No", no menu option will be added but the page will still be available if added to another menu or linked from other content.</dd>
+      </dl>
 
-    <tr class="row0">
-      <td class="col0 leftalign" valign="top"><a name="desc_usermenu_option"></a>Show the plugin on the "Plugins" menu?</td>
-      <td class="col1 leftalign">
-Select "Yes" to have a menu option for this plugin page added to the default "Plugins" menu.  If this is "No", no menu option will be added but the page will still be available if added to another menu or linked from other content.
-      </td>
-    </tr>
+      <dl id="desc_provider">
+        <dt>Weather Provider</dt>
+        <dd>Select the weather provider to use. Remember that you'll need to sign up on the provider&apos;s website and set the API key</dd>
+      </dl>
 
-    <tr class="row0">
-      <td class="col0 leftalign" valign="top"><a name="desc_provider"></a>Weather Provider</td>
-      <td class="col1 leftalign">
-        Select the weather provider to use. Remember that you'll need to sign up on the provider&apos;s website and set the API key value below.<br /><br />
-        <i>Be sure to purge the weather cache (in addition to the glFusion template cache) after changing providers.</i>
-        <ul><li><a href="http://www.worldweatheronline.com" target="_blank">World Weather Online</a></li>
-        <li><a href="http://wunderground.com/weather/api" target="_blank">Weather Underground</a></li></ul>
-      </td>
-    </tr>
+      <dl id="desc_k_m">
+        <dt>Windspeed units</dt>
+        <dd>Select the unit of measure for Windspeed- Miles per Hour or Kilometres per Hour</dd>
+      </dl>
 
-    <tr class="row0">
-      <td class="col0 leftalign" valign="top"><a name="desc_k_m"></a>Windspeed units</td>
-      <td class="col1 leftalign">
-        Select the unit of measure for Windspeed- Miles per Hour or Kilometres per Hour
-      </td>
-    </tr>
+      <dl id="desc_f_c">
+        <dt>Temperature units</dt>
+        <dd>Select the unit of measure used for temperature- Farenheit or Celsius</dd>
+      </dl>
 
-    <tr class="row0">
-      <td class="col0 leftalign" valign="top"><a name="desc_f_c"></a>Temperature units</td>
-      <td class="col1 leftalign">
-        Select the unit of measure used for temperature- Farenheit or Celsius
-      </td>
-    </tr>
+      <dl id="desc_api_key_wwo">
+        <dt>API Key</dt>
+        <dd>Enter the API key assigned to you by World Weather Online.
+        Visit <a href="http://worldweatheronline.com" target="_new">worldweatheronline.com</a> to sign up for a key.</dd>
+      </dl>
 
-    <tr>
-      <th class="col0 leftalign" colspan="2">World Weather Online Settings</th>
-    </tr>
+      <dl id="desc_api_key_wu">
+        <dt>API Key</dt>
+        <dd>Enter the API key assigned to you by Weather Underground.
+        Visit <a href="http://wunderground.com/weather/api" target="_new">wunderground.com</a> to sign up for a key.</dd>
+      </dl>
 
-    <tr class="row0">
-      <th class="col0 leftalign">Option </th>
-      <th class="col1 leftalign">Description </th>
-    </tr>
+      <dl id="desc_ref_key_wu">
+        <dt>Referral Key</dt>
+        <dd>Enter the referral key assigned to you by Weather Underground. WU offers additional &quot;raindrops&quot; based on clicks received from your site.</dd>
+      </dl>
 
-    <tr class="row0">
-      <td class="col0 leftalign" valign="top"><a name="desc_api_key_wwo"></a>API Key</td>
-      <td class="col1 leftalign">
-        Enter the API key assigned to you by World Weather Online.
-        Visit <a href="http://worldweatheronline.com" target="_new">worldweatheronline.com</a> to sign up for a key.
-      </td>
-    </tr>
-
-    <tr>
-      <th class="col0 leftalign" colspan="2">Weather Underground Settings</th>
-    </tr>
-
-    <tr class="row0">
-      <th class="col0 leftalign">Option </th>
-      <th class="col1 leftalign">Description </th>
-    </tr>
-
-    <tr class="row0">
-      <td class="col0 leftalign" valign="top"><a name="desc_api_key_wu"></a>API Key</td>
-      <td class="col1 leftalign">
-        Enter the API key assigned to you by Weather Underground.
-        Visit <a href="http://wunderground.com/weather/api" target="_new">wunderground.com</a> to sign up for a key.
-      </td>
-    </tr>
-
-    <tr class="row0">
-      <td class="col0 leftalign" valign="top"><a name="desc_ref_key_wu"></a>Referral Key</td>
-      <td class="col1 leftalign">
-        Enter the referral key assigned to you by Weather Underground. WU offers additional &quot;raindrops&quot; based on clicks received from your site.
-      </td>
-    </tr>
-
-  </tbody>
-</table>
-<p></p>
-</div>
-</div>
-</div>
-</div>
+      <dl id="desc_api_key_apixu">
+        <dt>API Key</dt>
+        <dd>Enter the API key assigned to you by APIXU.
+        Visit <a href="https://www.apixu.com/api.aspx" target="_new">apixu.com</a> to sign up for a key.</dd>
+      </dl>
+    </div>
+  </div>
 </body>
 </html>

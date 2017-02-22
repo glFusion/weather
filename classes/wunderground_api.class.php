@@ -5,33 +5,21 @@
 *   @author     Lee Garner <lee@leegarner.com>
 *   @copyright  Copyright (c) 2012 Lee Garner <lee@leegarner.com>
 *   @package    weather
-*   @version    1.0.0
+*   @version    1.0.4
 *   @license    http://opensource.org/licenses/gpl-2.0.php 
 *               GNU Public License v2 or later
 *   @filesource
 */
+
+require_once dirname(__FILE__) . '/base_api.class.php';
 
 /**
 *   Class to manage Weather Underground
 *   @since  version 1.0.0
 *   @package weather
 */
-class Weather
+class Weather extends WeatherBase
 {
-    // Our variables are all available publically, though typically not used
-    public $response;
-    public $location;
-    public $current;
-    public $forecast;
-    public $fc_text;
-    public $info;
-    public $http_code;
-    public $error = 0;
-    public $api_name;
-
-    private $have_fopen = false;
-    private $have_curl = false;
-
     /**
     *   Constructor.
     *   Get the weather for the location string, if specified
@@ -42,30 +30,14 @@ class Weather
     {
         global $_CONF, $_CONF_WEATHER;
 
-        $this->api_name = 'Weather Underground';
+        $this->api_name = 'APIXU';
+        $this->api_code = 'wu';
 
-        if (empty($_CONF_WEATHER['api_key_wu'])) {
-            if (SEC_inGroup('Root')) {
-                $this->error = WEATHER_ERR_KEYMISSING;
-            } else {
-                $this->error = WEATHER_ERR_API;
-            }
-            return;
-        }
+        parent::__construct($loc);
 
-        //$iso_lang = empty($_CONF['iso_lang']) ? 'en' : 
-        //            rawurlencode($_CONF['iso_lang']);
         $this->url = 'http://api.wunderground.com/api/' .
                 $_CONF_WEATHER['api_key_wu'] .
                 '/conditions/forecast10day/q/';
-                //'/geolookup/conditions/forecast10day/q/';
- 
-        if (in_array('curl', get_loaded_extensions())) {
-            // CURL is preferred since it handles other character sets better.
-            $this->have_curl = true;
-        } elseif (ini_get('allow_url_fopen') == 1) {
-            $this->have_fopen = true;
-        }
 
         if (!empty($loc)) {
             // Get the weather for the specified location, if requested
@@ -75,50 +47,29 @@ class Weather
 
 
     /**
-    *   Get the weather for a given location
-    *   If $loc is not specified, use the current saved location
+    *   Format a url for this provider.
+    *   Separates the location string on commas, removes extra whitespace,
+    *   and converts internal spaces to underscores. Then the components are
+    *   assembled in reverse order separated by slashes.
+    *   Example: "Los Angeles, CA" becomes "CA/Los_Angeles.json"
     *
-    *   @param  string  $loc    Optional location to retrieve.
-    *   @return boolean     True on success, False on failure
+    *   @param  string  $loc    Location
+    *   @return string      Full API URL
     */
-    public function Get($loc = '')
+    protected function _makeUrl($loc)
     {
-        if (!empty($loc)) {
-            // Sanitize the location
-            $this->location = $loc;
+        $this->location = $loc;
+        $loc = explode(',', $this->location);
+        foreach ($loc as $idx=>$loc_elem) {
+            $loc_elem = trim($loc_elem);
+            $loc[$idx] = str_replace(' ', '_', $loc_elem);
         }
-
-        if (empty($this->location)) {
-            COM_errorLog('Empty location provided');
-            $this->error = WEATHER_ERR_NOTFOUND;
-            return false;
-        }
-
-        $url = $this->url . trim(rawurlencode($this->location)) . '.json';
-        $json = $this->GetWeather($url);
-        if (empty($json)) {
-            $this->error = WEATHER_ERR_API;
-            COM_errorLog('Empty weather data from ' . $this->api_name);
-            return false;
-        }
-
-        $A = json_decode($json);
-        if (!is_object($A)) {
-            $this->error = WEATHER_ERR_API;
-            COM_errorLog("error decoding json: $json");
-            return false;
-        }
-        $this->response = $A;
-        if (!$this->Parse()) {
-            COM_errorLog('error parsing json object');
-            $this->error = WEATHER_ERR_API;
-            return false;
-        }
-
-        return true;
+        $loc = array_reverse($loc);
+        $loc = implode('/', $loc);
+        return $this->url . $loc . '.json';
     }
 
-
+ 
     /**
     *   Parse the returned weather information.
     *   This function just puts the forecast info into some "shortcut"
@@ -144,51 +95,6 @@ class Weather
             return true;
         }
     }
-    
-
-    /**
-    *   Fetch data from a remote server using php-curl
-    *
-    *   @param  string  $url    URL to retrieve
-    *   @return string      Data from website
-    */
-    private function GetWeather($url)
-    {
-        if ($this->have_curl) {
-            $agent = 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB; ' .
-                'rv:1.9.1) Gecko/20090624 Firefox/3.5 (.NET CLR ' .
-                '3.5.30729)';
-
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL,            $url);
-            curl_setopt($ch, CURLOPT_USERAGENT,      $agent);
-            curl_setopt($ch, CURLOPT_HEADER,         0);
-            curl_setopt($ch, CURLOPT_ENCODING,       'gzip');
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-            curl_setopt($ch, CURLOPT_FAILONERROR,    1);
-            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 8);
-            curl_setopt($ch, CURLOPT_TIMEOUT,        8);
-            /*curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                    'Accept-Charset: utf-8',
-                ) );*/
-            //curl_setopt($ch, CURLOPT_VERBOSE,        1);
-
-            $result = curl_exec($ch);
-            $this->http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            curl_close($ch);
-            if ($this->http_code != '200') {
-                $result = '';
-            }
-
-        } elseif ($this->have_fopen) {
-            $result = file_get_contents($url, 0);
-        } else {
-            $result = '';
-            COM_errorLog('WEATHER: Missing url_fopen and curl support');
-        }
-        return $result;
-    }
 
 
     /**
@@ -200,6 +106,8 @@ class Weather
     */
     public function getData()
     {
+        global $_CONF_WEATHER;
+
         //list($city, $country) = explode(', ', $this->info->query);
         $data = array(
             'info' => array(
@@ -223,9 +131,9 @@ class Weather
             'forecast' => array(),
         );
         if (is_array($this->forecast)) {
-            for ($i = 0; $i < 5; $i++) {
-                // Weather Underground provides only 3 or 10-day forecasts.
-                // We want 5 days.
+            // Weather Underground provides only 3 or 10-day forecasts.
+            // We want 5 days.
+            for ($i = 0; $i < $this->fc_days; $i++) {
                 if (!isset($this->forecast[$i])) break;
                 $fc = $this->forecast[$i];
                 $t = 2 * $i;    // index into text descriptions, 2 per entry
@@ -288,21 +196,6 @@ class Weather
                 'title="Powered by Weather Underground" ' .
                 'target="_blank">' . $img . '</a>';
         return $retval;
-    }
-
-
-    /**
-    *   Return the URL for a give icon string.
-    *
-    *   @param  string  $icon   Icon URL returned from the weather API
-    *   @return string          Fully-qualified URL to the icon image
-    */
-    public static function getIcon($icon)
-    {
-        if (function_exists('CUSTOM_weatherIcon')) {
-            $icon = CUSTOM_weatherIcon($icon);
-        }
-        return $icon;
     }
 
 }   // class Weather

@@ -26,6 +26,9 @@ $LANG_configsubgroups['weather'] = array(
 
 $LANG_fs['weather'] = array(
     'fs_main'               => 'Algemene Instellingen',
+    'fs_provider_wwo'       => 'World Weather Online',
+    'fs_provider_wu'        => 'Weather Underground',
+    'fs_provider_apixu'     => 'APIXU',
 );
 
 $LANG_configsections['weather'] = array(
@@ -40,7 +43,15 @@ $LANG_confignames['weather'] = array(
     'default_loc'       => 'Standaard Locatie',
     'blk_show_loc'      => 'Toon Locatie in PHP blok',
     'usermenu_option'   => 'Toon de Plugin in het "Plugins" menu?',
-);
+    'api_key'           => 'Provider API key',
+    'f_c'               => 'Temperature units',
+    'k_m'               => 'Windspeed units',
+    'provider'          => 'Provider',
+    'api_key_wwo'       => 'API Key',
+    'api_key_wu'        => 'API Key',
+    'ref_key_wu'        => 'Referrer Key',
+    'api_key_apixu'     => 'API Key',
+));
 
 $LANG_configselects['weather'] = array(
     0   => array(   'Ja' => 1, 'Nee' => 0),
@@ -57,6 +68,12 @@ $LANG_configselects['weather'] = array(
                     'Rechter Blokken' => 2, 
                     'Linker & Rechter Blokken' => 3, 
                     'Geen' => 0,
+            ),
+    14  => array(   'Miles per Hour' => 'M', 'Kilometres per Hour' => 'K' ),
+    15  => array(   'Farenheit' => 'F', 'Celsius' => 'C'),
+    16  => array(   'World Weather Online' => 'wwo',
+                    'Weather Underground' => 'wu',
+                    'APIXU' => 'apixu',
             ),
 );
 

@@ -10,6 +10,9 @@
 *               GNU Public License v2 or later
 *   @filesource
 */
+if (!defined ('GVERSION')) {
+    die ('This file can not be used on its own.');
+}
 
 // Initialize the configuration
 require_once $_CONF['path_system'] . 'classes/config.class.php';
@@ -18,9 +21,6 @@ $_CONF_WEATHER = $w_config->get_config('weather');
 
 // Get the static config items
 require_once dirname(__FILE__) . '/weather.php';
-
-// Sessions are used to track which weather info a user requested
-//if (!isset($_SESSION)) session_start();
 
 // Define commonly-used paths
 define('WEATHER_PI_PATH', 
@@ -83,6 +83,7 @@ function USES_weather_class_api()
 
     switch ($_CONF_WEATHER['provider']) {
     case 'wu':
+    default:    // wwo no longer supported
         require_once WEATHER_CLASSPATH . '/wunderground_api.class.php';
         break;
     case 'goog':
@@ -90,8 +91,10 @@ function USES_weather_class_api()
         require_once WEATHER_CLASSPATH . '/google_api.inc.php';
         break;
     case 'wwo':
-    default:        // default since it's the only provider in version 0.1.3
         require_once WEATHER_CLASSPATH . '/worldweather_api.class.php';
+        break;
+    case 'apixu':
+        require_once WEATHER_CLASSPATH . '/apixu_api.class.php';
         break;
     }
 }
@@ -573,15 +576,20 @@ function WEATHER_sanitize($var)
 */
 function WEATHER_getDocURL($file='', $doclang='english')
 {
+    global $_SYSTEM;
+
     $doc_path = WEATHER_PI_PATH . "/docs/$doclang/";
     $doc_url = '';
 
     if ($file != '') {
+        if ($_SYSTEM['framework'] != 'uikit') $file .= '.legacy';
+        $file .= '.html';
         if (!file_exists($doc_path . $file)) {
             $doclang = 'english';
         }
         $doc_url = WEATHER_URL . "/docs/$doclang/$file";
     } else {
+        // Just return the URL to the directory
         if (!is_dir($doc_path)) {
             $doclang = 'english';
         }
@@ -602,14 +610,13 @@ function WEATHER_getDocURL($file='', $doclang='english')
 */
 function plugin_getconfigelementhelp_weather($option, $doclang='english')
 {
-    $doc_url = WEATHER_getDocURL('config.html', $doclang);
+    $doc_url = WEATHER_getDocURL('config', $doclang);
     if (empty($doc_url))
         return false;
 
     if (!empty($option)) {
         $file .= '#desc_' . $option;
     }
-
     return array($doc_url . $file, 0);
 }
 

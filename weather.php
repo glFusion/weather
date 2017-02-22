@@ -29,7 +29,7 @@ $_table_prefix = $_DB_table_prefix . 'weather';
 $_TABLES['weather_cache']       = $_table_prefix . '_cache';
 
 $_CONF_WEATHER['pi_name'] = 'weather';
-$_CONF_WEATHER['pi_version'] = '1.0.3';
+$_CONF_WEATHER['pi_version'] = '1.0.4';
 $_CONF_WEATHER['gl_version'] = '1.3.0';
 $_CONF_WEATHER['pi_url'] = 'http://www.leegarner.com';
 $_CONF_WEATHER['pi_display_name'] = 'Weather';

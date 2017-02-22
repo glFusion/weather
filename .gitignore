@@ -1,3 +1,5 @@
 collect.sh
 config.php
 test/
+distrib.sh
+.gitignore

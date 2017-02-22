@@ -68,29 +68,26 @@ if (empty($loc)) {
     }
 }
 
-if (!isset($_SESSION['glWeather']) || !is_array($_SESSION['glWeather'])) {
-    $_SESSION['glWeather'] = array();
-}
+$Session = SESS_getVar('glWeather');
+if ($Session === 0) $Session = array();
 
 if (!empty($loc)) {
-    $key = array_search($loc, $_SESSION['glWeather']);
+    $key = array_search($loc, $Session);
     if ($key !== false) {
-        unset($_SESSION['glWeather'][$key]);
+        unset($Session[$key]);
     }
-    $_SESSION['glWeather'] = 
-        array_pad($_SESSION['glWeather'], 
-                (count($_SESSION['glWeather']) + 1) * -1,
-                $loc);
+    $Session[] = $loc;
 }
+SESS_setVar('glWeather', $Session);
 
 $T = new Template(WEATHER_PI_PATH . '/templates');
 $T->set_file('index', 'index.thtml');
 $T->set_block('index', 'EmbedBlock', 'eBlk');
 $msg = '';
-foreach ($_SESSION['glWeather'] as $key=>$loc) {
+foreach ($Session as $key=>$loc) {
     $weather = WEATHER_getWeather($loc);
     if (!is_array($weather)) {
-        unset($_SESSION['glWeather'][$key]);    // how'd bad weather get here?
+        unset($Session[$key]);    // how'd bad weather get here?
         $msg = $weather;
         continue;
     }
