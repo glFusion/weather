@@ -83,9 +83,9 @@ function plugin_initconfig_weather()
         $c->add('api_key_wu', '', 'text', 0, 20, 0, 200, true, $pi_name);
         $c->add('ref_key_wu', '', 'text', 0, 20, 0, 210, true, $pi_name);
 
-        // Provider - axpiu.com
-        $c->add('fs_provider_axpiu', NULL, 'fieldset', 0, 10, NULL, 0, true, $pi_name);
-        $c->add('api_key_axpiu', '', 'text', 0, 10, 0, 100, true, $pi_name);
+        // Provider - apixu.com
+        $c->add('fs_provider_apixu', NULL, 'fieldset', 0, 10, NULL, 0, true, $pi_name);
+        $c->add('api_key_apixu', '', 'text', 0, 10, 0, 100, true, $pi_name);
     }
 
     return true;
