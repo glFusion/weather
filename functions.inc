@@ -6,7 +6,7 @@
 *   @copyright  Copyright (c) 2011-2012 Lee Garner <lee@leegarner.com>
 *   @package    weather
 *   @version    1.0.0
-*   @license    http://opensource.org/licenses/gpl-2.0.php 
+*   @license    http://opensource.org/licenses/gpl-2.0.php
 *               GNU Public License v2 or later
 *   @filesource
 */
@@ -23,11 +23,11 @@ $_CONF_WEATHER = $w_config->get_config('weather');
 require_once dirname(__FILE__) . '/weather.php';
 
 // Define commonly-used paths
-define('WEATHER_PI_PATH', 
+define('WEATHER_PI_PATH',
         $_CONF['path'] . 'plugins/' . $_CONF_WEATHER['pi_name']);
-define('WEATHER_URL', 
+define('WEATHER_URL',
         $_CONF['site_url'] . '/' . $_CONF_WEATHER['pi_name']);
-define('WEATHER_ADMIN_URL', 
+define('WEATHER_ADMIN_URL',
         $_CONF['site_admin_url'] . '/plugins/' . $_CONF_WEATHER['pi_name']);
 define('WEATHER_CLASSPATH',  WEATHER_PI_PATH . '/classes');
 
@@ -65,10 +65,6 @@ if (is_file("$langpath/custom/$langfile")) {
 
 // Some housekeeping. Make sure config values have good data
 $_CONF_WEATHER['cache_minutes'] = max((int)$_CONF_WEATHER['cache_minutes'], 15);
- 
-// Load this variable to keep from having to call SEC_hasRights() for all
-// the menu options.
-$_CONF_WEATHER['isAdmin'] = SEC_hasRights('weather.admin');
 
 function USES_weather_upgrade()
 {   require_once WEATHER_PI_PATH . '/upgrade.inc.php';  }
@@ -125,8 +121,8 @@ function plugin_getmenuitems_weather()
 	if (
         $_CONF_WEATHER['usermenu_option'] &&
         ( SEC_hasRights('weather.view') ||
-            ( COM_isAnonUser() && 
-            $_CONF_WEATHER['anon_access'] & WEATHER_ACCESS_VIEW ) 
+            ( COM_isAnonUser() &&
+            $_CONF_WEATHER['anon_access'] & WEATHER_ACCESS_VIEW )
         )
     ) {
     	$menuitems[$LANG_WEATHER['pi_title']] = WEATHER_URL . '/index.php';
@@ -146,12 +142,12 @@ function plugin_autouninstall_weather()
 
     $out = array (
         'tables'    => array(
-                        'weather_cache', 
+                        'weather_cache',
                     ),
         'groups'    => array($_CONF_WEATHER['pi_name'] . ' Admin'),
         'features'  => array(
-                        $_CONF_WEATHER['pi_name'] . '.admin', 
-                        $_CONF_WEATHER['pi_name'] . '.view', 
+                        $_CONF_WEATHER['pi_name'] . '.admin',
+                        $_CONF_WEATHER['pi_name'] . '.view',
                     ),
         'php_blocks' => array('phpblock_weather_current'),
         'vars'      => array($_CONF_WEATHER['pi_name'] . '_gid')
@@ -176,9 +172,9 @@ function plugin_enablestatechange_weather($enabling)
 
     // turns block off if on, but will not turn it on if off.
     if ($enabling != 1) {
-        DB_query ("UPDATE {$_TABLES['blocks']} 
+        DB_query ("UPDATE {$_TABLES['blocks']}
                     SET is_enabled = 0
-                    WHERE (type = 'phpblock') 
+                    WHERE (type = 'phpblock')
                     AND (phpblockfn LIKE 'phpblock_weather_%')");
     }
 }
@@ -210,7 +206,7 @@ function phpblock_weather_current($A=array(), $loc='')
         } else {
             // Show the personal block, if configured & available
             if ($_CONF_WEATHER['blk_show_loc'] & WEATHER_BLK_PERSONAL) {
-                $loc = DB_getItem($_TABLES['userinfo'], 'location', 
+                $loc = DB_getItem($_TABLES['userinfo'], 'location',
                         "uid='{$_USER['uid']}'");
             }
             if (empty($loc)) {
@@ -333,7 +329,7 @@ function plugin_autotags_weather($op, $content = '', $autotag = '')
                 $HTML = WEATHER_embed($loc);
             }
             break;
-                
+               
         } // switch($option)
 
         $retval = str_replace($autotag['tagstr'], $HTML, $content);
@@ -547,10 +543,10 @@ function WEATHER_siteFooter()
 *   @param  mixed   $var    Value or array to sanitize
 *   @return mixed           Sanitized version of $var
 */
-function WEATHER_sanitize($var) 
+function WEATHER_sanitize($var)
 {
     if (is_array($var)) {
-        //run each array item through this function (by reference)       
+        //run each array item through this function (by reference)      
         foreach ($var as &$val) {
             $val = WEATHER_sanitize($val, $quotes);
         }
@@ -628,7 +624,7 @@ function plugin_getconfigelementhelp_weather($option, $doclang='english')
 *
 *   @return boolean True on success, error code on failure
 */
-function plugin_upgrade_weather() 
+function plugin_upgrade_weather()
 {
     global $_TABLES, $_CONF_WEATHER;
 
@@ -681,19 +677,19 @@ function plugin_upgrade_weather()
 
 
 /**
-* This will put an option for the plugin in the command and control block 
+* This will put an option for the plugin in the command and control block
 * on moderation.php
 *
-* Add the plugin name, icon and link to the command and control block in 
+* Add the plugin name, icon and link to the command and control block in
 * moderation.php
 *
 * @return   array  Array containing (plugin name, admin url, url of plugin icon)
 */
-function plugin_cclabel_weather() 
+function plugin_cclabel_weather()
 {
-    global $_CONF_WEATHER, $LANG_WEATHER;
+    global $LANG_WEATHER;
 
-    if ($_CONF_WEATHER['isAdmin']) {
+    if (plugin_isadmin_weather()) {
         return array(
             $LANG_WEATHER['pi_title'],
             WEATHER_ADMIN_URL . '/index.php',
@@ -721,11 +717,11 @@ function plugin_geticon_weather()
 *
 *   @return array   Array(pi_name, admin url, # of items) or '' for none.
 */
-function plugin_getadminoption_weather() 
+function plugin_getadminoption_weather()
 {
-    global $_CONF_WEATHER, $LANG_WEATHER;
+    global $LANG_WEATHER;
 
-    if ($_CONF_WEATHER['isAdmin']) {
+    if (plugin_isadmin_weather()) {
         $retval = array(
             $LANG_WEATHER['pi_title'],
             WEATHER_ADMIN_URL . '/index.php',
@@ -753,6 +749,22 @@ function plugin_user_move_weather($origUID, $destUID)
 
     DB_query("UPDATE {$_TABLES['weather_cache']}
             SET uid = $destUID WHERE uid = $origUID", 1);
+}
+
+
+/**
+*   Determine if the current user is a plugin admin
+*
+*   @see SEC_hasRights()
+*   @return boolean     True for an administrator, False if not
+*/
+function plugin_isadmin_weather()
+{
+    static $retval = NULL;
+    if ($retval === NULL) {
+        $retval = SEC_hasRights('weather.admin');
+    }
+    return $retval;
 }
 
 

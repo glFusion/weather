@@ -6,7 +6,7 @@
 *   @copyright  Copyright (c) 2012 Lee Garner <lee@leegarner.com>
 *   @package    weather
 *   @version    1.0.1
-*   @license    http://opensource.org/licenses/gpl-2.0.php 
+*   @license    http://opensource.org/licenses/gpl-2.0.php
 *               GNU Public License v2 or later
 *   @filesource
 */
@@ -36,7 +36,7 @@ function WEA_adminMenu($view = '')
               'text' => $LANG_WEATHER['purge_cache']),
     );
 
-    $header_str = $LANG_WEATHER['pi_title'] . ' ' . $LANG_WEATHER['version'] . 
+    $header_str = $LANG_WEATHER['pi_title'] . ' ' . $LANG_WEATHER['version'] .
         ' ' . $_CONF_WEATHER['pi_version'];
 
     $retval .= COM_startBlock($header_str, '', COM_getBlockTemplate('_admin_block', 'header'));
@@ -47,7 +47,7 @@ function WEA_adminMenu($view = '')
 
 
 /*
-* Main 
+* Main
 */
 
 // If plugin is installed but not enabled, display an error and exit gracefully
@@ -58,8 +58,7 @@ if (!in_array('weather', $_PLUGINS)) {
 }
 
 // Only let admin users access this page
-$isAdmin = SEC_hasRights($_CONF_WEATHER['pi_name'].'.admin');
-if (!$isAdmin) {
+if (!plugin_isadmin_weather()) {
     // Someone is trying to illegally access this page
     COM_errorLog("Someone has tried to illegally access the dailyquote Admin page.  User id: {$_USER['uid']}, Username: {$_USER['username']}, IP: $REMOTE_ADDR",1);
     COM_404();
@@ -67,7 +66,7 @@ if (!$isAdmin) {
 
 $action = '';
 $expected = array(
-    'purge', 
+    'purge',
 );
 foreach($expected as $provided) {
     if (isset($_POST[$provided])) {
