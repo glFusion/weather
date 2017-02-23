@@ -454,7 +454,7 @@ function WEATHER_embed($loc, $linkback = true)
         $T->set_var(array(
             'curr_wind' => $A['current']['wind_' . $KM],
             'curr_icon_url' => Weather::getIcon($A['current']['icon']),
-            'curr_icon_naem' => $A['current']['icon_name'],
+            'curr_icon_name' => $A['current']['icon_name'],
             'temp_f'    => $A['current']['temp_f'],
             'temp_c'    => $A['current']['temp_c'],
             'curr_cond' => $A['current']['condition'],
