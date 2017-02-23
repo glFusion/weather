@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
 *   Class to interface with Weather Underground's weather API
 *
@@ -6,7 +6,7 @@
 *   @copyright  Copyright (c) 2012 Lee Garner <lee@leegarner.com>
 *   @package    weather
 *   @version    1.0.4
-*   @license    http://opensource.org/licenses/gpl-2.0.php 
+*   @license    http://opensource.org/licenses/gpl-2.0.php
 *               GNU Public License v2 or later
 *   @filesource
 */
@@ -30,7 +30,7 @@ class Weather extends WeatherBase
     {
         global $_CONF, $_CONF_WEATHER;
 
-        $this->api_name = 'APIXU';
+        $this->api_name = 'Wunderground';
         $this->api_code = 'wu';
 
         parent::__construct($loc);
@@ -69,7 +69,7 @@ class Weather extends WeatherBase
         return $this->url . $loc . '.json';
     }
 
- 
+
     /**
     *   Parse the returned weather information.
     *   This function just puts the forecast info into some "shortcut"
