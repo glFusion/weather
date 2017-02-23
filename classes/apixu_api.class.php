@@ -104,7 +104,7 @@ class Weather extends WeatherBase
     */
     public function getData()
     {
-        global $_USER, $_CONF_WEATHER;
+        global $_USER, $_CONF_WEATHER, $LANG_APIXU_CONDITIONS, $LANG_DIRECTIONS;
 
         $this->data = array(
             'info' => array(
@@ -115,14 +115,14 @@ class Weather extends WeatherBase
             'current' => array(
                 'temp_f'   => (string)$this->current->temp_f,
                 'temp_c'  => (string)$this->current->temp_c,
-                'condition' => (string)$this->current->condition->text,
+                'condition' => $LANG_APIXU_CONDITIONS[(string)$this->current->condition->text],
                 'icon'  => (string)$this->current->condition->icon,
-                'icon_name' => (string)$this->current->condition->text,
+                'icon_name' => $LANG_APIXU_CONDITIONS[(string)$this->current->condition->text],
                 'humidity' => (string)$this->current->humidity,
                 'wind_M' => (string)$this->current->wind_mph. 'mph ' .
-                        (string)$this->current->wind_dir,
-                'wind_K' => (string)$this->current->wind_kph . 'kph ' .
-                        (string)$this->current->wind_dir,
+                        $LANG_DIRECTIONS[(string)$this->current->wind_dir],
+                'wind_K' => (string)$this->current->wind_kph . 'km/h ' .
+                        $LANG_DIRECTIONS[(string)$this->current->wind_dir],
             ),
             'forecast' => array(),
         );
@@ -145,11 +145,11 @@ class Weather extends WeatherBase
                     'highF'  => (string)$fc->day->maxtemp_f,
                     'lowC'   => (string)$fc->day->mintemp_c,
                     'highC'  => (string)$fc->day->maxtemp_c,
-                    'condition' => (string)$fc->day->condition->text,
+                    'condition' => $LANG_APIXU_CONDITIONS[(string)$fc->day->condition->text],
                     'icon'  => (string)$fc->day->condition->icon,
-                    'icon_name' => (string)$fc->day->condition->icon,
+                    'icon_name' => $LANG_APIXU_CONDITIONS[(string)$fc->day->condition->text],
                     'wind_M' => (string)$fc->day->maxwind_mph . 'mph ',
-                    'wind_K' => (string)$fc->day->maxwind_kph . 'kph ',
+                    'wind_K' => (string)$fc->day->maxwind_kph . 'km/h ',
                     'fc_text_F' => '',
                     'fc_text_C' => '',
                 );
