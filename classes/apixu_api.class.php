@@ -49,7 +49,8 @@ class Weather extends WeatherBase
 
     /**
     *   Format a url for this provider.
-    *   Just appends a urlencoded location to the base url
+    *   Just appends a urlencoded location to the base url.
+    *   Works for coordinates as well as address-style locations
     *
     *   @param  string  $loc    Location
     *   @return string      Full API URL

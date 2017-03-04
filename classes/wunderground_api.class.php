@@ -60,12 +60,20 @@ class Weather extends WeatherBase
     {
         $this->location = $loc;
         $loc = explode(',', $this->location);
-        foreach ($loc as $idx=>$loc_elem) {
-            $loc_elem = trim($loc_elem);
-            $loc[$idx] = str_replace(' ', '_', $loc_elem);
+        if (count($loc) == 2 && is_numeric($loc[0]) && is_numeric($loc[1])) {
+            // Assume the location is a coordinate "38.44556,-118.44040".
+            // Just put the location back as-is.
+            $loc = $this->location;
+        } else {
+            // A city, state, zip style location.
+            // Reverse and separate by '/'
+            // "Los Angeles, CA" becomes "CA/Los_Angeles"
+            foreach ($loc as $idx=>$loc_elem) {
+                $loc[$idx] = str_replace(' ', '_', trim($loc_elem));
+            }
+            $loc = array_reverse($loc);
+            $loc = implode('/', $loc);
         }
-        $loc = array_reverse($loc);
-        $loc = implode('/', $loc);
         return $this->url . $loc . '.json';
     }
 
