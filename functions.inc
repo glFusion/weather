@@ -65,6 +65,8 @@ if (is_file("$langpath/custom/$langfile")) {
 
 // Some housekeeping. Make sure config values have good data
 $_CONF_WEATHER['cache_minutes'] = max((int)$_CONF_WEATHER['cache_minutes'], 15);
+$_CONF_WEATHER['_is_uikit'] = $_SYSTEM['framework'] == 'uikit' ? true : false;
+$_CONF_WEATHER['_iconset'] = $_CONF_WEATHER['_is_uikit'] ? 'uk-icon' : 'fa fa';
 
 function USES_weather_upgrade()
 {   require_once WEATHER_PI_PATH . '/upgrade.inc.php';  }
@@ -572,13 +574,13 @@ function WEATHER_sanitize($var)
 */
 function WEATHER_getDocURL($file='', $doclang='english')
 {
-    global $_SYSTEM;
+    global $_CONF_WEATHER;
 
     $doc_path = WEATHER_PI_PATH . "/docs/$doclang/";
     $doc_url = '';
 
     if ($file != '') {
-        if ($_SYSTEM['framework'] != 'uikit') $file .= '.legacy';
+        if (!$_CONF_WEATHER['_is_uikit']) $file .= '.legacy';
         $file .= '.html';
         if (!file_exists($doc_path . $file)) {
             $doclang = 'english';

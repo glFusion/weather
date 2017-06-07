@@ -96,6 +96,7 @@ foreach ($Session as $key=>$loc) {
         'embed' => $embed,
         'divid' => $key,
         'linkback' => Weather::linkback(),
+        'iconset' => $_CONF_WEATHER['_iconset'],
     ) );
     $T->parse('eBlk', 'EmbedBlock', true);
 }

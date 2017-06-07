@@ -37,13 +37,7 @@ function WEAremoveElement(divNum)
   <div id="wDiv{divid}">
     <div class="piWeatherRemoveIcon">
       <a href="#" onclick="WEAremoveElement({divid})" title="{$LANG_WEATHER['rem_this_item']}" data-uk-tooltip>
-      {!if is_uikit}
-        <i class="uk-icon-trash-o wea-icon-danger"></i>
-      {!else}
-        <img src="{layout_url}/images/admin/delete.png" 
-            title="{$LANG_WEATHER['rem_this_item']}" class="gl_mootip"
-            alt="{$LANG_WEATHER['rem_this_item']}" />
-      {!endif}
+        <i class="{iconset}-trash-o wea-icon-danger"></i>
       </a>
     </div>
     {embed}
