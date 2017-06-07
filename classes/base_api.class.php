@@ -136,6 +136,8 @@ abstract class WeatherBase
     */
     protected function GetWeather($url)
     {
+        global $_CONF_WEATHER;
+
         if ($this->have_curl) {
             $agent = 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB; ' .
                 'rv:1.9.1) Gecko/20090624 Firefox/3.5 (.NET CLR ' .
@@ -155,6 +157,12 @@ abstract class WeatherBase
                     'Accept-Charset: utf-8',
                 ) );*/
             //curl_setopt($ch, CURLOPT_VERBOSE,        1);
+            if (isset($_CONF_WEATHER['curlopts']) &&
+                    is_array($_CONF_WEATHER['curlopts'])) {
+                foreach ($_CONF_WEATHER['curlopts'] as $name=>$value) {
+                    curl_setopt($ch, $name, $value);
+                }
+            }
 
             $result = curl_exec($ch);
             $this->http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
