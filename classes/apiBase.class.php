@@ -304,6 +304,18 @@ abstract class apiBase
 
 
     /**
+    *   Completely clear the cache table.
+    *   Called after upgrade.
+    */
+    public static function clearCache()
+    {
+        global $_TABLES;
+
+        DB_query("TRUNCATE {$_TABLES['weather_cache']}");
+    }
+
+
+    /**
     *   Sanitize values.  Recurse $var if it is an array.
     *
     *   @param  mixed   $var    Value or array to sanitize

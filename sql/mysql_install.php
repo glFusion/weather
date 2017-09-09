@@ -21,4 +21,12 @@ $_SQL = array(
         PRIMARY KEY (`location`)
         )",
 );
+
+$_SQL_UPGRADE = array(
+    '1.0.0' => "UPDATE {$_TABLES['conf_values']} SET
+        name='api_key_wwo', fieldset=10
+        WHERE name='api_key' AND group_name='weather'",
+    ),
+);
+
 ?>

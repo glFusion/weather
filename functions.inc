@@ -525,53 +525,8 @@ function plugin_getconfigelementhelp_weather($option, $doclang='english')
 */
 function plugin_upgrade_weather()
 {
-    global $_TABLES, $_CONF_WEATHER;
-
-    $pi_name = $_CONF_WEATHER['pi_name'];
-
-    // Get the current version, compare to the version in the plugin code
-    $current_ver = DB_getItem($_TABLES['plugins'], 'pi_version',
-        "pi_name = '$pi_name'");
-    if (!$current_ver) {
-        COM_errorLog("Error getting the $pi_name Plugin version",1);
-        return '3';
-    }
-
-    // if we're at the current version, what are we doing here?
-    if ($current_ver >= $_CONF_WEATHER['pi_version']) {
-        COM_errorLog("Current version $current_ver is already up to date");
-        return '6';
-    }
-
-    // If we're still here, import the upgrade functions.
-    // ... when there's a real upgrade (not code only) to be done
-    USES_weather_upgrade();
-    $error = weather_do_upgrade($current_ver);
-    if ($error) {
-        COM_errorLog("Error updating the $pi_name Plugin version",1);
-        return '4';
-    }
-
-    // now update the current version number.
-    DB_query("UPDATE {$_TABLES['plugins']} SET
-            pi_version = '{$_CONF_WEATHER['pi_version']}',
-            pi_gl_version = '{$_CONF_WEATHER['gl_version']}',
-            pi_homepage = '{$_CONF_WEATHER['pi_url']}'
-        WHERE pi_name = '$pi_name';", 1);
-    if (DB_error()) {
-        COM_errorLog("Error updating the $pi_name Plugin version", 1);
-        return '5';
-    }
-
-    // Clear the cache
-    DB_query("TRUNCATE {$_TABLES['weather_cache']}", 1);
-    if (DB_error()) {
-        COM_errorLog("Error clearing the $pi_name Plugin cache", 1);
-        return '5';
-    }
-
-    COM_errorLog("Succesfully updated the $pi_name Plugin!", 1);
-    return true;
+    require_once __DIR__ . '/upgrade.inc.php';
+    return weather_do_upgrade();
 }
 
 
