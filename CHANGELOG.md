@@ -1,6 +1,7 @@
 # Changelog - Weather plugin for glFusion
 
 ## Version 1.0.4 -
+- Implement Weather namespace and class autoloader
 - Add apixu.com weather provider
 - Add changes from matrox66 for World Weather Online class
 - Extract common weather functions into base_api.class.php

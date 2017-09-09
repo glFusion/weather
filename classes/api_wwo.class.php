@@ -10,14 +10,14 @@
 *               GNU Public License v2 or later
 *   @filesource
 */
-
+namespace Weather;
 
 /**
 *   Class to manage World Weather Online
 *   @since  version 0.1.3
 *   @package weather
 */
-class Weather
+class api extends apiBase
 {
     // Our variables are all available publically
     public $response;
@@ -106,7 +106,7 @@ class Weather
             $this->location = $info->latitude . ',' . $info->longitude;
         }
         $url = $this->url . '&q=' . $this->location;
-        $json = $this->GetWeather($url);
+        $json = $this->FetchWeather($url);
         if (empty($json)) {
             $this->error = WEATHER_ERR_API;
             COM_errorLog("Empty weather data from WorldWeatherOnline");
@@ -159,7 +159,7 @@ class Weather
     *   @param  string  $url    URL to retrieve
     *   @return string      Data from website
     */
-    private function GetWeather($url)
+    private function FetchWeather($url)
     {
         if ($this->have_curl) {
             $agent = 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB; ' .
@@ -258,7 +258,7 @@ class Weather
     *   @param  string  $format     Not used, text only is returned
     *   @return string  Linkback tag
     */
-    public static function linkback($format='page')
+    protected static function _linkback($format='page')
     {
         return '<a class="piWeatherLinkback" ' .
             'href="http://www.worldweatheronline.com/" ' .

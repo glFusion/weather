@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
 *   Base class for interfacing with weather providers
 *
@@ -6,18 +6,18 @@
 *   @copyright  Copyright (c) 2012 Lee Garner <lee@leegarner.com>
 *   @package    weather
 *   @version    1.0.4
-*   @license    http://opensource.org/licenses/gpl-2.0.php 
+*   @license    http://opensource.org/licenses/gpl-2.0.php
 *               GNU Public License v2 or later
 *   @filesource
 */
-
+namespace Weather;
 
 /**
 *   Base weather class
 *   @since  version 1.0.4
 *   @package weather
 */
-abstract class WeatherBase
+abstract class apiBase
 {
     // Our variables are all available publicly, though probably
     // never used
@@ -36,6 +36,7 @@ abstract class WeatherBase
 
     protected $have_fopen = false;
     protected $have_curl = false;
+
 
     /**
     *   Constructor.
@@ -63,22 +64,25 @@ abstract class WeatherBase
         } elseif (ini_get('allow_url_fopen') == 1) {
             $this->have_fopen = true;
         }
-
         return true;
     }
 
 
     /**
-    *   Get the weather for a given location
-    *   If $loc is not specified, use the current saved location
+    *   Get the weather for a given location.
+    *   If $loc is not specified, use the current saved location.
+    *   Creates the URL, fetches the weather data, then parses it.
     *
+    *   @uses   self::_makeUrl()
+    *   @uses   self::FetchWeather()
+    *   @uses   self::Parse()
     *   @param  string  $loc    Optional location to retrieve.
     *   @return boolean     True on success, False on failure
     */
     public function Get($loc = '')
     {
         $url = $this->_makeUrl($loc);
-        $json = $this->GetWeather($url);
+        $json = $this->FetchWeather($url);
 
         if (empty($json)) {
             $this->error = WEATHER_ERR_API;
@@ -115,7 +119,7 @@ abstract class WeatherBase
         return $this->url . rawurlencode($this->location);
     }
 
- 
+
     /**
     *   Parse the returned weather information.
     *   This function just puts the forecast info into some "shortcut"
@@ -134,7 +138,7 @@ abstract class WeatherBase
     *   @param  string  $url    URL to retrieve
     *   @return string      Data from website
     */
-    protected function GetWeather($url)
+    protected function FetchWeather($url)
     {
         global $_CONF_WEATHER;
 
@@ -195,6 +199,7 @@ abstract class WeatherBase
     /**
     *   Return the linkback url to the weather provider.
     *   World Weather Online requires this for the free API
+    *   Calls _linkback() from the instantiated object
     *
     *   @param  string  $format     Not used, text only is returned
     *   @return string  Linkback tag
@@ -222,6 +227,105 @@ abstract class WeatherBase
         return $icon;
     }
 
-}   // class Weather
+
+    /**
+    *   Retrieve weather information.
+    *   Checks the cache table first for a recent entry.  If not found,
+    *   get weather info from Google and update the cache.
+    *
+    *   @uses   self::updateCache()
+    *   @param  string  $loc    Location to get
+    *   @return mixed   Array of weather information, or integer error code
+    */
+    public static function getWeather($loc)
+    {
+        global $_TABLES, $_CONF_WEATHER;
+
+        // cache_minutes is already sanitized as an intgeger
+        $db_loc = strtolower(COM_sanitizeId($loc, false));
+        $sql = "SELECT * FROM {$_TABLES['weather_cache']}
+                WHERE location = '$db_loc'
+                AND ts > NOW() - INTERVAL {$_CONF_WEATHER['cache_minutes']} MINUTE";
+        $res = DB_query($sql);
+        if ($res && DB_numRows($res) == 1) {
+            $A = DB_fetchArray($res, false);
+        } else {
+            $A = array();
+        }
+
+        if (!empty($A)) {
+            // Got current cache data, return it
+            $retval = @unserialize($A['data']);
+        } else {
+            // Try to get new data from the provider
+            $w = new api();
+            $w->Get($loc);
+            if ($w->error > 0) {
+                if (!empty($A)) {
+                    // Got old data from cache, better than nothing
+                    $retval = @unserialize($A['data']);
+                } else {
+                $retval = $w->error;
+                }
+            } else {
+                // Got good data from the weather API, use it and update cache
+                $retval = $w->getData();
+                self::updateCache($db_loc, $retval);
+            }
+        }
+        return $retval;
+    }
+
+
+    /**
+    *   Updates the weather cache table and cleans out stale entries.
+    *
+    *   @param  string  $loc    Location to use as the key, already database-safe
+    *   @param  array   $data   Weather data to be saved
+    */
+    public static function updateCache($loc, $data)
+    {
+        global $_TABLES, $_USER, $_CONF_WEATHER;
+
+        $data = DB_escapeString(serialize(self::_sanitize($data)));
+
+        // Delete any stale entries and the current location to be replaced
+        // cache_minutes is already sanitized as an intgeger
+        DB_query("DELETE FROM {$_TABLES['weather_cache']}
+                WHERE ts < NOW() - INTERVAL {$_CONF_WEATHER['cache_minutes']} MINUTE
+                OR location = '$loc'");
+
+        // Insert the new record to be cached
+        DB_query("INSERT INTO {$_TABLES['weather_cache']}
+                    (location, uid, data)
+                VALUES
+                    ('$loc', '{$_USER['uid']}', '$data')");
+    }
+
+
+    /**
+    *   Sanitize values.  Recurse $var if it is an array.
+    *
+    *   @param  mixed   $var    Value or array to sanitize
+    *   @return mixed           Sanitized version of $var
+    */
+    private static function _sanitize($var)
+    {
+        if (is_array($var)) {
+            //run each array item through this function (by reference)      
+            foreach ($var as &$val) {
+                $val = self::_sanitize($val, $quotes);
+            }
+        } else if (is_string($var)) {   //clean strings
+            $var = COM_checkHTML($var);
+        } else if (is_null($var)) {   //convert null variables to SQL NULL
+            $var = "NULL";
+        } else if (is_bool($var)) {   // convert boolean variables to binary boolean
+            $var = ($var) ? 1 : 0;
+        }
+        return $var;
+    }
+
+}   // class apiBase
 
 ?>

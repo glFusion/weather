@@ -3,22 +3,21 @@
 *   Class to interface with apixu.com's weather API
 *
 *   @author     Lee Garner <lee@leegarner.com>
-*   @copyright  Copyright (c) 2016 Lee Garner <lee@leegarner.com>
+*   @copyright  Copyright (c) 2016-2017 Lee Garner <lee@leegarner.com>
 *   @package    weather
 *   @version    1.0.4
 *   @license    http://opensource.org/licenses/gpl-2.0.php 
 *               GNU Public License v2 or later
 *   @filesource
 */
-
-require_once dirname(__FILE__) . '/base_api.class.php';
+namespace Weather;
 
 /**
 *   Class to use apixu.com weather provider
 *   @since  version 1.0.4
 *   @package weather
 */
-class Weather extends WeatherBase
+class api extends apiBase
 {
     /**
     *   Constructor.
@@ -135,7 +134,7 @@ class Weather extends WeatherBase
                 $this->response->location->tz_id = $_USER['tzid'];
             }
             // Create Date object for getting the day name from the timestamp
-            $D = new Date('now', $this->response->location->tz_id);
+            $D = new \Date('now', $this->response->location->tz_id);
             for ($i = 0; $i < $this->fc_days; $i++) {
                 if (!isset($this->forecast[$i])) break;
                 $fc = $this->forecast[$i];
@@ -159,6 +158,6 @@ class Weather extends WeatherBase
         return $this->data;
     }
 
-}   // class Weather
+}   // class api
 
 ?>

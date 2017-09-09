@@ -20,7 +20,7 @@ $w_config = config::get_instance();
 $_CONF_WEATHER = $w_config->get_config('weather');
 
 // Get the static config items
-require_once dirname(__FILE__) . '/weather.php';
+require_once __DIR__ . '/weather.php';
 
 // Define commonly-used paths
 define('WEATHER_PI_PATH',
@@ -68,34 +68,35 @@ $_CONF_WEATHER['cache_minutes'] = max((int)$_CONF_WEATHER['cache_minutes'], 15);
 $_CONF_WEATHER['_is_uikit'] = $_SYSTEM['framework'] == 'uikit' ? true : false;
 $_CONF_WEATHER['_iconset'] = $_CONF_WEATHER['_is_uikit'] ? 'uk-icon' : 'fa fa';
 
-function USES_weather_upgrade()
-{   require_once WEATHER_PI_PATH . '/upgrade.inc.php';  }
-
-/**
-*   Load the weather provider API class based on the plugin configuration
-*   @since  1.0.0
-*/
-function USES_weather_class_api()
+// Load plugin classes as needed
+spl_autoload_register(function ($class)
 {
     global $_CONF_WEATHER;
 
-    switch ($_CONF_WEATHER['provider']) {
-    case 'wu':
-    default:    // wwo no longer supported
-        require_once WEATHER_CLASSPATH . '/wunderground_api.class.php';
-        break;
-    case 'goog':
-        // included more as a comment, Google API is deprecated
-        require_once WEATHER_CLASSPATH . '/google_api.inc.php';
-        break;
-    case 'wwo':
-        require_once WEATHER_CLASSPATH . '/worldweather_api.class.php';
-        break;
-    case 'apixu':
-        require_once WEATHER_CLASSPATH . '/apixu_api.class.php';
-        break;
+    if (strpos($class, 'Weather\\') === 0) {
+        $class = str_replace('Weather\\', '', $class);
+        if ($class == 'api') {
+            // If requesing an API class, include only the configured one.
+            switch ($_CONF_WEATHER['provider']) {
+            case 'wwo':
+            case 'apixu':
+            case 'wu':
+                $class = 'api_' . $_CONF_WEATHER['provider'];
+                break;
+            default:    // wwo no longer supported
+                $class = 'api_wu';
+                break;
+            }
+        }
+        $path = __DIR__ . '/classes/' . $class . '.class.php';
+        if (file_exists($path)) {
+            include $path;
+        }
     }
-}
+});
+
+function USES_weather_upgrade()
+{   require_once WEATHER_PI_PATH . '/upgrade.inc.php';  }
 
 
 /**
@@ -196,7 +197,6 @@ function plugin_enablestatechange_weather($enabling)
 function phpblock_weather_current($A=array(), $loc='')
 {
     global $_CONF_WEATHER, $_TABLES, $_USER;
-    USES_weather_class_api();
 
     // If a specific location isn't requested, figure out a default
     if (empty($loc)) {
@@ -221,7 +221,7 @@ function phpblock_weather_current($A=array(), $loc='')
         }
     }
 
-    $A = WEATHER_getWeather($loc);
+    $A = Weather\api::getWeather($loc);
     if (!is_array($A))
         return '';
 
@@ -234,10 +234,10 @@ function phpblock_weather_current($A=array(), $loc='')
         'temp_c'    => $A['current']['temp_c'],
         'curr_cond' => $A['current']['condition'],
         'city'      => $A['info']['city'],
-        'icon_url'  => Weather::getIcon($A['current']['icon']),
+        'icon_url'  => Weather\api::getIcon($A['current']['icon']),
         'icon_name' => $A['current']['icon_name'],
         'date'      => $dt[0],
-        'linkback'  => Weather::linkback('block'),
+        'linkback'  => Weather\api::linkback('block'),
     ) );
     $T->parse('output', 'block');
     $retval = $T->finish($T->get_var('output'));
@@ -302,8 +302,7 @@ function plugin_autotags_weather($op, $content = '', $autotag = '')
         case 'current':
             $loc = $autotag['parm2'];
             if (!empty($loc)) {
-                USES_weather_class_api();
-                $A = WEATHER_getWeather($loc);
+                $A = Weather\api::getWeather($loc);
                 if (!is_array($A))
                     return $content;
 
@@ -316,7 +315,7 @@ function plugin_autotags_weather($op, $content = '', $autotag = '')
                     'temp_c'    => $A['current']['temp_c'],
                     'curr_cond' => $A['current']['condition'],
                     'city'      => $A['info']['city'],
-                    'icon_url'  => Weather::getIcon($A['current']['icon']),
+                    'icon_url'  => Weather\api::getIcon($A['current']['icon']),
                     'icon_name' => $A['current']['icon_name'],
                     'date'      => $dt[0],
                 ) );
@@ -349,81 +348,6 @@ function plugin_autotags_weather($op, $content = '', $autotag = '')
 
 
 /**
-*   Retrieve weather information.
-*   Checks the cache table first for a recent entry.  If not found,
-*   get weather info from Google and update the cache.
-*
-*   @uses   WEATHER_updateCache()
-*   @param  string  $loc    Location to get
-*   @return mixed   Array of weather information, or integer error code
-*/
-function WEATHER_getWeather($loc)
-{
-    global $_TABLES, $_CONF_WEATHER;
-
-    // cache_minutes is already sanitized as an intgeger
-    $db_loc = strtolower(COM_sanitizeId($loc, false));
-    $sql = "SELECT * FROM {$_TABLES['weather_cache']}
-            WHERE location = '$db_loc'
-            AND ts > NOW() - INTERVAL {$_CONF_WEATHER['cache_minutes']} MINUTE";
-    $res = DB_query($sql);
-    if ($res && DB_numRows($res) == 1) {
-        $A = DB_fetchArray($res, false);
-    } else {
-        $A = array();
-    }
-
-    if (!empty($A)) {
-        // Got current cache data, return it
-        $retval = @unserialize($A['data']);
-    } else {
-        // Try to get new data from the provider
-        USES_weather_class_api();
-        $w = new Weather($loc);
-        if ($w->error > 0) {
-            if (!empty($A)) {
-                // Got old data from cache, better than nothing
-                $retval = @unserialize($A['data']);
-            } else {
-                $retval = $w->error;
-            }
-        } else {
-            // Got good data from the weather API, use it and update cache
-            $retval = $w->getData();
-            WEATHER_updateCache($db_loc, $retval);
-        }
-    }
-    return $retval;
-}
-
-
-/**
-*   Updates the weather cache table and cleans out stale entries.
-*
-*   @param  string  $loc    Location to use as the key, already database-safe
-*   @param  array   $data   Weather data to be saved
-*/
-function WEATHER_updateCache($loc, $data)
-{
-    global $_TABLES, $_USER, $_CONF_WEATHER;
-
-    $data = DB_escapeString(serialize(WEATHER_sanitize($data)));
-
-    // Delete any stale entries and the current location to be replaced
-    // cache_minutes is already sanitized as an intgeger
-    DB_query("DELETE FROM {$_TABLES['weather_cache']}
-            WHERE ts < NOW() - INTERVAL {$_CONF_WEATHER['cache_minutes']} MINUTE
-            OR location = '$loc'");
-
-    // Insert the new record to be cached
-    DB_query("INSERT INTO {$_TABLES['weather_cache']}
-                (location, uid, data)
-            VALUES
-                ('$loc', '{$_USER['uid']}', '$data')");
-}
-
-
-/**
 *   API function to get a weather block embedded in a page.
 *
 *   @param  mixed   $loc        Location to show, or array of data
@@ -434,15 +358,13 @@ function WEATHER_embed($loc, $linkback = true)
 {
     global $_CONF, $_CONF_WEATHER;
 
-    USES_weather_class_api();
-
     $retval = '';
     $T = new Template(WEATHER_PI_PATH . '/templates');
     $T->set_file('embed', 'embed.thtml');
     if (is_array($loc)) {       // Already got the weather into this array
         $A = $loc;
     } else {                    // Need to read the location's weather
-        $A = WEATHER_getWeather($loc);
+        $A = Weather\api::getWeather($loc);
     }
 
     if (is_array($A)) {
@@ -451,7 +373,7 @@ function WEATHER_embed($loc, $linkback = true)
         $KM = $_CONF_WEATHER['k_m'] == 'K' ? 'K' : 'M';
         $T->set_var(array(
             'curr_wind' => $A['current']['wind_' . $KM],
-            'curr_icon_url' => Weather::getIcon($A['current']['icon']),
+            'curr_icon_url' => Weather\api::getIcon($A['current']['icon']),
             'curr_icon_name' => $A['current']['icon_name'],
             'temp_f'    => $A['current']['temp_f'],
             'temp_c'    => $A['current']['temp_c'],
@@ -459,7 +381,7 @@ function WEATHER_embed($loc, $linkback = true)
             'city'      => $A['info']['city'],
             'date'      => $dt[0],
             'curr_humidity' => $A['current']['humidity'],
-            'linkback'  => $linkback ? Weather::linkback() : '',
+            'linkback'  => $linkback ? Weather\api::linkback() : '',
         ) );
         $T->set_block('embed', 'ForeCastItem', 'fcItem');
         foreach ($A['forecast'] as $day) {
@@ -469,7 +391,7 @@ function WEATHER_embed($loc, $linkback = true)
                 'day'   => $day['day'],
                 'condition' => $day['condition'],
                 'icon_name' => $day['icon_name'],
-                'icon_url' => Weather::getIcon($day['icon']),
+                'icon_url' => Weather\api::getIcon($day['icon']),
                 'wind'  => $day['wind_' . $KM],
                 'humidity' => $day['humidity'],
                 'fc_text' => !empty($day['fc_text_' . $FC]) ? $day['fc_text_' . $FC] : '',
@@ -537,31 +459,6 @@ function WEATHER_siteFooter()
     }
     return $retval;
 }
-
-
-/**
-*   Sanitize values.  Recurse $var if it is an array.
-*
-*   @param  mixed   $var    Value or array to sanitize
-*   @return mixed           Sanitized version of $var
-*/
-function WEATHER_sanitize($var)
-{
-    if (is_array($var)) {
-        //run each array item through this function (by reference)      
-        foreach ($var as &$val) {
-            $val = WEATHER_sanitize($val, $quotes);
-        }
-    } else if (is_string($var)) {   //clean strings
-        $var = COM_checkHTML($var);
-    } else if (is_null($var)) {   //convert null variables to SQL NULL
-        $var = "NULL";
-    } else if (is_bool($var)) {   // convert boolean variables to binary boolean
-        $var = ($var) ? 1 : 0;
-    }
-    return $var;
-}
-
 
 /**
 *   Get the link to a documentation file.
@@ -767,24 +664,6 @@ function plugin_isadmin_weather()
         $retval = SEC_hasRights('weather.admin');
     }
     return $retval;
-}
-
-
-/**
-*   Return the URL for a give icon string.
-*   If the provide string is a relative URL, then www.google.com is prepended.
-*
-*   @param  string  $icon   Icon URL returned from the weather API
-*   @return string          Fully-qualified URL to the icon image
-*/
-function WEATHER_getIcon($icon)
-{
-    if (function_exists('CUSTOM_weatherIcon')) {
-        $icon = CUSTOM_weatherIcon($icon);
-    } elseif ($icon[0] == '/') {
-        $icon = 'http://www.google.com' . $icon;
-    }
-    return $icon;
 }
 
 

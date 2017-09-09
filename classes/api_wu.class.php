@@ -10,15 +10,14 @@
 *               GNU Public License v2 or later
 *   @filesource
 */
-
-require_once dirname(__FILE__) . '/base_api.class.php';
+namespace Weather;
 
 /**
 *   Class to manage Weather Underground
 *   @since  version 1.0.0
 *   @package weather
 */
-class Weather extends WeatherBase
+class api extends apiBase
 {
     /**
     *   Constructor.
@@ -87,17 +86,23 @@ class Weather extends WeatherBase
     */
     protected function Parse()
     {
+        if (is_object($this->response->response->error)) {
+            $tmp = $this->response->response->error;
+            COM_errorLog("WU error: {$tmp->type} - {$tmp->description}");
+            COM_errorLog("Searching for {$this->location}");
+        }
+
         $this->info = $this->response->current_observation->display_location;
         $this->current = $this->response->current_observation;
         $this->forecast = $this->response->forecast->simpleforecast->forecastday;
         $this->fc_text = $this->response->forecast->txt_forecast->forecastday;
         if (!is_object($this->current)) {
             COM_errorLog('Invalid current data, should be object ');
-            COM_errorLog('Current object: ' . print_r($this->current, true));
+            //COM_errorLog('Current object: ' . print_r($this->current, true));
             return false;
         } elseif (!is_array($this->forecast)) {
             COM_errorLog('Invalid forecast data, should be array:');
-            COM_errorLog('Forecaset array: ' . print_r($this->forecast, true));
+            //COM_errorLog('Forecaset array: ' . print_r($this->forecast, true));
             return false;
         } else {
             return true;
