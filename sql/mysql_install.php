@@ -19,7 +19,7 @@ $_SQL = array(
         `ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         `data` text,
         PRIMARY KEY (`location`)
-        )",
+        ) ENGINE=MyISAM",
 );
 
 $_SQL_UPGRADE = array(
