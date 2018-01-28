@@ -254,12 +254,12 @@ function phpblock_weather_current($A=array(), $loc='')
 */
 function plugin_getheadercss_weather()
 {
-    global $_CONF, $_CONF_FRM;
+    global $_CONF, $_CONF_WEATHER;
 
     $styles = array();
     $files = array('style.css');
 
-    $layoutpath = $_CONF['layout_path'].'plugins/'.$_CONF_FRM['pi_name'].'/';
+    $layoutpath = $_CONF['path_layout'].'plugins/'.$_CONF_WEATHER['pi_name'].'/';
     foreach ($files as $file) {
         if (@file_exists($layoutpath . $file)) {
             // check for custom layout first
@@ -393,7 +393,7 @@ function WEATHER_embed($loc, $linkback = true)
                 'icon_name' => $day['icon_name'],
                 'icon_url' => Weather\api::getIcon($day['icon']),
                 'wind'  => $day['wind_' . $KM],
-                'humidity' => $day['humidity'],
+                'humidity' => isset($day['humidity']) ? $day['humidity'] : '',
                 'fc_text' => !empty($day['fc_text_' . $FC]) ? $day['fc_text_' . $FC] : '',
             ) );
             $T->parse('fcItem', 'ForeCastItem', true);
@@ -585,24 +585,6 @@ function plugin_getadminoption_weather()
         $retval = '';
     }
     return $retval;
-}
-
-
-/**
-*   Support merging local accounts into remote accounts
-*
-*   @param  integer $origUID    Original (remote) user ID
-*   @param  integer $destUID    Merged (local) user ID
-*/
-function plugin_user_move_weather($origUID, $destUID)
-{
-    global $_TABLES;
-
-    $origUID = (int)$origUID;
-    $destUID = (int)$destUID;
-
-    DB_query("UPDATE {$_TABLES['weather_cache']}
-            SET uid = $destUID WHERE uid = $origUID", 1);
 }
 
 

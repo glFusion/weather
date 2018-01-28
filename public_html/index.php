@@ -31,6 +31,7 @@ if ($access < WEATHER_ACCESS_VIEW) {
 }
 
 $loc = '';
+$content = '';
 
 // Show the search form if the user has access to it.
 if ($access & WEATHER_ACCESS_SEARCH) {
@@ -111,7 +112,7 @@ SESS_setVar('glWeather', $Session);
 $T->parse('output', 'index');
 $content .= $T->finish($T->get_var('output'));
 
-$display .= WEATHER_siteHeader();
+$display = WEATHER_siteHeader();
 if (!empty($msg)) {
     $display .= COM_showMessage($msg, $_CONF_WEATHER['pi_name']);
 }
