@@ -23,10 +23,15 @@ $_SQL = array(
 );
 
 $_SQL_UPGRADE = array(
-    '1.0.0' => "UPDATE {$_TABLES['conf_values']} SET
-        name='api_key_wwo', fieldset=10
-        WHERE name='api_key' AND group_name='weather'",
+    '1.0.0' => array(
+        "UPDATE {$_TABLES['conf_values']} SET
+            name='api_key_wwo', fieldset=10
+            WHERE name='api_key' AND group_name='weather'",
     ),
+/*    '1.1.0' => array(
+        "DROP TABLE IF EXISTS {$_TABLES['weather_cache']}",
+    ),
+*/
 );
 
 ?>

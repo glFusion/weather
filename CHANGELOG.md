@@ -1,6 +1,7 @@
 # Changelog - Weather plugin for glFusion
 
-## Version 1.0.4 -
+## Version 1.0.4 - TBD
+- Use glFusion cache (req. glFusion 1.8.0 or higher)
 - Implement Weather namespace and class autoloader
 - Add apixu.com weather provider
 - Add changes from matrox66 for World Weather Online class

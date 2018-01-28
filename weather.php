@@ -3,9 +3,9 @@
 *   Table definitions and other static config variables.
 *
 *   @author     Lee Garner <lee@leegarner.com>
-*   @copyright  Copyright (c) 2009-2012 Lee Garner <lee@leegarner.com>
+*   @copyright  Copyright (c) 2009-2018 Lee Garner <lee@leegarner.com>
 *   @package    weather
-*   @version    1.0.3
+*   @version    1.1.0
 *   @license    http://opensource.org/licenses/gpl-2.0.php 
 *               GNU Public License v2 or later
 *   @filesource
@@ -25,12 +25,12 @@ global $_DB_table_prefix;
 
 $_table_prefix = $_DB_table_prefix . 'weather';
 
-// Add Plugin tables to $_TABLES array
+// Deprecated cache table, delete when only glFusion cache is supported
 $_TABLES['weather_cache']       = $_table_prefix . '_cache';
 
 $_CONF_WEATHER['pi_name'] = 'weather';
 $_CONF_WEATHER['pi_version'] = '1.0.4';
-$_CONF_WEATHER['gl_version'] = '1.3.0';
+$_CONF_WEATHER['gl_version'] = '1.7.0';
 $_CONF_WEATHER['pi_url'] = 'http://www.leegarner.com';
 $_CONF_WEATHER['pi_display_name'] = 'Weather';
 

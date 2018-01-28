@@ -36,6 +36,7 @@ abstract class apiBase
 
     protected $have_fopen = false;
     protected $have_curl = false;
+    protected static $tag = 'weather';  // used for caching
 
 
     /**
@@ -101,7 +102,6 @@ abstract class apiBase
             $this->error = WEATHER_ERR_API;
             return false;
         }
-
         return true;
     }
 
@@ -241,36 +241,20 @@ abstract class apiBase
     {
         global $_TABLES, $_CONF_WEATHER;
 
-        // cache_minutes is already sanitized as an intgeger
-        $db_loc = strtolower(COM_sanitizeId($loc, false));
-        $sql = "SELECT * FROM {$_TABLES['weather_cache']}
-                WHERE location = '$db_loc'
-                AND ts > NOW() - INTERVAL {$_CONF_WEATHER['cache_minutes']} MINUTE";
-        $res = DB_query($sql);
-        if ($res && DB_numRows($res) == 1) {
-            $A = DB_fetchArray($res, false);
-        } else {
-            $A = array();
-        }
-
+        $A = self::_getCache($loc);
         if (!empty($A)) {
             // Got current cache data, return it
-            $retval = @unserialize($A['data']);
+            $retval = $A;
         } else {
             // Try to get new data from the provider
             $w = new api();
             $w->Get($loc);
             if ($w->error > 0) {
-                if (!empty($A)) {
-                    // Got old data from cache, better than nothing
-                    $retval = @unserialize($A['data']);
-                } else {
                 $retval = $w->error;
-                }
             } else {
                 // Got good data from the weather API, use it and update cache
                 $retval = $w->getData();
-                self::updateCache($db_loc, $retval);
+                self::updateCache($loc, $retval);
             }
         }
         return $retval;
@@ -283,23 +267,30 @@ abstract class apiBase
     *   @param  string  $loc    Location to use as the key, already database-safe
     *   @param  array   $data   Weather data to be saved
     */
-    public static function updateCache($loc, $data)
+    protected static function updateCache($loc, $data)
     {
         global $_TABLES, $_USER, $_CONF_WEATHER;
 
-        $data = DB_escapeString(serialize(self::_sanitize($data)));
+        $cache_mins = (int)$_CONF_WEATHER['cache_minutes'];
+        if ($cache_mins < 10) $cache_mins = 30;
+        if (GVERSION < '1.8.0') {
+            $data = DB_escapeString(serialize(self::_sanitize($data)));
 
-        // Delete any stale entries and the current location to be replaced
-        // cache_minutes is already sanitized as an intgeger
-        DB_query("DELETE FROM {$_TABLES['weather_cache']}
-                WHERE ts < NOW() - INTERVAL {$_CONF_WEATHER['cache_minutes']} MINUTE
-                OR location = '$loc'");
+            // Delete any stale entries and the current location to be replaced
+            // cache_minutes is already sanitized as an intgeger
+            DB_query("DELETE FROM {$_TABLES['weather_cache']}
+                    WHERE ts < NOW() - INTERVAL $cache_mins MINUTE
+                    OR location = '$loc'");
 
-        // Insert the new record to be cached
-        DB_query("INSERT INTO {$_TABLES['weather_cache']}
-                    (location, uid, data)
-                VALUES
-                    ('$loc', '{$_USER['uid']}', '$data')");
+            // Insert the new record to be cached
+            DB_query("INSERT INTO {$_TABLES['weather_cache']}
+                        (location, uid, data)
+                    VALUES
+                        ('$loc', '{$_USER['uid']}', '$data')");
+        } else {
+            \glFusion\Cache::getInstance()
+                ->set(self::_makeKey($loc), $data, self::$tag, $cache_mins * 60);
+        }
     }
 
 
@@ -311,7 +302,11 @@ abstract class apiBase
     {
         global $_TABLES;
 
-        DB_query("TRUNCATE {$_TABLES['weather_cache']}");
+        if (GVERSION < '1.8.0') {
+            DB_query("TRUNCATE {$_TABLES['weather_cache']}");
+        } else {
+            \glFusion\Cache::getInstance()->deleteItemsByTag(self::$tag);
+        }
     }
 
 
@@ -336,6 +331,49 @@ abstract class apiBase
             $var = ($var) ? 1 : 0;
         }
         return $var;
+    }
+
+
+    /**
+    *   Create a unique cache key.
+    *
+    *   @param  string  $key    Original key, usually an ASIN
+    *   @return string          Encoded key string to use as a cache ID
+    */
+    private static function _makeKey($key)
+    {
+        return self::$tag . '_' . md5($key);
+    }
+
+
+    /**
+    *   Get weather data from cache.
+    *   Supports database (glFusion < 1.8.0) and Cache class
+    *
+    *   @param  string  $loc    Location to retrieve
+    *   @return array       Weather data, empty array if not found
+    */
+    private static function _getCache($loc)
+    {
+        global $_TABLESi, $_CONF_WEATHER;
+
+        $cache_mins = (int)$_CONF_WEATHER['cache_minutes'];
+        if ($cache_mins < 10) $cache_mins = 30;
+        if (GVERSION < '1.8.0') {
+            $db_loc = strtolower(COM_sanitizeId($loc, false));
+            $sql = "SELECT * FROM {$_TABLES['weather_cache']}
+                    WHERE location = '$db_loc'
+                    AND ts > NOW() - INTERVAL $cache_mins MINUTE";
+            $res = DB_query($sql);
+            if ($res && DB_numRows($res) == 1) {
+                $A = DB_fetchArray($res, false);
+            } else {
+                $A = array();
+            }
+        } else {
+            $A = \glFusion\Cache::getInstance()->get(self::_makeKey($loc));
+        }
+        return $A;
     }
 
 }   // class apiBase
