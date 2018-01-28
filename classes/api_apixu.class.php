@@ -139,15 +139,19 @@ class api extends apiBase
                 if (!isset($this->forecast[$i])) break;
                 $fc = $this->forecast[$i];
                 $D->setTimestamp($fc->date_epoch);
+                $cond_txt = (string)$fc->day->condition->text;
+                if (isset($LANG_APIXU_CONDITIONS[$cond_txt])) {
+                    $cond_txt = $LANG_APIXU_CONDITIONS[$cond_txt];
+                }
                 $this->data['forecast'][] = array(
                     'day'    => $D->format('l', true),
                     'lowF'   => (string)$fc->day->mintemp_f,
                     'highF'  => (string)$fc->day->maxtemp_f,
                     'lowC'   => (string)$fc->day->mintemp_c,
                     'highC'  => (string)$fc->day->maxtemp_c,
-                    'condition' => $LANG_APIXU_CONDITIONS[(string)$fc->day->condition->text],
+                    'condition' => $cond_txt,
                     'icon'  => (string)$fc->day->condition->icon,
-                    'icon_name' => $LANG_APIXU_CONDITIONS[(string)$fc->day->condition->text],
+                    'icon_name' => $cond_txt,
                     'wind_M' => (string)$fc->day->maxwind_mph . 'mph ',
                     'wind_K' => (string)$fc->day->maxwind_kph . 'km/h ',
                     'fc_text_F' => '',
