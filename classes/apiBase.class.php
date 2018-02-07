@@ -273,7 +273,7 @@ abstract class apiBase
 
         $cache_mins = (int)$_CONF_WEATHER['cache_minutes'];
         if ($cache_mins < 10) $cache_mins = 30;
-        if (GVERSION < '1.8.0') {
+        if (version_compare(GVERSION, '1.8.0', '<') {
             $data = DB_escapeString(serialize(self::_sanitize($data)));
 
             // Delete any stale entries and the current location to be replaced
@@ -302,7 +302,7 @@ abstract class apiBase
     {
         global $_TABLES;
 
-        if (GVERSION < '1.8.0') {
+        if (version_compare(GVERSION, '1.8.0', '<') {
             DB_query("TRUNCATE {$_TABLES['weather_cache']}");
         } else {
             \glFusion\Cache::getInstance()->deleteItemsByTag(self::$tag);
@@ -359,21 +359,23 @@ abstract class apiBase
 
         $cache_mins = (int)$_CONF_WEATHER['cache_minutes'];
         if ($cache_mins < 10) $cache_mins = 30;
-        if (GVERSION < '1.8.0') {
+        $retval = array();
+        if (version_compare(GVERSION, '1.8.0', '<') {
             $db_loc = strtolower(COM_sanitizeId($loc, false));
             $sql = "SELECT * FROM {$_TABLES['weather_cache']}
                     WHERE location = '$db_loc'
                     AND ts > NOW() - INTERVAL $cache_mins MINUTE";
             $res = DB_query($sql);
             if ($res && DB_numRows($res) == 1) {
-                $A = DB_fetchArray($res, false);
-            } else {
-                $A = array();
+                $retval = DB_fetchArray($res, false);
             }
         } else {
-            $A = \glFusion\Cache::getInstance()->get(self::_makeKey($loc));
+            $key = self::_makeKey($loc);
+            if (\glFusion\Cache::getInstance()->has($key)) {
+                $retval = \glFusion\Cache::getInstance()->get($key);
+            }
         }
-        return $A;
+        return $retval;
     }
 
 }   // class apiBase

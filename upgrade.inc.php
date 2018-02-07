@@ -90,7 +90,7 @@ function weather_do_upgrade()
         }
     }
     COM_errorLog("Successfully updated the {$_CONF_WEATHER['pi_display_name']} Plugin", 1);
-    Weather\api::clearCache();
+    Weather\apiBase::clearCache();
     return true;
 }
 
