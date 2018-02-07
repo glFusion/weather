@@ -28,6 +28,7 @@ $_SQL_UPGRADE = array(
             name='api_key_wwo', fieldset=10
             WHERE name='api_key' AND group_name='weather'",
     ),
+// Drop table when glFusion 1.8.0+ is targeted
 /*    '1.1.0' => array(
         "DROP TABLE IF EXISTS {$_TABLES['weather_cache']}",
     ),
