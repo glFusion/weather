@@ -273,7 +273,7 @@ abstract class apiBase
 
         $cache_mins = (int)$_CONF_WEATHER['cache_minutes'];
         if ($cache_mins < 10) $cache_mins = 30;
-        if (version_compare(GVERSION, '1.8.0', '<') {
+        if (version_compare(GVERSION, '1.8.0', '<')) {
             $data = DB_escapeString(serialize(self::_sanitize($data)));
 
             // Delete any stale entries and the current location to be replaced
@@ -302,7 +302,7 @@ abstract class apiBase
     {
         global $_TABLES;
 
-        if (version_compare(GVERSION, '1.8.0', '<') {
+        if (version_compare(GVERSION, '1.8.0', '<')) {
             DB_query("TRUNCATE {$_TABLES['weather_cache']}");
         } else {
             \glFusion\Cache::getInstance()->deleteItemsByTag(self::$tag);
@@ -360,7 +360,7 @@ abstract class apiBase
         $cache_mins = (int)$_CONF_WEATHER['cache_minutes'];
         if ($cache_mins < 10) $cache_mins = 30;
         $retval = array();
-        if (version_compare(GVERSION, '1.8.0', '<') {
+        if (version_compare(GVERSION, '1.8.0', '<')) {
             $db_loc = strtolower(COM_sanitizeId($loc, false));
             $sql = "SELECT * FROM {$_TABLES['weather_cache']}
                     WHERE location = '$db_loc'
