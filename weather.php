@@ -5,7 +5,7 @@
 *   @author     Lee Garner <lee@leegarner.com>
 *   @copyright  Copyright (c) 2009-2018 Lee Garner <lee@leegarner.com>
 *   @package    weather
-*   @version    1.1.0
+*   @version    1.0.4
 *   @license    http://opensource.org/licenses/gpl-2.0.php 
 *               GNU Public License v2 or later
 *   @filesource

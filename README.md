@@ -21,3 +21,6 @@ weather data.
 #### APIXU
 http://apixu.com has been added in version 1.0.4 and offers a free API with
 up to 5000 requests per month.
+
+## Administration
+There is no administration interface provided other than a link to purge the cache.
