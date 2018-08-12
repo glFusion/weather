@@ -10,11 +10,11 @@
 *               GNU Public License v2 or later
 *   @filesource
 */
-
+global $_TABLES;
 $_SQL = array(
     // Create the cache table
     'weather_cache' => "CREATE TABLE {$_TABLES['weather_cache']} (
-        `location` varchar(255) NOT NULL,
+        `location` varchar(100) NOT NULL,
         `uid` int(11) NOT NULL DEFAULT '0',
         `ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         `data` text,
