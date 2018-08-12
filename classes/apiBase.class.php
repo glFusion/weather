@@ -3,7 +3,7 @@
 *   Base class for interfacing with weather providers
 *
 *   @author     Lee Garner <lee@leegarner.com>
-*   @copyright  Copyright (c) 2012 Lee Garner <lee@leegarner.com>
+*   @copyright  Copyright (c) 2012-2018 Lee Garner <lee@leegarner.com>
 *   @package    weather
 *   @version    1.0.4
 *   @license    http://opensource.org/licenses/gpl-2.0.php
@@ -84,7 +84,6 @@ abstract class apiBase
     {
         $url = $this->_makeUrl($loc);
         $json = $this->FetchWeather($url);
-
         if (empty($json)) {
             $this->error = WEATHER_ERR_API;
             COM_errorLog('Empty weather data from ' . $this->api_name);
@@ -146,42 +145,49 @@ abstract class apiBase
             $agent = 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB; ' .
                 'rv:1.9.1) Gecko/20090624 Firefox/3.5 (.NET CLR ' .
                 '3.5.30729)';
-
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL,            $url);
-            curl_setopt($ch, CURLOPT_USERAGENT,      $agent);
-            curl_setopt($ch, CURLOPT_HEADER,         0);
-            curl_setopt($ch, CURLOPT_ENCODING,       'gzip');
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-            curl_setopt($ch, CURLOPT_FAILONERROR,    1);
-            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 8);
-            curl_setopt($ch, CURLOPT_TIMEOUT,        8);
-            /*curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                    'Accept-Charset: utf-8',
-                ) );*/
-            //curl_setopt($ch, CURLOPT_VERBOSE,        1);
-            if (isset($_CONF_WEATHER['curlopts']) &&
-                    is_array($_CONF_WEATHER['curlopts'])) {
-                foreach ($_CONF_WEATHER['curlopts'] as $name=>$value) {
-                    curl_setopt($ch, $name, $value);
+            try {
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL,            $url);
+                curl_setopt($ch, CURLOPT_USERAGENT,      $agent);
+                curl_setopt($ch, CURLOPT_HEADER,         0);
+                curl_setopt($ch, CURLOPT_ENCODING,       'gzip');
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+                curl_setopt($ch, CURLOPT_FAILONERROR,    1);
+                curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 8);
+                curl_setopt($ch, CURLOPT_TIMEOUT,        8);
+                /*curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                        'Accept-Charset: utf-8',
+                    ) );*/
+                curl_setopt($ch, CURLOPT_VERBOSE,        1);
+                if (isset($_CONF_WEATHER['curlopts']) &&
+                        is_array($_CONF_WEATHER['curlopts'])) {
+                    foreach ($_CONF_WEATHER['curlopts'] as $name=>$value) {
+                        curl_setopt($ch, $name, $value);
+                    }
                 }
+                $result = curl_exec($ch);
+                // Check the return value of curl_exec(), too
+                if ($result === false) {
+                    throw new \Exception(curl_error($ch), curl_errno($ch));
+                }
+                $this->http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                curl_close($ch);
+                if ($this->http_code != '200') {
+                    $result = '';
+                }
+            } catch (Exception $e) {
+                trigger_error(sprintf(
+                    'Curl failed with error #%d: %s',
+                       $e->getCode(), $e->getMessage()),
+                       E_USER_ERROR);
             }
-
-            $result = curl_exec($ch);
-            $this->http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            curl_close($ch);
-            if ($this->http_code != '200') {
-                $result = '';
-            }
-
         } elseif ($this->have_fopen) {
             $result = file_get_contents($url, 0);
         } else {
             $result = '';
             COM_errorLog('WEATHER: Missing url_fopen and curl support');
         }
-
         return $result;
     }
 
@@ -273,7 +279,7 @@ abstract class apiBase
 
         $cache_mins = (int)$_CONF_WEATHER['cache_minutes'];
         if ($cache_mins < 10) $cache_mins = 30;
-        if (version_compare(GVERSION, '1.8.0', '<')) {
+        if (version_compare(GVERSION, '2.0.0', '<')) {
             $data = DB_escapeString(serialize(self::_sanitize($data)));
 
             // Delete any stale entries and the current location to be replaced
@@ -302,7 +308,7 @@ abstract class apiBase
     {
         global $_TABLES;
 
-        if (version_compare(GVERSION, '1.8.0', '<')) {
+        if (version_compare(GVERSION, '2.0.0', '<')) {
             DB_query("TRUNCATE {$_TABLES['weather_cache']}");
         } else {
             \glFusion\Cache::getInstance()->deleteItemsByTag(self::$tag);
@@ -348,7 +354,7 @@ abstract class apiBase
 
     /**
     *   Get weather data from cache.
-    *   Supports database (glFusion < 1.8.0) and Cache class
+    *   Supports database (glFusion < 2.0.0) and Cache class
     *
     *   @param  string  $loc    Location to retrieve
     *   @return array       Weather data, empty array if not found
@@ -360,7 +366,7 @@ abstract class apiBase
         $cache_mins = (int)$_CONF_WEATHER['cache_minutes'];
         if ($cache_mins < 10) $cache_mins = 30;
         $retval = array();
-        if (version_compare(GVERSION, '1.8.0', '<')) {
+        if (version_compare(GVERSION, '2.0.0', '<')) {
             $db_loc = strtolower(COM_sanitizeId($loc, false));
             $sql = "SELECT * FROM {$_TABLES['weather_cache']}
                     WHERE location = '$db_loc'
