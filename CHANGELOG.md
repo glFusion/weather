@@ -1,6 +1,6 @@
 # Changelog - Weather plugin for glFusion
 
-## Version 1.0.4 - 2018-08012
+## Version 1.1.0 - 2018-08-12
 - Use glFusion cache (req. glFusion 2.0.0 or higher)
 - Implement Weather namespace and class autoloader
 - Add apixu.com weather provider

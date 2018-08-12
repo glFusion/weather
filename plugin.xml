@@ -2,7 +2,7 @@
     <id>weather</id>
     <name>Weather</name>
     <description>Allows weather forecasts to be embedded in articles and other content.  API functions are provided so other plugins can request weather data. This plugin uses the World Weather Online or Weather Underground API and requires an API key. Visit http://www.worldweatheronline.com or http://wunderground.com/weather/api for details.</description>
-    <version>1.0.4</version>
+    <version>1.1.0</version>
     <glfusionversion>1.7.0</glfusionversion>
     <phpversion>7.0.0</phpversion>
     <url>http://www.leegarner.com</url>

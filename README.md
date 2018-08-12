@@ -1,5 +1,5 @@
 # Weather plugin for glFusion
-Copyright (C) 2011-2016 by Lee Garner  lee@leegarner.com
+Copyright (C) 2011-2018 by Lee Garner  lee@leegarner.com
 
 The Weather plugin allows you to display weather forecasts on your
 glFusion site, and integrate weather displays with other plugins such

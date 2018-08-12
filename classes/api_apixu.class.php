@@ -3,9 +3,10 @@
 *   Class to interface with apixu.com's weather API
 *
 *   @author     Lee Garner <lee@leegarner.com>
-*   @copyright  Copyright (c) 2016-2017 Lee Garner <lee@leegarner.com>
+*   @copyright  Copyright (c) 2016-2018 Lee Garner <lee@leegarner.com>
 *   @package    weather
-*   @version    1.0.4
+*   @version    1.1.0
+*   @since      1.1.0
 *   @license    http://opensource.org/licenses/gpl-2.0.php 
 *               GNU Public License v2 or later
 *   @filesource
