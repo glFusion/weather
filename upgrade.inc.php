@@ -3,9 +3,9 @@
 *   Upgrade the plugin
 *
 *   @author     Lee Garner <lee@leegarner.com>
-*   @copyright  Copyright (c) 2012 Lee Garner <lee@leegarner.com>
+*   @copyright  Copyright (c) 2012-2018 Lee Garner <lee@leegarner.com>
 *   @package    weather
-*   @version    1.0.0
+*   @version    1.1.0
 *   @license    http://opensource.org/licenses/gpl-2.0.php 
 *               GNU Public License v2 or later
 *   @filesource
@@ -41,7 +41,7 @@ function weather_do_upgrade()
     }
     $installed_ver = plugin_chkVersion_weather();
     $c = config::get_instance();
-    if ($c->group_exists($_CONF_WEATHER['pi_name'])) return false;
+    if (!$c->group_exists($_CONF_WEATHER['pi_name'])) return false;
 
     if (!COM_checkVersion($current_ver, '1.0.0')) {
         $current_ver = '1.0.0';
@@ -134,7 +134,7 @@ function weather_do_upgrade_sql($version)
 *   @param  string  $ver    New version to set
 *   @return boolean         True on success, False on failure
 */
-function weather_set_version($ver)
+function weather_do_set_version($ver)
 {
     global $_TABLES, $_CONF_WEATHER;
 
