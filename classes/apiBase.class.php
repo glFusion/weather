@@ -145,42 +145,37 @@ abstract class apiBase
             $agent = 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB; ' .
                 'rv:1.9.1) Gecko/20090624 Firefox/3.5 (.NET CLR ' .
                 '3.5.30729)';
-            try {
-                $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL,            $url);
-                curl_setopt($ch, CURLOPT_USERAGENT,      $agent);
-                curl_setopt($ch, CURLOPT_HEADER,         0);
-                curl_setopt($ch, CURLOPT_ENCODING,       'gzip');
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-                curl_setopt($ch, CURLOPT_FAILONERROR,    1);
-                curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 8);
-                curl_setopt($ch, CURLOPT_TIMEOUT,        8);
-                /*curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL,            $url);
+            curl_setopt($ch, CURLOPT_USERAGENT,      $agent);
+            curl_setopt($ch, CURLOPT_HEADER,         0);
+            curl_setopt($ch, CURLOPT_ENCODING,       'gzip');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+            curl_setopt($ch, CURLOPT_FAILONERROR,    1);
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 8);
+            curl_setopt($ch, CURLOPT_TIMEOUT,        10);
+            //curl_setopt($ch, CURLOPT_TIMEOUT_MS,        1);
+            /*curl_setopt($ch, CURLOPT_HTTPHEADER, array(
                         'Accept-Charset: utf-8',
-                    ) );*/
-                curl_setopt($ch, CURLOPT_VERBOSE,        1);
-                if (isset($_CONF_WEATHER['curlopts']) &&
-                        is_array($_CONF_WEATHER['curlopts'])) {
-                    foreach ($_CONF_WEATHER['curlopts'] as $name=>$value) {
-                        curl_setopt($ch, $name, $value);
-                    }
+            ) );*/
+            curl_setopt($ch, CURLOPT_VERBOSE,        1);
+            if (isset($_CONF_WEATHER['curlopts']) &&
+                    is_array($_CONF_WEATHER['curlopts'])) {
+            foreach ($_CONF_WEATHER['curlopts'] as $name=>$value) {
+                    curl_setopt($ch, $name, $value);
                 }
-                $result = curl_exec($ch);
-                // Check the return value of curl_exec(), too
-                if ($result === false) {
-                    throw new \Exception(curl_error($ch), curl_errno($ch));
-                }
-                $this->http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                curl_close($ch);
-                if ($this->http_code != '200') {
-                    $result = '';
-                }
-            } catch (Exception $e) {
-                trigger_error(sprintf(
-                    'Curl failed with error #%d: %s',
-                       $e->getCode(), $e->getMessage()),
-                       E_USER_ERROR);
+            }
+            $result = curl_exec($ch);
+            // Check the return value of curl_exec(), too
+            $this->http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            if (curl_errno($ch) || $result == false) {
+                COM_errorLog(sprintf('Weather\apiBase::FetchWeather() Error: %d %s',
+                    curl_errno($ch), curl_error($ch)));
+            }
+            curl_close($ch);
+            if ($this->http_code != '200') {
+                $result = '';
             }
         } elseif ($this->have_fopen) {
             $result = file_get_contents($url, 0);
@@ -361,7 +356,7 @@ abstract class apiBase
     */
     private static function _getCache($loc)
     {
-        global $_TABLESi, $_CONF_WEATHER;
+        global $_TABLES, $_CONF_WEATHER;
 
         $cache_mins = (int)$_CONF_WEATHER['cache_minutes'];
         if ($cache_mins < 10) $cache_mins = 30;
