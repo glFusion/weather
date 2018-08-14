@@ -5,7 +5,7 @@
 *   @author     Lee Garner <lee@leegarner.com>
 *   @copyright  Copyright (c) 2012-2018 Lee Garner <lee@leegarner.com>
 *   @package    weather
-*   @version    1.0.4
+*   @version    1.1.1
 *   @license    http://opensource.org/licenses/gpl-2.0.php
 *               GNU Public License v2 or later
 *   @filesource
@@ -58,7 +58,6 @@ abstract class apiBase
             }
             return false;
         }
-
         if (in_array('curl', get_loaded_extensions())) {
             // CURL is preferred since it handles other character sets better.
             $this->have_curl = true;
@@ -153,7 +152,7 @@ abstract class apiBase
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
             curl_setopt($ch, CURLOPT_FAILONERROR,    1);
-            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 8);
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
             curl_setopt($ch, CURLOPT_TIMEOUT,        10);
             //curl_setopt($ch, CURLOPT_TIMEOUT_MS,        1);
             /*curl_setopt($ch, CURLOPT_HTTPHEADER, array(
@@ -272,26 +271,23 @@ abstract class apiBase
     {
         global $_TABLES, $_USER, $_CONF_WEATHER;
 
+        if (isset($_CONF_WEATHER['nocache'])) return;
+
         $cache_mins = (int)$_CONF_WEATHER['cache_minutes'];
         if ($cache_mins < 10) $cache_mins = 30;
-        if (version_compare(GVERSION, '2.0.0', '<')) {
-            $data = DB_escapeString(serialize(self::_sanitize($data)));
+        $data = DB_escapeString(serialize(self::_sanitize($data)));
 
-            // Delete any stale entries and the current location to be replaced
-            // cache_minutes is already sanitized as an intgeger
-            DB_query("DELETE FROM {$_TABLES['weather_cache']}
+        // Delete any stale entries and the current location to be replaced
+        // cache_minutes is already sanitized as an intgeger
+        DB_query("DELETE FROM {$_TABLES['weather_cache']}
                     WHERE ts < NOW() - INTERVAL $cache_mins MINUTE
                     OR location = '$loc'");
 
-            // Insert the new record to be cached
-            DB_query("INSERT INTO {$_TABLES['weather_cache']}
+        // Insert the new record to be cached
+        DB_query("INSERT INTO {$_TABLES['weather_cache']}
                         (location, uid, data)
                     VALUES
                         ('$loc', '{$_USER['uid']}', '$data')");
-        } else {
-            \glFusion\Cache::getInstance()
-                ->set(self::_makeKey($loc), $data, self::$tag, $cache_mins * 60);
-        }
     }
 
 
@@ -303,11 +299,7 @@ abstract class apiBase
     {
         global $_TABLES;
 
-        if (version_compare(GVERSION, '2.0.0', '<')) {
-            DB_query("TRUNCATE {$_TABLES['weather_cache']}");
-        } else {
-            \glFusion\Cache::getInstance()->deleteItemsByTag(self::$tag);
-        }
+        DB_query("TRUNCATE {$_TABLES['weather_cache']}");
     }
 
 
@@ -322,7 +314,7 @@ abstract class apiBase
         if (is_array($var)) {
             //run each array item through this function (by reference)      
             foreach ($var as &$val) {
-                $val = self::_sanitize($val, $quotes);
+                $val = self::_sanitize($val);
             }
         } else if (is_string($var)) {   //clean strings
             $var = COM_checkHTML($var);
@@ -349,7 +341,6 @@ abstract class apiBase
 
     /**
     *   Get weather data from cache.
-    *   Supports database (glFusion < 2.0.0) and Cache class
     *
     *   @param  string  $loc    Location to retrieve
     *   @return array       Weather data, empty array if not found
@@ -361,20 +352,14 @@ abstract class apiBase
         $cache_mins = (int)$_CONF_WEATHER['cache_minutes'];
         if ($cache_mins < 10) $cache_mins = 30;
         $retval = array();
-        if (version_compare(GVERSION, '2.0.0', '<')) {
-            $db_loc = strtolower(COM_sanitizeId($loc, false));
-            $sql = "SELECT * FROM {$_TABLES['weather_cache']}
+        $db_loc = strtolower(COM_sanitizeId($loc, false));
+        $sql = "SELECT * FROM {$_TABLES['weather_cache']}
                     WHERE location = '$db_loc'
                     AND ts > NOW() - INTERVAL $cache_mins MINUTE";
-            $res = DB_query($sql);
-            if ($res && DB_numRows($res) == 1) {
-                $retval = DB_fetchArray($res, false);
-            }
-        } else {
-            $key = self::_makeKey($loc);
-            if (\glFusion\Cache::getInstance()->has($key)) {
-                $retval = \glFusion\Cache::getInstance()->get($key);
-            }
+        $res = DB_query($sql);
+        if ($res && DB_numRows($res) == 1) {
+            $A = DB_fetchArray($res, false);
+            $retval = @unserialize($A['data']);
         }
         return $retval;
     }
