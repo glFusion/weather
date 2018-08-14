@@ -3,9 +3,9 @@
 *   Administrator interface for the Weather plugin.
 *
 *   @author     Lee Garner <lee@leegarner.com>
-*   @copyright  Copyright (c) 2012 Lee Garner <lee@leegarner.com>
+*   @copyright  Copyright (c) 2012-2018 Lee Garner <lee@leegarner.com>
 *   @package    weather
-*   @version    1.0.1
+*   @version    1.1.1
 *   @license    http://opensource.org/licenses/gpl-2.0.php
 *               GNU Public License v2 or later
 *   @filesource
@@ -26,9 +26,10 @@ function WEA_adminMenu($view = '')
 {
     global $LANG_ADMIN, $LANG_WEATHER, $_CONF, $_CONF_WEATHER;
 
-    if (empty($view)) $view = 'default';
-    //$desc_text = $LANG_WEATHER['menu_hlp'][$view];
-    $desc_text = '';
+    if (empty($view) || !isset($LANG_WEATHER['menu_hlp'][$view])) {
+        $view = 'default';
+    }
+    $desc_text = $LANG_WEATHER['menu_hlp'][$view];
     $menu_arr = array (
         array('url' => $_CONF['site_admin_url'],
               'text' => $LANG_ADMIN['admin_home']),
