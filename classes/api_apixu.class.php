@@ -5,7 +5,7 @@
 *   @author     Lee Garner <lee@leegarner.com>
 *   @copyright  Copyright (c) 2016-2018 Lee Garner <lee@leegarner.com>
 *   @package    weather
-*   @version    1.1.0
+*   @version    1.1.1
 *   @since      1.1.0
 *   @license    http://opensource.org/licenses/gpl-2.0.php 
 *               GNU Public License v2 or later
@@ -38,7 +38,9 @@ class api extends apiBase
 
         $this->url = 'https://api.apixu.com/v1/forecast.json?key=' .
                 $_CONF_WEATHER['api_key_apixu'] .
-                 '&days=' . $this->fc_days . '&q=';
+                '&days=' . $this->fc_days .
+                '&lang=' . $_CONF['iso_lang'] .
+                '&q=';
 
         if (!empty($loc)) {
             // Get the weather for the specified location, if requested
@@ -105,7 +107,7 @@ class api extends apiBase
     */
     public function getData()
     {
-        global $_USER, $_CONF_WEATHER, $LANG_APIXU_CONDITIONS, $LANG_DIRECTIONS;
+        global $_USER, $_CONF_WEATHER;
 
         $this->data = array(
             'info' => array(
@@ -116,14 +118,14 @@ class api extends apiBase
             'current' => array(
                 'temp_f'   => (string)$this->current->temp_f,
                 'temp_c'  => (string)$this->current->temp_c,
-                'condition' => $LANG_APIXU_CONDITIONS[(string)$this->current->condition->text],
+                'condition' => (string)$this->current->condition->text,
                 'icon'  => (string)$this->current->condition->icon,
-                'icon_name' => $LANG_APIXU_CONDITIONS[(string)$this->current->condition->text],
+                'icon_name' => (string)$this->current->condition->text,
                 'humidity' => (string)$this->current->humidity,
                 'wind_M' => (string)$this->current->wind_mph. 'mph ' .
-                        $LANG_DIRECTIONS[(string)$this->current->wind_dir],
+                        (string)$this->current->wind_dir,
                 'wind_K' => (string)$this->current->wind_kph . 'km/h ' .
-                        $LANG_DIRECTIONS[(string)$this->current->wind_dir],
+                        (string)$this->current->wind_dir,
             ),
             'forecast' => array(),
         );
@@ -140,19 +142,15 @@ class api extends apiBase
                 if (!isset($this->forecast[$i])) break;
                 $fc = $this->forecast[$i];
                 $D->setTimestamp($fc->date_epoch);
-                $cond_txt = (string)$fc->day->condition->text;
-                if (isset($LANG_APIXU_CONDITIONS[$cond_txt])) {
-                    $cond_txt = $LANG_APIXU_CONDITIONS[$cond_txt];
-                }
                 $this->data['forecast'][] = array(
                     'day'    => $D->format('l', true),
                     'lowF'   => (string)$fc->day->mintemp_f,
                     'highF'  => (string)$fc->day->maxtemp_f,
                     'lowC'   => (string)$fc->day->mintemp_c,
                     'highC'  => (string)$fc->day->maxtemp_c,
-                    'condition' => $cond_txt,
+                    'condition' => (string)$fc->day->condition->text,
                     'icon'  => (string)$fc->day->condition->icon,
-                    'icon_name' => $cond_txt,
+                    'icon_name' => (string)$fc->day->condition->text,
                     'wind_M' => (string)$fc->day->maxwind_mph . 'mph ',
                     'wind_K' => (string)$fc->day->maxwind_kph . 'km/h ',
                     'fc_text_F' => '',
