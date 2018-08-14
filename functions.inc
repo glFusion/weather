@@ -3,9 +3,9 @@
 *   Common functions for the Weather plugin.
 *
 *   @author     Lee Garner <lee@leegarner.com>
-*   @copyright  Copyright (c) 2011-2012 Lee Garner <lee@leegarner.com>
+*   @copyright  Copyright (c) 2011-2018 Lee Garner <lee@leegarner.com>
 *   @package    weather
-*   @version    1.0.0
+*   @version    1.1.1
 *   @license    http://opensource.org/licenses/gpl-2.0.php
 *               GNU Public License v2 or later
 *   @filesource
@@ -81,6 +81,7 @@ spl_autoload_register(function ($class)
             case 'wwo':
             case 'apixu':
             case 'wu':
+            case 'wunlocked':
                 $class = 'api_' . $_CONF_WEATHER['provider'];
                 break;
             default:    // wwo no longer supported
@@ -222,14 +223,15 @@ function phpblock_weather_current($A=array(), $loc='')
     }
 
     $A = Weather\api::getWeather($loc);
-    if (!is_array($A))
+    if (!is_array($A) || !isset($A['current']))
         return '';
 
     $dt = COM_getUserDateTimeFormat($A['info']['ts']);
     $T = new Template(WEATHER_PI_PATH . '/templates');
     $T->set_file('block', 'phpblock.thtml');
+    $KM = $_CONF_WEATHER['k_m'] == 'K' ? 'K' : 'M';
     $T->set_var(array(
-        'curr_wind' => $A['current']['wind_condition'],
+        'curr_wind' => $A['current']['wind_' . $KM],
         'temp_f'    => $A['current']['temp_f'],
         'temp_c'    => $A['current']['temp_c'],
         'curr_cond' => $A['current']['condition'],
