@@ -5,6 +5,8 @@ The Weather plugin allows you to display weather forecasts on your
 glFusion site, and integrate weather displays with other plugins such
 as Locator and Evlist.
 
+The Weather plugin requires either Curl support or `allow_url_fopen` set in php.ini.
+
 ## Providers
 #### Weather Underground
 Weather Underground is the default and recommended provider.
