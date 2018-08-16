@@ -28,6 +28,11 @@ $_SQL_UPGRADE = array(
             name='api_key_wwo', fieldset=10
             WHERE name='api_key' AND group_name='weather'",
     ),
+    '1.1.2' => array(
+        // Fix wrong fieldset value created in 1.0.4
+        "UPDATE {$_TABLES['conf_values']} SET fieldset=30
+            WHERE group_name = 'weather' AND name like '%apixu'",
+    ),
 // Drop table when glFusion 1.8.0+ is targeted
 /*    '1.1.0' => array(
         "DROP TABLE IF EXISTS {$_TABLES['weather_cache']}",

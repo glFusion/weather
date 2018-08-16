@@ -76,7 +76,13 @@ function weather_do_upgrade()
         $c->add('fs_provider_apixu', NULL, 'fieldset',
                 0, 30, NULL, 0, true, $_CONF_WEATHER['pi_name']);
         $c->add('api_key_apixu', '', 'text',
-                0, 10, 0, 100, true, $_CONF_WEATHER['pi_name']);
+                0, 30, 0, 100, true, $_CONF_WEATHER['pi_name']);
+        if (!weather_do_set_version($current_ver)) return false;
+    }
+
+    if (!COM_checkVersion($current_ver, '1.1.2')) {
+        $current_ver = '1.1.2';
+        if (!weather_do_upgrade_sql($current_ver)) return false;
         if (!weather_do_set_version($current_ver)) return false;
     }
 
