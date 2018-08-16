@@ -5,7 +5,7 @@
 *   @author     Lee Garner <lee@leegarner.com>
 *   @copyright  Copyright (c) 2012-2018 Lee Garner <lee@leegarner.com>
 *   @package    weather
-*   @version    1.1.1
+*   @version    1.1.2
 *   @license    http://opensource.org/licenses/gpl-2.0.php
 *               GNU Public License v2 or later
 *   @filesource
@@ -264,7 +264,7 @@ abstract class apiBase
     /**
     *   Updates the weather cache table and cleans out stale entries.
     *
-    *   @param  string  $loc    Location to use as the key, already database-safe
+    *   @param  string  $loc    Location to use as the key
     *   @param  array   $data   Weather data to be saved
     */
     protected static function updateCache($loc, $data)
@@ -276,18 +276,19 @@ abstract class apiBase
         $cache_mins = (int)$_CONF_WEATHER['cache_minutes'];
         if ($cache_mins < 10) $cache_mins = 30;
         $data = DB_escapeString(serialize(self::_sanitize($data)));
+        $db_loc = self::_makeCacheKey($loc);
 
         // Delete any stale entries and the current location to be replaced
         // cache_minutes is already sanitized as an intgeger
         DB_query("DELETE FROM {$_TABLES['weather_cache']}
                     WHERE ts < NOW() - INTERVAL $cache_mins MINUTE
-                    OR location = '$loc'");
+                    OR location = '$db_loc'");
 
         // Insert the new record to be cached
         DB_query("INSERT INTO {$_TABLES['weather_cache']}
                         (location, uid, data)
                     VALUES
-                        ('$loc', '{$_USER['uid']}', '$data')");
+                        ('$db_loc', '{$_USER['uid']}', '$data')");
     }
 
 
@@ -352,7 +353,7 @@ abstract class apiBase
         $cache_mins = (int)$_CONF_WEATHER['cache_minutes'];
         if ($cache_mins < 10) $cache_mins = 30;
         $retval = array();
-        $db_loc = strtolower(COM_sanitizeId($loc, false));
+        $db_loc = self::_makeCacheKey($loc);
         $sql = "SELECT * FROM {$_TABLES['weather_cache']}
                     WHERE location = '$db_loc'
                     AND ts > NOW() - INTERVAL $cache_mins MINUTE";
@@ -362,6 +363,17 @@ abstract class apiBase
             $retval = @unserialize($A['data']);
         }
         return $retval;
+    }
+
+
+    /**
+     * Create the cache key to ensure it's the same when reading and writing
+     *
+     * @return  string  DB-safe cache key
+     */
+    private static function _makeCacheKey($loc)
+    {
+        return strtolower(COM_sanitizeId($loc, false));
     }
 
 }   // class apiBase

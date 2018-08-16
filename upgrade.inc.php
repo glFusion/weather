@@ -26,7 +26,7 @@ global $_SQL_UPGRADE;
 */
 function weather_do_upgrade()
 {
-    global $_CONF_WEATHER, $_PLUGIN_INFO;
+    global $_CONF_WEATHER, $_PLUGIN_INFO, $_WEA_DEFAULT;
 
     if (isset($_PLUGIN_INFO[$_CONF_WEATHER['pi_name']])) {
         if (is_array($_PLUGIN_INFO[$_CONF_WEATHER['pi_name']])) {
@@ -71,7 +71,7 @@ function weather_do_upgrade()
         if (!weather_do_set_version($current_ver)) return false;
     }
 
-    if (!COM_checkVersion($current_ver, '1.0.4')) {
+    if (!COM_checkVersion($current_ver, '1.1.0')) {
         $current_ver = '1.0.4';
         $c->add('fs_provider_apixu', NULL, 'fieldset',
                 0, 30, NULL, 0, true, $_CONF_WEATHER['pi_name']);

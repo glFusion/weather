@@ -5,7 +5,7 @@
 *   @author     Lee Garner <lee@leegarner.com>
 *   @copyright  Copyright (c) 2009-2018 Lee Garner <lee@leegarner.com>
 *   @package    weather
-*   @version    1.1.1
+*   @version    1.1.2
 *   @license    http://opensource.org/licenses/gpl-2.0.php 
 *               GNU Public License v2 or later
 *   @filesource
@@ -29,7 +29,7 @@ $_table_prefix = $_DB_table_prefix . 'weather';
 $_TABLES['weather_cache']       = $_table_prefix . '_cache';
 
 $_CONF_WEATHER['pi_name'] = 'weather';
-$_CONF_WEATHER['pi_version'] = '1.1.1';
+$_CONF_WEATHER['pi_version'] = '1.1.2';
 $_CONF_WEATHER['gl_version'] = '1.7.0';
 $_CONF_WEATHER['pi_url'] = 'http://www.leegarner.com';
 $_CONF_WEATHER['pi_display_name'] = 'Weather';

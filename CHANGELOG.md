@@ -1,5 +1,9 @@
 # Changelog - Weather plugin for glFusion
 
+## Version 1.1.2 - TBD
+- Fix cache key creation
+- Fix fieldset for APIXU config elements
+
 ## Version 1.1.1 - 2018-08-14
 - Remove glfusion 2 caching, use DB only
 - Remove APIXU language strings, use iso_lang in request instead
