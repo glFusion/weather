@@ -73,7 +73,7 @@ function weather_do_upgrade()
 
     // Sync the config items
     require_once __DIR__ . '/install_defaults.php';
-    plugin_update_config_weather();
+    plugin_updateconfig_weather();
 
     COM_errorLog("Successfully updated the {$_CONF_WEATHER['pi_display_name']} Plugin", 1);
     \Weather\Cache::clear();
@@ -100,7 +100,7 @@ function weather_do_upgrade_sql($version)
     // Execute SQL now to perform the upgrade
     COM_errorLOG("--Updating Weather Plugin to version $version");
     foreach ($_SQL_UPGRADE[$version] as $sql) {
-        COM_errorLot("Weather Plugin $version update: Executing SQL => $sql");
+        COM_errorLog("Weather Plugin $version update: Executing SQL => $sql");
         DB_query($sql, '1');
         if (DB_error()) {
             COM_errorLog("SQL Error during Weather plugin update",1);
@@ -195,6 +195,42 @@ function weather_upgrade_1_0_0()
     }
 
     return 0;
+}
+
+
+/**
+ *   Remove deprecated files
+ *   Errors in unlink() and rmdir() are ignored.
+ */
+function weather_remove_old_files()
+{
+    global $_CONF;
+
+    $paths = array(
+        // private/plugins/weather
+        __DIR__ => array(
+            'classes/api_apixu.class.php',
+            'classes/apiBase.class.php',
+            'classes/api_wu.class.php',
+            'classes/api_wunlocked.class.php',
+            'classes/api_wwo.class.php',
+            'classes/google_api.inc.php',
+            'classes/worldweather_api.class.php',
+            'classes/wunderground_api.class.php',
+        ),
+        // public_html/paypal
+        $_CONF['path_html'] . 'weather' => array(
+        ),
+        // admin/plugins/paypal
+        $_CONF['path_html'] . 'admin/plugins/paypal' => array(
+        ),
+    );
+
+    foreach ($paths as $path=>$files) {
+        foreach ($files as $file) {
+            @unlink("$path/$file");
+        }
+    }
 }
 
 ?>

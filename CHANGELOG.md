@@ -1,6 +1,7 @@
 # Changelog - Weather plugin for glFusion
 
 ## Version 1.1.2 - TBD
+- Add dvlpupdate.php for tracking develop branch
 - Improve class namespacing
 - Remove World Weather Online, no longer working
 - Fix cache key creation
