@@ -22,7 +22,7 @@ global $_SQL_UPGRADE;
 *
 *   @return boolean     True on success, False on failure
 */
-function weather_do_upgrade()
+function weather_do_upgrade($dvlp=false)
 {
     global $_CONF_WEATHER, $_PLUGIN_INFO, $_WEA_DEFAULT;
 
@@ -57,7 +57,7 @@ function weather_do_upgrade()
 
     if (!COM_checkVersion($current_ver, '1.1.2')) {
         $current_ver = '1.1.2';
-        if (!weather_do_upgrade_sql($current_ver)) return false;
+        if (!weather_do_upgrade_sql($current_ver, $dvlp)) return false;
         if (!weather_do_set_version($current_ver)) return false;
     }
 
@@ -85,11 +85,11 @@ function weather_do_upgrade()
 *   Execute the SQL statement to perform a version upgrade.
 *   An empty SQL parameter will return success.
 *
-*   @param string   $version  Version being upgraded to
-*   @param array    $sql      SQL statement to execute
-*   @return integer Zero on success, One on failure.
+*   @param  string  $version        Version being upgraded to
+*   @param  boolean $ignore_errors  True to ignore sql errors and continue
+*   @return boolean     True for success, False for failure
 */
-function weather_do_upgrade_sql($version)
+function weather_do_upgrade_sql($version, $ignore_errors=false)
 {
     global $_TABLES, $_CONF_WEATHER, $_SQL_UPGRADE;
 
@@ -104,8 +104,7 @@ function weather_do_upgrade_sql($version)
         DB_query($sql, '1');
         if (DB_error()) {
             COM_errorLog("SQL Error during Weather plugin update",1);
-            return false;
-            break;
+            if (!$ignore_errors) return false;
         }
     }
     return true;

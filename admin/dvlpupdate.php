@@ -31,7 +31,7 @@ if (function_exists('CACHE_clear')) {
 
 // Force the plugin version to the previous version and do the upgrade
 $_PLUGIN_INFO['weather']['pi_version'] = '1.1.1';
-WEATHER_do_upgrade(true);
+weather_do_upgrade(true);
 
 // need to clear the template cache so do it here
 if (function_exists('CACHE_clear')) {
