@@ -14,9 +14,7 @@
 global $_CONF, $_CONF_WEATHER, $_DB_dbms;
 
 /** Include default values for new config items */
-require_once __DIR__ . '/install_defaults.php';
-global $_DB_dbms;
- require_once __DIR__ . '/sql/'.$_DB_dbms.'_install.php';
+require_once __DIR__ . '/sql/mysql_install.php';
 global $_SQL_UPGRADE;
 
 /**
@@ -40,43 +38,20 @@ function weather_do_upgrade()
         return false;
     }
     $installed_ver = plugin_chkVersion_weather();
-    $c = config::get_instance();
-    if (!$c->group_exists($_CONF_WEATHER['pi_name'])) return false;
 
     if (!COM_checkVersion($current_ver, '1.0.0')) {
         $current_ver = '1.0.0';
-        $c->add('provider',$_WEA_DEFAULT['provider'], 'select',
-                0, 0, 16, 75, true, 'weather');
-        // Provider - World Weather Online
-        $c->add('fs_provider_wwo', NULL, 'fieldset', 0, 10, NULL, 0,
-                true, 'weather');
-        // Provider - Weather Underground
-        $c->add('fs_provider_wu', NULL, 'fieldset', 0, 20, NULL, 0,
-                true, 'weather');
-        $c->add('api_key_wu', '', 'text', 0, 20, 0, 200, true, 'weather');
-        $c->add('ref_key_wu', '', 'text', 0, 20, 0, 210, true, 'weather');
         if (!weather_do_upgrade_sql($current_ver)) return false;
         if (!weather_do_set_version($current_ver)) return false;
     }
 
     if (!COM_checkVersion($current_ver, '1.0.3')) {
         $current_ver = '1.0.3';
-        // Add new configuration items
-        $c->add('api_key',$_WEA_DEFAULT['api_key'], 'text',
-                0, 0, NULL, 70, true, 'weather');
-        $c->add('k_m',$_WEA_DEFAULT['k_m'], 'select',
-                0, 0, 14, 80, true, 'weather');
-        $c->add('f_c',$_WEA_DEFAULT['f_c'], 'select',
-                    0, 0, 15, 90, true, 'weather');
         if (!weather_do_set_version($current_ver)) return false;
     }
 
     if (!COM_checkVersion($current_ver, '1.1.0')) {
         $current_ver = '1.0.4';
-        $c->add('fs_provider_apixu', NULL, 'fieldset',
-                0, 30, NULL, 0, true, $_CONF_WEATHER['pi_name']);
-        $c->add('api_key_apixu', '', 'text',
-                0, 30, 0, 100, true, $_CONF_WEATHER['pi_name']);
         if (!weather_do_set_version($current_ver)) return false;
     }
 
@@ -95,8 +70,13 @@ function weather_do_upgrade()
             return false;
         }
     }
+
+    // Sync the config items
+    require_once __DIR__ . '/install_defaults.php';
+    plugin_update_config_weather();
+
     COM_errorLog("Successfully updated the {$_CONF_WEATHER['pi_display_name']} Plugin", 1);
-    Weather\apiBase::clearCache();
+    \Weather\Cache::clear();
     return true;
 }
 

@@ -23,15 +23,9 @@ $_SQL = array(
 );
 
 $_SQL_UPGRADE = array(
-    '1.0.0' => array(
-        "UPDATE {$_TABLES['conf_values']} SET
-            name='api_key_wwo', fieldset=10
-            WHERE name='api_key' AND group_name='weather'",
-    ),
     '1.1.2' => array(
-        // Fix wrong fieldset value created in 1.0.4
-        "UPDATE {$_TABLES['conf_values']} SET fieldset=30
-            WHERE group_name = 'weather' AND name like '%apixu'",
+        "ALTER TABLE {$_TABLES['weather_cache']}
+            CHANGE location location varchar(100) NOT NULL",
     ),
 // Drop table when glFusion 1.8.0+ is targeted
 /*    '1.1.0' => array(
