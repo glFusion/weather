@@ -21,19 +21,185 @@ if (!defined ('GVERSION')) {
 *   Initial Installation Defaults used when loading the online configuration
 *   records. These settings are only used during the initial installation
 *   and not referenced any more once the plugin is installed
-*/
-
-global $_WEA_DEFAULT;
-$_WEA_DEFAULT = array(
-    'anon_access'       => '1', // 0=none,1=view,2=search
-    'displayblocks'     => '3',
-    'cache_minutes'     => '120',
-    'default_loc'       => 'Los Angeles, CA',
-    'blk_show_loc'      => '3', // Personal, fallback to default
-    'usermenu_option'   => '1',
-    'provider'          => 'wu',
-    'k_m'               => 'M',     // Windspeed: M = MPH, K = KPH
-    'f_c'               => 'F',     // F = Farenheit, C = Celsius
+ */
+global $weatherConfigData;
+$weatherConfigData = array(
+    array(
+        'name' => 'sg_main',
+        'default_value' => NULL,
+        'type' => 'subgroup',
+        'subgroup' => 0,
+        'fieldset' => 0,
+        'selection_array' => NULL,
+        'sort' => 0,
+        'set' => true,
+        'group' => 'weather',
+    ),
+    array(
+        'name' => 'fs_main',
+        'default_value' => NULL,
+        'type' => 'fieldset',
+        'subgroup' => 0,
+        'fieldset' => 0,
+        'selection_array' => NULL,
+        'sort' => 0,
+        'set' => true,
+        'group' => 'weather',
+    ),
+    array(
+        'name' => 'anon_access',
+        'default_value' => '1',
+        'type' => 'select',
+        'subgroup' => 0,
+        'fieldset' => 0,
+        'selection_array' => 2,
+        'sort' => 10,
+        'set' => true,
+        'group' => 'weather',
+    ),
+    array(
+        'name' => 'displayblocks',
+        'default_value' => '3',
+        'type' => 'select',
+        'subgroup' => 0,
+        'fieldset' => 0,
+        'selection_array' => 13,
+        'sort' => 20,
+        'set' => true,
+        'group' => 'weather',
+    ),
+    array(
+        'name' => 'cache_minutes',
+        'default_value' => '120',
+        'type' => 'text',
+        'subgroup' => 0,
+        'fieldset' => 0,
+        'selection_array' => 0,
+        'sort' => 30,
+        'set' => true,
+        'group' => 'weather',
+    ),
+    array(
+        'name' => 'default_loc',
+        'default_value' => '',
+        'type' => 'text',
+        'subgroup' => 0,
+        'fieldset' => 0,
+        'selection_array' => 0,
+        'sort' => 40,
+        'set' => true,
+        'group' => 'weather',
+    ),
+    array(
+        'name' => 'blk_show_loc',
+        'default_value' => '3',
+        'type' => 'select',
+        'subgroup' => 0,
+        'fieldset' => 0,
+        'selection_array' => 3,
+        'sort' => 50,
+        'set' => true,
+        'group' => 'weather',
+    ),
+    array(
+        'name' => 'usermenu_option',
+        'default_value' => '1',
+        'type' => 'select',
+        'subgroup' => 0,
+        'fieldset' => 0,
+        'selection_array' => 2,
+        'sort' => 50,
+        'set' => true,
+        'group' => 'weather',
+    ),
+    array(
+        'name' => 'provider',
+        'default_value' => '',
+        'type' => 'select',
+        'subgroup' => 0,
+        'fieldset' => 0,
+        'selection_array' => 16,
+        'sort' => 60,
+        'set' => true,
+        'group' => 'weather',
+    ),
+    array(
+        'name' => 'k_m',
+        'default_value' => 'M',
+        'type' => 'select',
+        'subgroup' => 0,
+        'fieldset' => 0,
+        'selection_array' => 14,
+        'sort' => 70,
+        'set' => true,
+        'group' => 'weather',
+    ),
+    array(
+        'name' => 'f_c',
+        'default_value' => 'F',
+        'type' => 'select',
+        'subgroup' => 0,
+        'fieldset' => 0,
+        'selection_array' => 15,
+        'sort' => 80,
+        'set' => true,
+        'group' => 'weather',
+    ),
+    array(
+        'name' => 'fs_provider_wu',
+        'default_value' => NULL,
+        'type' => 'fieldset',
+        'subgroup' => 0,
+        'fieldset' => 10,
+        'selection_array' => NULL,
+        'sort' => 0,
+        'set' => true,
+        'group' => 'weather',
+    ),
+    array(
+        'name' => 'api_key_wu',
+        'default_value' => '',
+        'type' => 'text',
+        'subgroup' => 0,
+        'fieldset' => 10,
+        'selection_array' => 0,
+        'sort' => 10,
+        'set' => true,
+        'group' => 'weather',
+    ),
+    array(
+        'name' => 'ref_key_wu',
+        'default_value' => '',
+        'type' => 'text',
+        'subgroup' => 0,
+        'fieldset' => 10,
+        'selection_array' => 0,
+        'sort' => 20,
+        'set' => true,
+        'group' => 'weather',
+    ),
+    array(
+        'name' => 'fs_provider_apixu',
+        'default_value' => NULL,
+        'type' => 'fieldset',
+        'subgroup' => 0,
+        'fieldset' => 20,
+        'selection_array' => NULL,
+        'sort' => 0,
+        'set' => true,
+        'group' => 'weather',
+    ),
+    array(
+        'name' => 'api_key_apixu',
+        'default_value' => '',
+        'type' => 'text',
+        'subgroup' => 0,
+        'fieldset' => 20,
+        'selection_array' => 0,
+        'sort' => 10,
+        'set' => true,
+        'group' => 'weather',
+    ),
 );
 
 
@@ -46,48 +212,28 @@ $_WEA_DEFAULT = array(
 */
 function plugin_initconfig_weather()
 {
-    global $_CONF_WEATHER, $_WEA_DEFAULT;
-
-    $pi_name = $_CONF_WEATHER['pi_name'];
+    global $weatherConfigData;
+    
     $c = config::get_instance();
-    if (!$c->group_exists($pi_name)) {
-
-        $c->add('sg_main', NULL, 'subgroup', 0, 0, NULL, 0, true, $pi_name);
-        $c->add('fs_main', NULL, 'fieldset', 0, 0, NULL, 0, true, $pi_name);
-
-        $c->add('anon_access',$_WEA_DEFAULT['anon_access'], 'select',
-                0, 0, 2, 10, true, $pi_name);
-        $c->add('displayblocks',$_WEA_DEFAULT['displayblocks'], 'select',
-                0, 0, 13, 30, true, $pi_name);
-        $c->add('cache_minutes',$_WEA_DEFAULT['cache_minutes'], 'text',
-                0, 0, NULL, 40, true, $pi_name);
-        $c->add('default_loc',$_WEA_DEFAULT['default_loc'], 'text',
-                0, 0, NULL, 50, true, $pi_name);
-        $c->add('blk_show_loc',$_WEA_DEFAULT['blk_show_loc'], 'select',
-                0, 0, 3, 60, true, $pi_name);
-        $c->add('usermenu_option',$_WEA_DEFAULT['usermenu_option'], 'select',
-                0, 0, 1, 70, true, $pi_name);
-        $c->add('provider',$_WEA_DEFAULT['provider'], 'select',
-                0, 0, 16, 75, true, $pi_name);
-        $c->add('k_m',$_WEA_DEFAULT['k_m'], 'select',
-                0, 0, 14, 80, true, $pi_name);
-        $c->add('f_c',$_WEA_DEFAULT['f_c'], 'select',
-                0, 0, 15, 90, true, $pi_name);
-
-        // Provider - World Weather Online
-        $c->add('fs_provider_wwo', NULL, 'fieldset', 0, 10, NULL, 0, true, $pi_name);
-        $c->add('api_key_wwo', '', 'text', 0, 10, 0, 100, true, $pi_name);
-
-        // Provider - Weather Underground
-        $c->add('fs_provider_wu', NULL, 'fieldset', 0, 20, NULL, 0, true, $pi_name);
-        $c->add('api_key_wu', '', 'text', 0, 20, 0, 200, true, $pi_name);
-        $c->add('ref_key_wu', '', 'text', 0, 20, 0, 210, true, $pi_name);
-
-        // Provider - apixu.com
-        $c->add('fs_provider_apixu', NULL, 'fieldset', 0, 30, NULL, 0, true, $pi_name);
-        $c->add('api_key_apixu', '', 'text', 0, 30, 0, 100, true, $pi_name);
+    if (!$c->group_exists('weather')) {
+        USES_lib_install();
+        foreach ($weatherConfigData AS $cfgItem) {
+            _addConfigItem($cfgItem);
+        }
     }
-
     return true;
 }
+
+
+/**
+ * Sync the configuration in the DB to the above configs
+ */
+function plugin_updateconfig_weather()
+{
+    global $weatherConfigData;
+
+    USES_lib_install();
+    _update_config('weather', $weatherConfigData);
+}
+
 ?>
