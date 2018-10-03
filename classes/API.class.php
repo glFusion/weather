@@ -17,7 +17,7 @@ namespace Weather;
 *   @since  version 1.0.4
 *   @package weather
 */
-abstract class apiBase
+class API
 {
     // Our variables are all available publicly, though probably
     // never used
@@ -33,10 +33,10 @@ abstract class apiBase
     public $url;
     public $http_code;
     public $fc_days = 5;        // Number of days to retrieve
+    public $configs = array();  // Config items
 
     protected $have_fopen = false;
     protected $have_curl = false;
-    protected static $tag = 'weather';  // used for caching
 
 
     /**
@@ -65,6 +65,28 @@ abstract class apiBase
             $this->have_fopen = true;
         }
         return true;
+    }
+
+
+    /**
+     * Get an instance of an api provider
+     *
+     * @param   string  $provider   Provider classname
+     * @return  object              Provider object
+     */
+    public static function getInstance($provider=NULL)
+    {
+        global $_CONF_WEATHER;
+        static $inst = array();
+
+        // Use the configured provider if none specified (normal usage)
+        if ($provider === NULL) $provider = $_CONF_WEATHER['provider'];
+
+        if (!array_key_exists($provider, $inst)) {
+            $cls = __NAMESPACE__ . '\\api\\' . $provider;
+            $inst[$provider] = new $cls;
+        }
+        return $inst[$provider];
     }
 
 
@@ -125,7 +147,9 @@ abstract class apiBase
     *
     *   @return boolean     True if all values are objects, false otherwise
     */
-    protected abstract function Parse();
+    protected function Parse()
+    {
+    }
 
 
     /**
@@ -169,7 +193,7 @@ abstract class apiBase
             // Check the return value of curl_exec(), too
             $this->http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             if (curl_errno($ch) || $result == false) {
-                COM_errorLog(sprintf('Weather\apiBase::FetchWeather() Error: %d %s',
+                COM_errorLog(sprintf('Weather\API::FetchWeather() Error: %d %s',
                     curl_errno($ch), curl_error($ch)));
             }
             curl_close($ch);
@@ -193,18 +217,19 @@ abstract class apiBase
     *
     *   @return array   Data array
     */
-    public abstract function getData();
+    public function getData()
+    {
+    }
 
 
     /**
     *   Return the linkback url to the weather provider.
     *   World Weather Online requires this for the free API
-    *   Calls _linkback() from the instantiated object
     *
     *   @param  string  $format     Not used, text only is returned
     *   @return string  Linkback tag
     */
-    public static function linkback($format='page')
+    public function linkback($format='page')
     {
         return '';
     }
@@ -219,7 +244,7 @@ abstract class apiBase
     *   @param  string  $icon   Icon URL returned from the weather API
     *   @return string          Fully-qualified URL to the icon image
     */
-    public static function getIcon($icon)
+    public function getIcon($icon)
     {
         if (function_exists('CUSTOM_weatherIcon')) {
             $icon = CUSTOM_weatherIcon($icon);
@@ -237,70 +262,30 @@ abstract class apiBase
     *   @param  string  $loc    Location to get
     *   @return mixed   Array of weather information, or integer error code
     */
-    public static function getWeather($loc)
+    public function getWeather($loc, $extra='')
     {
         global $_TABLES, $_CONF_WEATHER;
 
-        $A = self::_getCache($loc);
+        $key = $loc;
+        if ($extra != '') {
+            $key .= '_' . $extra;
+        }
+        $A = Cache::get($key);
         if (!empty($A)) {
             // Got current cache data, return it
             $retval = $A;
         } else {
             // Try to get new data from the provider
-            $w = new api();
-            $w->Get($loc);
-            if ($w->error > 0) {
-                $retval = $w->error;
+            $this->Get($loc);
+            if ($this->error > 0) {
+                $retval = $this->error;
             } else {
                 // Got good data from the weather API, use it and update cache
-                $retval = $w->getData();
-                self::updateCache($loc, $retval);
+                $retval = $this->getData();
+                Cache::set($key, $retval);
             }
         }
         return $retval;
-    }
-
-
-    /**
-    *   Updates the weather cache table and cleans out stale entries.
-    *
-    *   @param  string  $loc    Location to use as the key
-    *   @param  array   $data   Weather data to be saved
-    */
-    protected static function updateCache($loc, $data)
-    {
-        global $_TABLES, $_USER, $_CONF_WEATHER;
-
-        if (isset($_CONF_WEATHER['nocache'])) return;
-
-        $cache_mins = (int)$_CONF_WEATHER['cache_minutes'];
-        if ($cache_mins < 10) $cache_mins = 30;
-        $data = DB_escapeString(serialize(self::_sanitize($data)));
-        $db_loc = self::_makeCacheKey($loc);
-
-        // Delete any stale entries and the current location to be replaced
-        // cache_minutes is already sanitized as an intgeger
-        DB_query("DELETE FROM {$_TABLES['weather_cache']}
-                    WHERE ts < NOW() - INTERVAL $cache_mins MINUTE
-                    OR location = '$db_loc'");
-
-        // Insert the new record to be cached
-        DB_query("INSERT INTO {$_TABLES['weather_cache']}
-                        (location, uid, data)
-                    VALUES
-                        ('$db_loc', '{$_USER['uid']}', '$data')");
-    }
-
-
-    /**
-    *   Completely clear the cache table.
-    *   Called after upgrade.
-    */
-    public static function clearCache()
-    {
-        global $_TABLES;
-
-        DB_query("TRUNCATE {$_TABLES['weather_cache']}");
     }
 
 
@@ -310,11 +295,12 @@ abstract class apiBase
     *   @param  mixed   $var    Value or array to sanitize
     *   @return mixed           Sanitized version of $var
     */
-    private static function _sanitize($var)
+    public static function _sanitize($var)
     {
         if (is_array($var)) {
             //run each array item through this function (by reference)      
             foreach ($var as &$val) {
+                COM_errorLog("Sanitizing $val");
                 $val = self::_sanitize($val);
             }
         } else if (is_string($var)) {   //clean strings
@@ -327,55 +313,6 @@ abstract class apiBase
         return $var;
     }
 
-
-    /**
-    *   Create a unique cache key.
-    *
-    *   @param  string  $key    Original key, usually an ASIN
-    *   @return string          Encoded key string to use as a cache ID
-    */
-    private static function _makeKey($key)
-    {
-        return self::$tag . '_' . md5($key);
-    }
-
-
-    /**
-    *   Get weather data from cache.
-    *
-    *   @param  string  $loc    Location to retrieve
-    *   @return array       Weather data, empty array if not found
-    */
-    private static function _getCache($loc)
-    {
-        global $_TABLES, $_CONF_WEATHER;
-
-        $cache_mins = (int)$_CONF_WEATHER['cache_minutes'];
-        if ($cache_mins < 10) $cache_mins = 30;
-        $retval = array();
-        $db_loc = self::_makeCacheKey($loc);
-        $sql = "SELECT * FROM {$_TABLES['weather_cache']}
-                    WHERE location = '$db_loc'
-                    AND ts > NOW() - INTERVAL $cache_mins MINUTE";
-        $res = DB_query($sql);
-        if ($res && DB_numRows($res) == 1) {
-            $A = DB_fetchArray($res, false);
-            $retval = @unserialize($A['data']);
-        }
-        return $retval;
-    }
-
-
-    /**
-     * Create the cache key to ensure it's the same when reading and writing
-     *
-     * @return  string  DB-safe cache key
-     */
-    private static function _makeCacheKey($loc)
-    {
-        return strtolower(COM_sanitizeId($loc, false));
-    }
-
-}   // class apiBase
+}   // class Weather\API
 
 ?>

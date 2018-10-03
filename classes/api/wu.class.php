@@ -10,14 +10,14 @@
 *               GNU Public License v2 or later
 *   @filesource
 */
-namespace Weather;
+namespace Weather\api;
 
 /**
 *   Class to manage Weather Underground
 *   @since  version 1.0.0
 *   @package weather
 */
-class api extends apiBase
+class wu extends \Weather\API
 {
     /**
     *   Constructor.
@@ -31,7 +31,10 @@ class api extends apiBase
 
         $this->api_name = 'Wunderground';
         $this->api_code = 'wu';
-
+        $this->configs = array(
+            'api_key',
+            'ref_key',
+        );
         parent::__construct($loc);
 
         $this->url = 'http://api.wunderground.com/api/' .
@@ -86,8 +89,8 @@ class api extends apiBase
     */
     protected function Parse()
     {
-        if (is_object($this->response->response->error)) {
-            $tmp = $this->response->response->error;
+        if (isset($this->response->error)) {
+            $tmp = $this->response->error;
             COM_errorLog("WU error: {$tmp->type} - {$tmp->description}");
             COM_errorLog("Searching for {$this->location}");
         }
@@ -182,7 +185,7 @@ class api extends apiBase
     *   @param  string  $format     'page' or 'block' for horiz or vert image
     *   @return string  Linkback tag
     */
-    public static function linkback($format='page')
+    public function linkback($format='page')
     {
         global $_CONF_WEATHER;
 

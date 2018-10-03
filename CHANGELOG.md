@@ -1,6 +1,8 @@
 # Changelog - Weather plugin for glFusion
 
 ## Version 1.1.2 - TBD
+- Improve class namespacing
+- Remove World Weather Online, no longer working
 - Fix cache key creation
 - Fix fieldset for APIXU config elements
 

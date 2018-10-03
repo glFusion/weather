@@ -91,7 +91,7 @@ $T->set_file('index', 'index.thtml');
 $T->set_block('index', 'EmbedBlock', 'eBlk');
 $msg = '';
 foreach ($Session as $key=>$loc) {
-    $weather = Weather\api::getWeather($loc);
+    $weather = \Weather\API::getInstance()->getWeather($loc);
     if (!is_array($weather)) {
         unset($Session[$key]);    // how'd bad weather get here?
         //$msg = $weather;
@@ -101,7 +101,7 @@ foreach ($Session as $key=>$loc) {
     $T->set_var(array(
         'embed' => $embed,
         'divid' => $key,
-        'linkback' => Weather\api::linkback(),
+        'linkback' => \Weather\API::getInstance()->linkback(),
         'iconset' => $_CONF_WEATHER['_iconset'],
     ) );
     $T->parse('eBlk', 'EmbedBlock', true);

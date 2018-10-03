@@ -81,7 +81,7 @@ $content = '';      // initialize variable for page content
 
 switch ($action) {
 case 'purge':       // Purge the cache
-    Weather\apiBase::clearCache();
+    Weather\Cache::clear();
     break;
 
 default:

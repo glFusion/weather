@@ -11,14 +11,14 @@
 *               GNU Public License v2 or later
 *   @filesource
 */
-namespace Weather;
+namespace Weather\api;
 
 /**
 *   Class to use apixu.com weather provider
 *   @since  version 1.0.4
 *   @package weather
 */
-class api extends apiBase
+class apixu extends \Weather\API
 {
     /**
     *   Constructor.
@@ -33,6 +33,9 @@ class api extends apiBase
         $this->api_name = 'APIXU';
         $this->api_code = 'apixu';
         $this->max_days = 10;
+        $this->configs = array(
+            'api_key',
+        );
 
         parent::__construct($loc);
 

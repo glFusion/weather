@@ -5,7 +5,7 @@
 *   @author     Lee Garner <lee@leegarner.com>
 *   @copyright  Copyright (c) 2011-2018 Lee Garner <lee@leegarner.com>
 *   @package    weather
-*   @version    1.1.1
+*   @version    1.1.2
 *   @license    http://opensource.org/licenses/gpl-2.0.php
 *               GNU Public License v2 or later
 *   @filesource
@@ -68,36 +68,34 @@ $_CONF_WEATHER['cache_minutes'] = max((int)$_CONF_WEATHER['cache_minutes'], 15);
 $_CONF_WEATHER['_is_uikit'] = $_SYSTEM['framework'] == 'uikit' ? true : false;
 $_CONF_WEATHER['_iconset'] = $_CONF_WEATHER['_is_uikit'] ? 'uk-icon' : 'fa fa';
 
-// Load plugin classes as needed
 spl_autoload_register(function ($class)
 {
-    global $_CONF_WEATHER;
+    // project-specific namespace prefix
+    $prefix = 'Weather\\';
 
-    if (strpos($class, 'Weather\\') === 0) {
-        $class = str_replace('Weather\\', '', $class);
-        if ($class == 'api') {
-            // If requesing an API class, include only the configured one.
-            switch ($_CONF_WEATHER['provider']) {
-            case 'wwo':
-            case 'apixu':
-            case 'wu':
-            case 'wunlocked':
-                $class = 'api_' . $_CONF_WEATHER['provider'];
-                break;
-            default:    // wwo no longer supported
-                $class = 'api_wu';
-                break;
-            }
-        }
-        $path = __DIR__ . '/classes/' . $class . '.class.php';
-        if (file_exists($path)) {
-            include $path;
-        }
+    // does the class use the namespace prefix?
+    $len = strlen($prefix);
+    if (strncmp($prefix, $class, $len) !== 0) {
+        // no, move to the next registered autoloader
+        return;
+    }
+
+    // base directory for the namespace prefix
+    $base_dir = __DIR__ . '/classes/';
+
+    // get the relative class name
+    $relative_class = substr($class, $len);
+
+    // replace the namespace prefix with the base directory, replace namespace
+    // separators with directory separators in the relative class name, append
+    // with .php
+    $file = $base_dir . str_replace('\\', '/', $relative_class) . '.class.php';
+
+    // if the file exists, require it
+    if (file_exists($file)) {
+        require $file;
     }
 });
-
-function USES_weather_upgrade()
-{   require_once WEATHER_PI_PATH . '/upgrade.inc.php';  }
 
 
 /**
@@ -157,6 +155,7 @@ function plugin_autouninstall_weather()
         'vars'      => array($_CONF_WEATHER['pi_name'] . '_gid')
     );
 
+    \Weather\Cache::clear();
     return $out;
 
 }
@@ -222,7 +221,7 @@ function phpblock_weather_current($A=array(), $loc='')
         }
     }
 
-    $A = Weather\api::getWeather($loc);
+    $A = \Weather\API::getInstance()->getWeather($loc);
     if (!is_array($A) || !isset($A['current']))
         return '';
 
@@ -236,10 +235,12 @@ function phpblock_weather_current($A=array(), $loc='')
         'temp_c'    => $A['current']['temp_c'],
         'curr_cond' => $A['current']['condition'],
         'city'      => $A['info']['city'],
-        'icon_url'  => Weather\api::getIcon($A['current']['icon']),
+        //'icon_url'  => Weather\api::getIcon($A['current']['icon']),
+        'icon_url'  => \Weather\API::getInstance()->getIcon($A['current']['icon']),
         'icon_name' => $A['current']['icon_name'],
         'date'      => $dt[0],
-        'linkback'  => Weather\api::linkback('block'),
+        //'linkback'  => Weather\api::linkback('block'),
+        'linkback'  => \Weather\API::getInstance()->linkback('block'),
     ) );
     $T->parse('output', 'block');
     $retval = $T->finish($T->get_var('output'));
@@ -304,7 +305,7 @@ function plugin_autotags_weather($op, $content = '', $autotag = '')
         case 'current':
             $loc = $autotag['parm2'];
             if (!empty($loc)) {
-                $A = Weather\api::getWeather($loc);
+                $A = \Weather\API::getInstance()->getWeather($loc);
                 if (!is_array($A))
                     return $content;
 
@@ -317,7 +318,8 @@ function plugin_autotags_weather($op, $content = '', $autotag = '')
                     'temp_c'    => $A['current']['temp_c'],
                     'curr_cond' => $A['current']['condition'],
                     'city'      => $A['info']['city'],
-                    'icon_url'  => Weather\api::getIcon($A['current']['icon']),
+                    //'icon_url'  => Weather\api::getIcon($A['current']['icon']),
+                    'icon_url'  => \Weather\API::getInstance()->getIcon($A['current']['icon']),
                     'icon_name' => $A['current']['icon_name'],
                     'date'      => $dt[0],
                 ) );
@@ -366,7 +368,7 @@ function WEATHER_embed($loc, $linkback = true)
     if (is_array($loc)) {       // Already got the weather into this array
         $A = $loc;
     } else {                    // Need to read the location's weather
-        $A = Weather\api::getWeather($loc);
+        $A = \Weather\API::getInstance()->getWeather($loc);
     }
 
     if (is_array($A)) {
@@ -375,7 +377,8 @@ function WEATHER_embed($loc, $linkback = true)
         $KM = $_CONF_WEATHER['k_m'] == 'K' ? 'K' : 'M';
         $T->set_var(array(
             'curr_wind' => $A['current']['wind_' . $KM],
-            'curr_icon_url' => Weather\api::getIcon($A['current']['icon']),
+            //'curr_icon_url' => Weather\api::getIcon($A['current']['icon']),
+            'curr_icon_url' => \Weather\API::getInstance()->getIcon($A['current']['icon']),
             'curr_icon_name' => $A['current']['icon_name'],
             'temp_f'    => $A['current']['temp_f'],
             'temp_c'    => $A['current']['temp_c'],
@@ -383,7 +386,8 @@ function WEATHER_embed($loc, $linkback = true)
             'city'      => $A['info']['city'],
             'date'      => $dt[0],
             'curr_humidity' => $A['current']['humidity'],
-            'linkback'  => $linkback ? Weather\api::linkback() : '',
+            //'linkback'  => $linkback ? Weather\api::linkback() : '',
+            'linkback'  => $linkback ? \Weather\API::getInstance()->linkback() : '',
         ) );
         $T->set_block('embed', 'ForeCastItem', 'fcItem');
         foreach ($A['forecast'] as $day) {
@@ -393,7 +397,8 @@ function WEATHER_embed($loc, $linkback = true)
                 'day'   => $day['day'],
                 'condition' => $day['condition'],
                 'icon_name' => $day['icon_name'],
-                'icon_url' => Weather\api::getIcon($day['icon']),
+                //'icon_url' => Weather\api::getIcon($day['icon']),
+                'icon_url' => \Weather\API::getInstance()->getIcon($day['icon']),
                 'wind'  => $day['wind_' . $KM],
                 'humidity' => isset($day['humidity']) ? $day['humidity'] : '',
                 'fc_text' => !empty($day['fc_text_' . $FC]) ? $day['fc_text_' . $FC] : '',
