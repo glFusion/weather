@@ -38,7 +38,6 @@ $LANG_configsubgroups['weather'] = array(
 
 $LANG_fs['weather'] = array(
     'fs_main'               => 'Allgemeine Einstellungen',
-    'fs_provider_wwo'       => 'World Weather Online',
     'fs_provider_wu'        => 'Weather Underground',
     'fs_provider_apixu'     => 'APIXU',
 );
@@ -59,7 +58,6 @@ $LANG_confignames['weather'] = array(
     'f_c'               => 'Einheit für Temperatur',
     'k_m'               => 'Einheit für Windgeschwindigkeit',
     'provider'          => 'Anbieter',
-    'api_key_wwo'       => 'WWO-API-Key',
     'api_key_wu'        => 'WU-API-Key',
     'ref_key_wu'        => 'Referrer-Key',
     'api_key_apixu'     => 'APIXU-API-Key',
@@ -83,10 +81,10 @@ $LANG_configselects['weather'] = array(
             ),
     14  => array(   'Milen pro Stunde' => 'M', 'Kilometer pro Stunde' => 'K' ),
     15  => array(   'Farenheit' => 'F', 'Celsius' => 'C'),
-    16  => array(   'World Weather Online' => 'wwo',
-                    'Weather Underground' => 'wu',
-                    'APIXU' => 'apixu',
-            ),
+    16  => array(
+        'Weather Underground' => 'wu',
+        'APIXU' => 'apixu',
+    ),
 );
 
 ?>
