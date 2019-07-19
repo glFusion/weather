@@ -1,15 +1,15 @@
 <?php
 /**
-*   Upgrade the plugin
-*
-*   @author     Lee Garner <lee@leegarner.com>
-*   @copyright  Copyright (c) 2012-2018 Lee Garner <lee@leegarner.com>
-*   @package    weather
-*   @version    1.1.0
-*   @license    http://opensource.org/licenses/gpl-2.0.php 
-*               GNU Public License v2 or later
-*   @filesource
-*/
+ * Upgrade the plugin.
+ *
+ * @author      Lee Garner <lee@leegarner.com>
+ * @copyright   Copyright (c) 2012-2018 Lee Garner <lee@leegarner.com>
+ * @package     weather
+ * @version     v1.1.0
+ * @license     http://opensource.org/licenses/gpl-2.0.php 
+ *              GNU Public License v2 or later
+ * @filesource
+ */
 
 global $_CONF, $_CONF_WEATHER, $_DB_dbms;
 
@@ -18,10 +18,11 @@ require_once __DIR__ . '/sql/mysql_install.php';
 global $_SQL_UPGRADE;
 
 /**
-*   Sequentially perform version upgrades.
-*
-*   @return boolean     True on success, False on failure
-*/
+ * Sequentially perform version upgrades.
+ *
+ * @param   boolean $dvlp   True if this is a development update
+ * @return  boolean     True on success, False on failure
+ */
 function weather_do_upgrade($dvlp=false)
 {
     global $_CONF_WEATHER, $_PLUGIN_INFO, $_WEA_DEFAULT;
@@ -82,13 +83,13 @@ function weather_do_upgrade($dvlp=false)
 
 
 /**
-*   Execute the SQL statement to perform a version upgrade.
-*   An empty SQL parameter will return success.
-*
-*   @param  string  $version        Version being upgraded to
-*   @param  boolean $ignore_errors  True to ignore sql errors and continue
-*   @return boolean     True for success, False for failure
-*/
+ * Execute the SQL statement to perform a version upgrade.
+ * An empty SQL parameter will return success.
+ *
+ * @param   string  $version        Version being upgraded to
+ * @param   boolean $ignore_errors  True to ignore sql errors and continue
+ * @return  boolean     True for success, False for failure
+ */
 function weather_do_upgrade_sql($version, $ignore_errors=false)
 {
     global $_TABLES, $_CONF_WEATHER, $_SQL_UPGRADE;
@@ -112,13 +113,13 @@ function weather_do_upgrade_sql($version, $ignore_errors=false)
 
 
 /**
-*   Update the plugin version number in the database.
-*   Called at each version upgrade to keep up to date with
-*   successful upgrades.
-*
-*   @param  string  $ver    New version to set
-*   @return boolean         True on success, False on failure
-*/
+ * Update the plugin version number in the database.
+ * Called at each version upgrade to keep up to date with
+ * successful upgrades.
+ *
+ * @param   string  $ver    New version to set
+ * @return  boolean         True on success, False on failure
+ */
 function weather_do_set_version($ver)
 {
     global $_TABLES, $_CONF_WEATHER;
@@ -141,12 +142,12 @@ function weather_do_set_version($ver)
 
 
 /**
-*   Upgrade to version 0.1.3
-*   Implements WorldWeatherOnline provider, adds api key and
-*   English/Metric selections to plugin configuration.
-*
-*   @return integer 0, no sql to upgrade here
-*/
+ * Upgrade to version 0.1.3.
+ * Implements WorldWeatherOnline provider, adds api key and
+ * English/Metric selections to plugin configuration.
+ *
+ * @return  integer 0, no sql to upgrade here
+ */
 function weather_upgrade_0_1_3()
 {
     global $_TABLES, $_CONF_WEATHER, $_WEA_DEFAULT;
@@ -164,13 +165,14 @@ function weather_upgrade_0_1_3()
     return 0;
 }
 
+
 /**
-*   Upgrade to version 1.0.0
-*   Implements Weather Underground provider, adds provider selection
-*   to plugin configuration.
-*
-*   @return integer 0, no sql to upgrade here
-*/
+ * Upgrade to version 1.0.0.
+ * Implements Weather Underground provider, adds provider selection
+ * to plugin configuration.
+ *
+ * @return  integer 0, no sql to upgrade here
+ */
 function weather_upgrade_1_0_0()
 {
     global $_TABLES, $_CONF_WEATHER, $_WEA_DEFAULT;
@@ -192,14 +194,13 @@ function weather_upgrade_1_0_0()
         $c->add('api_key_wu', '', 'text', 0, 20, 0, 200, true, 'weather');
         $c->add('ref_key_wu', '', 'text', 0, 20, 0, 210, true, 'weather');
     }
-
     return 0;
 }
 
 
 /**
- *   Remove deprecated files
- *   Errors in unlink() and rmdir() are ignored.
+ * Remove deprecated files.
+ * Errors in unlink() and rmdir() are ignored.
  */
 function weather_remove_old_files()
 {

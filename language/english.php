@@ -1,16 +1,19 @@
 <?php
 /**
-*   Default English language file for the Weather plugin
-*
-*   @author     Lee Garner <lee@leegarner.com>
-*   @copyright  Copyright (c) 2011 Lee Garner <lee@leegarner.com>
-*   @package    weather
-*   @version    1.0.0
-*   @license    http://opensource.org/licenses/gpl-2.0.php
-*               GNU Public License v2 or later
-*   @filesource
-*/
+ * Default English language file for the Weather plugin.
+ *
+ * @author      Lee Garner <lee@leegarner.com>
+ * @copyright   Copyright (c) 2011 Lee Garner <lee@leegarner.com>
+ * @package     weather
+ * @version     v1.0.0
+ * @license     http://opensource.org/licenses/gpl-2.0.php
+ *              GNU Public License v2 or later
+ * @filesource
+ */
 
+/**
+ * Weather language array.
+ * @var array */
 $LANG_WEATHER = array(
 'pi_title'      => 'Weather',
 'version'       => 'ver.',

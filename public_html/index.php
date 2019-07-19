@@ -1,17 +1,17 @@
 <?PHP
 /**
-*   Entry point for the Weather plugin.
-*   Allows the user to view several weather forcasts.  Forecasts are cached
-*   to minimize calls to the weather API
-*
-*   @author     Lee Garner <lee@leegarner.com>
-*   @copyright  Copyright (c) 2011-2012 Lee Garner <lee@leegarner.com>
-*   @package    weather
-*   @version    0.1.3
-*   @license    http://opensource.org/licenses/gpl-2.0.php 
-*               GNU Public License v2 or later
-*   @filesource
-*/
+ * Entry point for the Weather plugin.
+ * Allows the user to view several weather forcasts.  Forecasts are cached
+ * to minimize calls to the weather API
+ *
+ * @author      Lee Garner <lee@leegarner.com>
+ * @copyright   Copyright (c) 2011-2012 Lee Garner <lee@leegarner.com>
+ * @package     weather
+ * @version     v0.1.3
+ * @license     http://opensource.org/licenses/gpl-2.0.php 
+ *              GNU Public License v2 or later
+ * @filesource
+ */
 
 // Import glFusion core
 require_once '../lib-common.php';

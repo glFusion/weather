@@ -1,20 +1,20 @@
 <?php
 /**
-*   Apply updates to Weather during development.
-*   Calls upgrade function with "ignore_errors" set so repeated SQL statements
-*   won't cause functions to abort.
-*
-*   Only updates from the previous released version.
-*
-*   @author     Mark R. Evans mark AT glfusion DOT org
-*   @copyright  Copyright (c) 2018 Lee Garner <lee@leegarner.com>
-*   @package    weather
-*   @version    1.1.2
-*   @since      1.1.2
-*   @license    http://opensource.org/licenses/gpl-2.0.php
-*               GNU Public License v2 or later
-*   @filesource
-*/
+ * Apply updates to Weather during development.
+ * Calls upgrade function with "ignore_errors" set so repeated SQL statements
+ * won't cause functions to abort.
+ *
+ * Only updates from the previous released version.
+ *
+ * @author      Mark R. Evans mark AT glfusion DOT org
+ * @copyright   Copyright (c) 2018 Lee Garner <lee@leegarner.com>
+ * @package     weather
+ * @version     v1.1.2
+ * @since       v1.1.2
+ * @license     http://opensource.org/licenses/gpl-2.0.php
+ *              GNU Public License v2 or later
+ * @filesource
+ */
 
 require_once '../../../lib-common.php';
 if (!SEC_inGroup('Root')) {

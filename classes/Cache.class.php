@@ -126,7 +126,6 @@ class Cache
      * Intended for internal use, but public in case it is needed.
      *
      * @param   string  $key    Base key, e.g. Item ID
-     * @param   boolean $incl_sechash   True to include the security hash
      * @return  string          Encoded key string to use as a cache ID
      */
     public static function makeKey($key)

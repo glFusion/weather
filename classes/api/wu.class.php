@@ -1,30 +1,29 @@
 <?php
 /**
-*   Class to interface with Weather Underground's weather API
-*
-*   @author     Lee Garner <lee@leegarner.com>
-*   @copyright  Copyright (c) 2012 Lee Garner <lee@leegarner.com>
-*   @package    weather
-*   @version    1.0.4
-*   @license    http://opensource.org/licenses/gpl-2.0.php
-*               GNU Public License v2 or later
-*   @filesource
-*/
+ * Class to interface with Weather Underground's weather API.
+ *
+ * @author      Lee Garner <lee@leegarner.com>
+ * @copyright   Copyright (c) 2012 Lee Garner <lee@leegarner.com>
+ * @package     weather
+ * @version     v1.0.4
+ * @since       v1.0.0
+ * @license     http://opensource.org/licenses/gpl-2.0.php
+ *              GNU Public License v2 or later
+ * @filesource
+ */
 namespace Weather\api;
 
 /**
-*   Class to manage Weather Underground
-*   @since  version 1.0.0
-*   @package weather
+* Class to interact with Weather Underground.
 */
 class wu extends \Weather\API
 {
     /**
-    *   Constructor.
-    *   Get the weather for the location string, if specified
-    *
-    *   @param  string  $loc    Optional location to retrieve.
-    */
+     * Constructor.
+     * Get the weather for the location string, if specified.
+     *
+     * @param   string  $loc    Optional location to retrieve.
+     */
     public function __construct($loc = '')
     {
         global $_CONF, $_CONF_WEATHER;
@@ -49,15 +48,15 @@ class wu extends \Weather\API
 
 
     /**
-    *   Format a url for this provider.
-    *   Separates the location string on commas, removes extra whitespace,
-    *   and converts internal spaces to underscores. Then the components are
-    *   assembled in reverse order separated by slashes.
-    *   Example: "Los Angeles, CA" becomes "CA/Los_Angeles.json"
-    *
-    *   @param  string  $loc    Location
-    *   @return string      Full API URL
-    */
+     * Format a url for this provider.
+     * Separates the location string on commas, removes extra whitespace,
+     * and converts internal spaces to underscores. Then the components are
+     * assembled in reverse order separated by slashes.
+     * Example: "Los Angeles, CA" becomes "CA/Los_Angeles.json"
+     *
+     * @param   string  $loc    Location
+     * @return  string      Full API URL
+     */
     protected function _makeUrl($loc)
     {
         $this->location = $loc;
@@ -81,12 +80,12 @@ class wu extends \Weather\API
 
 
     /**
-    *   Parse the returned weather information.
-    *   This function just puts the forecast info into some "shortcut"
-    *   variables.
-    *
-    *   @return boolean     True if all values are objects, false otherwise
-    */
+     * Parse the returned weather information.
+     * This function just puts the forecast info into some "shortcut"
+     * variables.
+     *
+     * @return  boolean     True if all values are objects, false otherwise
+     */
     protected function Parse()
     {
         if (isset($this->response->error)) {
@@ -114,12 +113,12 @@ class wu extends \Weather\API
 
 
     /**
-    *   Get the data into standard arrays for cache storage and display.
-    *   Collects data from the info, current and forecast variables
-    *   depending on the format of the weather provider
-    *
-    *   @return array   Data array
-    */
+     * Get the data into standard arrays for cache storage and display.
+     * Collects data from the info, current and forecast variables
+     * depending on the format of the weather provider
+     *
+     * @return  array   Data array
+     */
     public function getData()
     {
         global $_CONF_WEATHER;
@@ -179,12 +178,12 @@ class wu extends \Weather\API
 
 
     /**
-    *   Return the linkback url to the weather provider.
-    *   Weather Underground requires this for the free API
-    *
-    *   @param  string  $format     'page' or 'block' for horiz or vert image
-    *   @return string  Linkback tag
-    */
+     * Return the linkback url to the weather provider.
+     * Weather Underground requires this for the free API
+     *
+     * @param   string  $format     'page' or 'block' for horiz or vert image
+     * @return  string  Linkback tag
+     */
     public function linkback($format='page')
     {
         global $_CONF_WEATHER;
@@ -214,6 +213,6 @@ class wu extends \Weather\API
         return $retval;
     }
 
-}   // class Weather
+}
 
 ?>

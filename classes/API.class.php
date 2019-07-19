@@ -1,51 +1,110 @@
 <?php
 /**
-*   Base class for interfacing with weather providers
-*
-*   @author     Lee Garner <lee@leegarner.com>
-*   @copyright  Copyright (c) 2012-2018 Lee Garner <lee@leegarner.com>
-*   @package    weather
-*   @version    1.1.2
-*   @license    http://opensource.org/licenses/gpl-2.0.php
-*               GNU Public License v2 or later
-*   @filesource
-*/
+ * Base class for interfacing with weather providers.
+ *
+ * @author      Lee Garner <lee@leegarner.com>
+ * @copyright   Copyright (c) 2012-2018 Lee Garner <lee@leegarner.com>
+ * @package     weather
+ * @version     v1.1.2
+ * @since       v1.0.4
+ * @license     http://opensource.org/licenses/gpl-2.0.php
+ *              GNU Public License v2 or later
+ * @filesource
+ */
 namespace Weather;
 
 /**
-*   Base weather class
-*   @since  version 1.0.4
-*   @package weather
-*/
+ * Base weather class
+ * @since   v1.0.4
+ * @package weather
+ */
 class API
 {
     // Our variables are all available publicly, though probably
     // never used
+    /**
+     * Response from the API provider.
+     * @var string */
     public $response;
-    public $location;
-    public $current;
-    public $forecast;
-    public $info;
-    public $error = 0;
-    public $data = array();     // Standard data array
-    public $api_name;
-    public $api_code;
-    public $url;
-    public $http_code;
-    public $fc_days = 5;        // Number of days to retrieve
-    public $configs = array();  // Config items
 
+    /**
+     * Location being requested.
+     * @var string */
+    public $location;
+
+    /**
+     * Current weather info.
+     * @var object */
+    public $current;
+
+    /**
+     * Weather forcast.
+     * @var object */
+    public $forecast;
+
+    /**
+     * Information returned from API provider.
+     * @var object */
+    public $info;
+
+    /**
+     * Error status.
+     * @var integer */
+    public $error = 0;
+
+    /**
+     * Raw data received from provider.
+     * @var array */
+    public $data = array();     // Standard data array
+
+    /**
+     * Name of api provider.
+     * @var string */
+    public $api_name;
+
+    /**
+     * Short code of api provicer, e.g. `wu` for `Weather Underground`.
+     * @var string */
+    public $api_code;
+
+    /**
+     * API provider endpoing.
+     * @var string */
+    public $url;
+
+    /**
+     * HTTP coded returned by provider.
+     * @var integer */
+    public $http_code;
+
+    /**
+     * Number of days to retrieve in forecast.
+     * @var interger */
+    public $fc_days = 5;
+
+    /**
+     * Provider configuration items.
+     * @var array */
+    public $configs = array();
+
+    /**
+     * Flag to indicate that fopen() can be used.
+     * @var boolean */
     protected $have_fopen = false;
+
+    /**
+     * Flag to indicate that Curl is available.
+     * @var boolean */
     protected $have_curl = false;
 
 
     /**
-    *   Constructor.
-    *   Get the weather for the location string, if specified
-    *
-    *   @param  string  $loc    Optional location. Used by child class
-    *   @return boolean     True on successful creation, False on config error
-    */
+     * Constructor.
+     * Get the weather for the location string, if specified
+     *
+     * @param   string  $loc    Optional location. Used by child class
+     * @return  boolean     True on successful creation, False on config error
+     */
     public function __construct($loc = '')
     {
         global $_CONF_WEATHER;
@@ -91,16 +150,16 @@ class API
 
 
     /**
-    *   Get the weather for a given location.
-    *   If $loc is not specified, use the current saved location.
-    *   Creates the URL, fetches the weather data, then parses it.
-    *
-    *   @uses   self::_makeUrl()
-    *   @uses   self::FetchWeather()
-    *   @uses   self::Parse()
-    *   @param  string  $loc    Optional location to retrieve.
-    *   @return boolean     True on success, False on failure
-    */
+     * Get the weather for a given location.
+     * If $loc is not specified, use the current saved location.
+     * Creates the URL, fetches the weather data, then parses it.
+     *
+     * @uses    self::_makeUrl()
+     * @uses    self::FetchWeather()
+     * @uses    self::Parse()
+     * @param   string  $loc    Optional location to retrieve.
+     * @return  boolean     True on success, False on failure
+     */
     public function Get($loc = '')
     {
         $url = $this->_makeUrl($loc);
@@ -127,12 +186,12 @@ class API
 
 
     /**
-    *   Format a url for a provider.
-    *   Base function just appends a urlencoded location to the base url
-    *
-    *   @param  string  $loc    Location
-    *   @return string      Full API URL
-    */
+     * Format a url for a provider.
+     * Base function just appends a urlencoded location to the base url
+     *
+     * @param   string  $loc    Location
+     * @return  string      Full API URL
+     */
     protected function _makeUrl($loc)
     {
         $this->location = $loc;
@@ -141,25 +200,25 @@ class API
 
 
     /**
-    *   Parse the returned weather information.
-    *   This function just puts the forecast info into some "shortcut"
-    *   variables. Each API is different.
-    *
-    *   @return boolean     True if all values are objects, false otherwise
-    */
+     * Parse the returned weather information.
+     * This function just puts the forecast info into some "shortcut"
+     * variables. Each API is different.
+     *
+     * @return  boolean     True if all values are objects, false otherwise
+     */
     protected function Parse()
     {
     }
 
 
     /**
-    *   Fetch data from a remote server using php-curl.
-    *   The Parse() function of the class instance is used to parse
-    *   the data into class variables.
-    *
-    *   @param  string  $url    URL to retrieve
-    *   @return string      Data from website
-    */
+     * Fetch data from a remote server using php-curl.
+     * The Parse() function of the class instance is used to parse
+     * the data into class variables.
+     *
+     * @param   string  $url    URL to retrieve
+     * @return  string      Data from website
+     */
     protected function FetchWeather($url)
     {
         global $_CONF_WEATHER;
@@ -211,24 +270,24 @@ class API
 
 
     /**
-    *   Get the data into standard arrays for cache storage and display.
-    *   Collects data from the info, current and forecast variables
-    *   depending on the format of the weather provider
-    *
-    *   @return array   Data array
-    */
+     * Get the data into standard arrays for cache storage and display.
+     * Collects data from the info, current and forecast variables
+     * depending on the format of the weather provider
+     *
+     * @return  array   Data array
+     */
     public function getData()
     {
     }
 
 
     /**
-    *   Return the linkback url to the weather provider.
-    *   World Weather Online requires this for the free API
-    *
-    *   @param  string  $format     Not used, text only is returned
-    *   @return string  Linkback tag
-    */
+     * Return the linkback url to the weather provider.
+     * World Weather Online requires this for the free API
+     *
+     * @param   string  $format     Not used, text only is returned
+     * @return  string  Linkback tag
+     */
     public function linkback($format='page')
     {
         return '';
@@ -236,14 +295,14 @@ class API
 
 
     /**
-    *   Return the URL for a given icon string.
-    *   Allows the site admin to customize the icon display.
-    *   CUSTOM_weatherIcon() must be able to parse icon URLs for this
-    *   provider.
-    *
-    *   @param  string  $icon   Icon URL returned from the weather API
-    *   @return string          Fully-qualified URL to the icon image
-    */
+     * Return the URL for a given icon string.
+     * Allows the site admin to customize the icon display.
+     * CUSTOM_weatherIcon() must be able to parse icon URLs for this
+     * provider.
+     *
+     * @param   string  $icon   Icon URL returned from the weather API
+     * @return  string          Fully-qualified URL to the icon image
+     */
     public function getIcon($icon)
     {
         if (function_exists('CUSTOM_weatherIcon')) {
@@ -254,14 +313,15 @@ class API
 
 
     /**
-    *   Retrieve weather information.
-    *   Checks the cache table first for a recent entry.  If not found,
-    *   get weather info from Google and update the cache.
-    *
-    *   @uses   self::updateCache()
-    *   @param  string  $loc    Location to get
-    *   @return mixed   Array of weather information, or integer error code
-    */
+     * Retrieve weather information.
+     * Checks the cache table first for a recent entry.  If not found,
+     * get weather info from Google and update the cache.
+     *
+     * @uses    self::updateCache()
+     * @param   string  $loc    Location to get
+     * @param   string  $extra  Optional extra ID for cache key
+     * @return  mixed   Array of weather information, or integer error code
+     */
     public function getWeather($loc, $extra='')
     {
         global $_TABLES, $_CONF_WEATHER;
@@ -290,11 +350,11 @@ class API
 
 
     /**
-    *   Sanitize values.  Recurse $var if it is an array.
-    *
-    *   @param  mixed   $var    Value or array to sanitize
-    *   @return mixed           Sanitized version of $var
-    */
+     * Sanitize values. Recurse $var if it is an array.
+     *
+     * @param   mixed   $var    Value or array to sanitize
+     * @return  mixed           Sanitized version of $var
+     */
     public static function _sanitize($var)
     {
         if (is_array($var)) {

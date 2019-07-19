@@ -1,15 +1,15 @@
 <?php
 /**
-*   Administrator interface for the Weather plugin.
-*
-*   @author     Lee Garner <lee@leegarner.com>
-*   @copyright  Copyright (c) 2012-2018 Lee Garner <lee@leegarner.com>
-*   @package    weather
-*   @version    1.1.1
-*   @license    http://opensource.org/licenses/gpl-2.0.php
-*               GNU Public License v2 or later
-*   @filesource
-*/
+ * Administrator interface for the Weather plugin.
+ *
+ * @author      Lee Garner <lee@leegarner.com>
+ * @copyright   Copyright (c) 2012-2018 Lee Garner <lee@leegarner.com>
+ * @package     weather
+ * @version     v1.1.1
+ * @license     http://opensource.org/licenses/gpl-2.0.php
+ *              GNU Public License v2 or later
+ * @filesource
+ */
 
 /** Include required glFusion common functions */
 require_once '../../../lib-common.php';
@@ -18,10 +18,11 @@ require_once '../../../lib-common.php';
 USES_lib_admin();
 
 /**
-*   Create the admin menu block.
-*   @param  string  $desc_text  Description text to appear in the menu.
-*   @return string  HTML for the menu block
-*/
+ * Create the admin menu block.
+ *
+ * @param   string  $view   Name of current view
+ * @return  string  HTML for the menu block
+ */
 function WEA_adminMenu($view = '')
 {
     global $LANG_ADMIN, $LANG_WEATHER, $_CONF, $_CONF_WEATHER;

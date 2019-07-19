@@ -1,16 +1,19 @@
 <?php
 /**
-*   Default Dutch language file for the Weather plugin
-*
-*   @author     Eric Starkenburg <zilverballs@home.nl>
-*   @copyright  Copyright (c) 2011 Lee Garner <lee@leegarner.com>
-*   @package    weather
-*   @version    0.1.0
-*   @license    http://opensource.org/licenses/gpl-2.0.php 
-*               GNU Public License v2 or later
-*   @filesource
-*/
+ * Default Dutch language file for the Weather plugin.
+ *
+ * @author      Eric Starkenburg <zilverballs@home.nl>
+ * @copyright   Copyright (c) 2011 Lee Garner <lee@leegarner.com>
+ * @package     weather
+ * @version     v0.1.0
+ * @license     http://opensource.org/licenses/gpl-2.0.php 
+ *              GNU Public License v2 or later
+ * @filesource
+ */
 
+/**
+ * Dutch language array.
+ * @var array */
 $LANG_WEATHER = array(
 'pi_title'      => 'Weerbericht',
 'curr_cond_for' => 'Actuele weersomstandigheden',
@@ -49,7 +52,7 @@ $LANG_confignames['weather'] = array(
     'api_key_wu'        => 'API Key',
     'ref_key_wu'        => 'Referrer Key',
     'api_key_apixu'     => 'API Key',
-));
+);
 
 $LANG_configselects['weather'] = array(
     0   => array(   'Ja' => 1, 'Nee' => 0),

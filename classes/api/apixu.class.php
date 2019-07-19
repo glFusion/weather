@@ -1,31 +1,29 @@
 <?php 
 /**
-*   Class to interface with apixu.com's weather API
-*
-*   @author     Lee Garner <lee@leegarner.com>
-*   @copyright  Copyright (c) 2016-2018 Lee Garner <lee@leegarner.com>
-*   @package    weather
-*   @version    1.1.1
-*   @since      1.1.0
-*   @license    http://opensource.org/licenses/gpl-2.0.php 
-*               GNU Public License v2 or later
-*   @filesource
-*/
+ * Class to interface with apixu.com's weather API.
+ *
+ * @author      Lee Garner <lee@leegarner.com>
+ * @copyright   Copyright (c) 2016-2018 Lee Garner <lee@leegarner.com>
+ * @package     weather
+ * @version     v1.1.1
+ * @since       v1.1.0
+ * @license     http://opensource.org/licenses/gpl-2.0.php 
+ *              GNU Public License v2 or later
+ * @filesource
+ */
 namespace Weather\api;
 
 /**
-*   Class to use apixu.com weather provider
-*   @since  version 1.0.4
-*   @package weather
-*/
+ * Class to use apixu.com weather provider.
+ */
 class apixu extends \Weather\API
 {
     /**
-    *   Constructor.
-    *   Get the weather for the location string, if specified
-    *
-    *   @param  string  $loc    Optional location to retrieve.
-    */
+     * Constructor.
+     * Get the weather for the location string, if specified.
+     *
+     * @param   string  $loc    Optional location to retrieve.
+     */
     public function __construct($loc = '')
     {
         global $_CONF, $_CONF_WEATHER;
@@ -53,13 +51,13 @@ class apixu extends \Weather\API
 
 
     /**
-    *   Format a url for this provider.
-    *   Just appends a urlencoded location to the base url.
-    *   Works for coordinates as well as address-style locations
-    *
-    *   @param  string  $loc    Location
-    *   @return string      Full API URL
-    */
+     * Format a url for this provider.
+     * Just appends a urlencoded location to the base url.
+     * Works for coordinates as well as address-style locations.
+     *
+     * @param   string  $loc    Location
+     * @return  string      Full API URL
+     */
     protected function _makeUrl($loc)
     {
         $this->location = $loc;
@@ -68,12 +66,12 @@ class apixu extends \Weather\API
 
 
     /**
-    *   Parse the returned weather information.
-    *   This function just puts the forecast info into some "shortcut"
-    *   variables.
-    *
-    *   @return boolean     True if all values are objects, false otherwise
-    */
+     * Parse the returned weather information.
+     * This function just puts the forecast info into some "shortcut"
+     * variables.
+     *
+     * @return boolean     True if all values are objects, false otherwise
+     */
     protected function Parse()
     {
         $disp_loc = array(
@@ -99,15 +97,15 @@ class apixu extends \Weather\API
 
 
     /**
-    *   Get the data into standard arrays for cache storage and display.
-    *   Collects data from the info, current and forecast variables
-    *   depending on the format of the weather provider.
-    *
-    *   Returns the data array as well as setting the values in $this->data
-    *   to be publicly consumed.
-    *
-    *   @return array   Data array
-    */
+     * Get the data into standard arrays for cache storage and display.
+     * Collects data from the info, current and forecast variables
+     * depending on the format of the weather provider.
+     *
+     * Returns the data array as well as setting the values in $this->data
+     * to be publicly consumed.
+     *
+     * @return  array   Data array
+     */
     public function getData()
     {
         global $_USER, $_CONF_WEATHER;
@@ -164,6 +162,6 @@ class apixu extends \Weather\API
         return $this->data;
     }
 
-}   // class api
+}
 
 ?>
