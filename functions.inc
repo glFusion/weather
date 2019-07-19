@@ -334,7 +334,6 @@ function plugin_autotags_weather($op, $content = '', $autotag = '')
                 $HTML = WEATHER_embed($loc);
             }
             break;
-               
         } // switch($option)
 
         $retval = str_replace($autotag['tagstr'], $HTML, $content);

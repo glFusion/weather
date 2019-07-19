@@ -6,7 +6,7 @@
 *   @copyright  Copyright (c) 2011-2012 Lee Garner <lee@leegarner.com>
 *   @package    weather
 *   @version    1.0.1
-*   @license    http://opensource.org/licenses/gpl-2.0.php 
+*   @license    http://opensource.org/licenses/gpl-2.0.php
 *               GNU Public License v2 or later
 *   @filesource
 */
@@ -206,14 +206,14 @@ $weatherConfigData = array(
 /**
 *   Initialize Weather plugin configuration
 *   Creates the entries for the configuration if they don't already
-*   exist. 
+*   exist.
 *
 *   @return boolean     true: success; false: an error occurred
 */
 function plugin_initconfig_weather()
 {
     global $weatherConfigData;
-    
+
     $c = config::get_instance();
     if (!$c->group_exists('weather')) {
         USES_lib_install();

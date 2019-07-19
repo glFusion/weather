@@ -358,7 +358,7 @@ class API
     public static function _sanitize($var)
     {
         if (is_array($var)) {
-            //run each array item through this function (by reference)      
+            //run each array item through this function (by reference)
             foreach ($var as &$val) {
                 COM_errorLog("Sanitizing $val");
                 $val = self::_sanitize($val);

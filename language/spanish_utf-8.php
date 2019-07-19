@@ -1,15 +1,16 @@
 <?php
 /**
-*   Default Spanish language file for the Weather plugin
-*	Translated by matrox66 Feb.2017
-*   @author     Lee Garner <lee@leegarner.com>
-*   @copyright  Copyright (c) 2011 Lee Garner <lee@leegarner.com>
-*   @package    weather
-*   @version    1.0.0
-*   @license    http://opensource.org/licenses/gpl-2.0.php 
-*               GNU Public License v2 or later
-*   @filesource
-*/
+ * Default Spanish language file for the Weather plugin.
+ * Translated by matrox66 Feb.2017
+ *
+ * @author     Lee Garner <lee@leegarner.com>
+ * @copyright  Copyright (c) 2011 Lee Garner <lee@leegarner.com>
+ * @package    weather
+ * @version    v1.0.0
+ * @license    http://opensource.org/licenses/gpl-2.0.php
+ *              GNU Public License v2 or later
+ * @filesource
+ */
 
 $LANG_WEATHER = array(
 'pi_title'      => 'Weather',
@@ -64,23 +65,38 @@ $LANG_confignames['weather'] = array(
 );
 
 $LANG_configselects['weather'] = array(
-    0   => array(   'True' => 1, 'False' => 0),
-    1   => array(   'Yes' => 1, 'No' => 0),
-    2   => array(   'None' => 0,
-                    'View'  => 1,
-                    'View & Search' => 2,
-            ),
-    3   => array(   'Default location only' => 1,
-                    'Personal only, if available' => 2,
-                    'Personal, fallback to default' => 3,
-            ),
-    13  => array(   'Left Blocks' => 1, 
-                    'Right Blocks' => 2, 
-                    'Left & Right Blocks' => 3, 
-                    'None' => 0,
-            ),
-    14  => array(   'Miles per Hour' => 'M', 'Kilometres per Hour' => 'K' ),
-    15  => array(   'Farenheit' => 'F', 'Celsius' => 'C'),
+    0   => array(
+        'True' => 1,
+        'False' => 0,
+    ),
+    1   => array(
+        'Yes' => 1,
+        'No' => 0,
+    ),
+    2   => array(
+        'None' => 0,
+        'View'  => 1,
+        'View & Search' => 2,
+    ),
+    3   => array(
+        'Default location only' => 1,
+        'Personal only, if available' => 2,
+        'Personal, fallback to default' => 3,
+    ),
+    13  => array(
+        'Left Blocks' => 1,
+        'Right Blocks' => 2,
+        'Left & Right Blocks' => 3,
+        'None' => 0,
+    ),
+    14  => array(
+        'Miles per Hour' => 'M',
+        'Kilometres per Hour' => 'K',
+    ),
+    15  => array(
+        'Farenheit' => 'F',
+        'Celsius' => 'C',
+    ),
     16  => array(
         'Weather Underground' => 'wu',
         'APIXU' => 'apixu',

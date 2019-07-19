@@ -48,8 +48,10 @@ class Cache
         if ($cache_mins == 0) {
             $cache_mins = (int)$_CONF_WEATHER['cache_minutes'];
         }
-        if ($cache_mins < 10) $cache_mins = 30;
- 
+        if ($cache_mins < 10) {
+            $cache_mins = 30;
+        }
+
         if (version_compare(GVERSION, self::MIN_GVERSION, '<')) {
             global $_TABLES, $_USER;
 

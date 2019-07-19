@@ -6,7 +6,7 @@
 *   @copyright  Copyright (c) 2011 Lee Garner <lee@leegarner.com>
 *   @package    weather
 *   @version    1.0.0
-*   @license    http://opensource.org/licenses/gpl-2.0.php 
+*   @license    http://opensource.org/licenses/gpl-2.0.php
 *               GNU Public License v2 or later
 *   @filesource
 */
@@ -74,9 +74,9 @@ $LANG_configselects['weather'] = array(
                     'Personal only, if available' => 2,
                     'Personal, fallback to default' => 3,
             ),
-    13  => array(   'Left Blocks' => 1, 
-                    'Right Blocks' => 2, 
-                    'Left & Right Blocks' => 3, 
+    13  => array(   'Left Blocks' => 1,
+                    'Right Blocks' => 2,
+                    'Left & Right Blocks' => 3,
                     'None' => 0,
             ),
     14  => array(   'Miles per Hour' => 'M', 'Kilometres per Hour' => 'K' ),

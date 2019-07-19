@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  * Class to interface with apixu.com's weather API.
  *
@@ -7,7 +7,7 @@
  * @package     weather
  * @version     v1.1.1
  * @since       v1.1.0
- * @license     http://opensource.org/licenses/gpl-2.0.php 
+ * @license     http://opensource.org/licenses/gpl-2.0.php
  *              GNU Public License v2 or later
  * @filesource
  */
