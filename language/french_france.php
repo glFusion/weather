@@ -37,9 +37,10 @@ $LANG_configsubgroups['weather'] = array(
 );
 
 $LANG_fs['weather'] = array(
-    'fs_main'               => 'General Settings',
-    'fs_provider_wu'        => 'Weather Underground',
-    'fs_provider_apixu'     => 'APIXU',
+'fs_main'               => 'General Settings',
+'fs_provider_wunlocked' => 'Weather Unlocked',
+'fs_provider_openweather' => 'OpenWeather',
+'fs_provider_weatherstack' => 'Weatherstack',
 );
 
 $LANG_configsections['weather'] = array(
@@ -48,19 +49,20 @@ $LANG_configsections['weather'] = array(
 );
 
 $LANG_confignames['weather'] = array(
-    'anon_access'       => 'Anonymous Access',
-    'displayblocks'     => 'Display glFusion Blocks',
-    'cache_minutes'     => 'Minutes to cache weather data',
-    'default_loc'       => 'Default location',
-    'blk_show_loc'      => 'Location to show in PHP block',
-    'usermenu_option'   => 'Show the plugin on the "Plugins" menu?',
-    'api_key'           => 'Provider API key',
-    'f_c'               => 'Temperature units',
-    'k_m'               => 'Windspeed units',
-    'provider'          => 'Provider',
-    'api_key_wu'        => 'API Key',
-    'ref_key_wu'        => 'Referrer Key',
-    'api_key_apixu'     => 'API Key',
+'anon_access' => 'Anonymous Access',
+'cache_minutes' => 'Minutes to cache weather data',
+'default_loc' => 'Default location',
+'blk_show_loc' => 'Location to show in PHP block',
+'usermenu_option' => 'Show the plugin on the "Plugins" menu?',
+'api_key' => 'Provider API key',
+'f_c' => 'Temperature units',
+'k_m' => 'Windspeed units',
+'provider' => 'Provider',
+'api_key_weatherstack' => 'API Key',
+'api_key_openweather' => 'API Key',
+'api_key_wunlocked' => 'API Key',
+'app_id_wunlocked' => 'Application ID',
+'def_country' => 'Default Country (2-letter code)',
 );
 
 $LANG_configselects['weather'] = array(

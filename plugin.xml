@@ -2,9 +2,9 @@
     <id>weather</id>
     <name>Weather</name>
     <description>Allows weather forecasts to be embedded in articles and other content.  API functions are provided so other plugins can request weather data. This plugin requires an API key to be entered for the provider that you select.</description>
-    <version>1.1.2</version>
+    <version>2.0.0</version>
     <glfusionversion>1.7.0</glfusionversion>
-    <phpversion>7.0.0</phpversion>
+    <phpversion>7.1.0</phpversion>
     <url>http://www.leegarner.com</url>
     <maintainer>Lee Garner</maintainer>
 </plugin>

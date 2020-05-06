@@ -3,9 +3,9 @@
  * Common functions for the Weather plugin.
  *
  * @author      Lee Garner <lee@leegarner.com>
- * @copyright   Copyright (c) 2011-2018 Lee Garner <lee@leegarner.com>
+ * @copyright   Copyright (c) 2011-2020 Lee Garner <lee@leegarner.com>
  * @package     weather
- * @version     v1.1.2
+ * @version     v2.0.0
  * @license     http://opensource.org/licenses/gpl-2.0.php
  *              GNU Public License v2 or later
  * @filesource
@@ -65,8 +65,6 @@ if (is_file("$langpath/custom/$langfile")) {
 
 // Some housekeeping. Make sure config values have good data
 $_CONF_WEATHER['cache_minutes'] = max((int)$_CONF_WEATHER['cache_minutes'], 15);
-$_CONF_WEATHER['_is_uikit'] = $_SYSTEM['framework'] == 'uikit' ? true : false;
-$_CONF_WEATHER['_iconset'] = $_CONF_WEATHER['_is_uikit'] ? 'uk-icon' : 'fa fa';
 
 spl_autoload_register(function ($class)
 {
@@ -364,7 +362,8 @@ function WEATHER_embed($loc, $linkback = true)
     $retval = '';
     $T = new Template(WEATHER_PI_PATH . '/templates');
     $T->set_file('embed', 'embed.thtml');
-    if (is_array($loc)) {       // Already got the weather into this array
+    if (is_array($loc) && !isset($loc['type'])) {
+        // Already got the weather into this array
         $A = $loc;
     } else {                    // Need to read the location's weather
         $A = \Weather\API::getInstance()->getWeather($loc);
@@ -483,7 +482,6 @@ function WEATHER_getDocURL($file='', $doclang='english')
     $doc_url = '';
 
     if ($file != '') {
-        if (!$_CONF_WEATHER['_is_uikit']) $file .= '.legacy';
         $file .= '.html';
         if (!file_exists($doc_path . $file)) {
             $doclang = 'english';

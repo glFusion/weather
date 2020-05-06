@@ -38,8 +38,9 @@ $LANG_configsubgroups['weather'] = array(
 
 $LANG_fs['weather'] = array(
     'fs_main'               => 'General Settings',
-    'fs_provider_wu'        => 'Weather Underground',
-    'fs_provider_apixu'     => 'APIXU',
+'fs_provider_wunlocked' => 'Weather Unlocked',
+'fs_provider_openweather' => 'OpenWeather',
+'fs_provider_weatherstack' => 'Weatherstack',
 );
 
 $LANG_configsections['weather'] = array(
@@ -58,9 +59,11 @@ $LANG_confignames['weather'] = array(
     'f_c'               => 'Temperature units',
     'k_m'               => 'Windspeed units',
     'provider'          => 'Provider',
-    'api_key_wu'        => 'API Key',
-    'ref_key_wu'        => 'Referrer Key',
-    'api_key_apixu'     => 'API Key',
+'api_key_weatherstack' => 'API Key',
+'api_key_openweather' => 'API Key',
+'api_key_wunlocked' => 'API Key',
+'app_id_wunlocked' => 'Application ID',
+'def_country' => 'Default Country (2-letter code)',
 );
 
 $LANG_configselects['weather'] = array(
@@ -82,8 +85,9 @@ $LANG_configselects['weather'] = array(
     14  => array(   'Miles per Hour' => 'M', 'Kilometres per Hour' => 'K' ),
     15  => array(   'Farenheit' => 'F', 'Celsius' => 'C'),
     16  => array(
-        'Weather Underground' => 'wu',
-        'APIXU' => 'apixu',
+        'Weatherstack' => 'weatherstack',
+        'OpenWeather' => 'openweather',
+        'Weather Unlocked' => 'wunlocked',
     ),
 );
 

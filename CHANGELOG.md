@@ -1,6 +1,7 @@
 # Changelog - Weather plugin for glFusion
 
-## Version 1.1.2 - TBD
+## Version 2.0.0 - 2020-05-10
+- Remove public index.php interface, only used for API access now.
 - Add dvlpupdate.php for tracking develop branch
 - Improve class namespacing
 - Remove World Weather Online, no longer working

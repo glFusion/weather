@@ -3,15 +3,16 @@
  * Base class for interfacing with weather providers.
  *
  * @author      Lee Garner <lee@leegarner.com>
- * @copyright   Copyright (c) 2012-2018 Lee Garner <lee@leegarner.com>
+ * @copyright   Copyright (c) 2012-2020 Lee Garner <lee@leegarner.com>
  * @package     weather
- * @version     v1.1.2
+ * @version     v2.0.0
  * @since       v1.0.4
  * @license     http://opensource.org/licenses/gpl-2.0.php
  *              GNU Public License v2 or later
  * @filesource
  */
 namespace Weather;
+
 
 /**
  * Base weather class
@@ -170,13 +171,13 @@ class API
             return false;
         }
 
-        $A = json_decode($json);
-        if (!is_object($A)) {
+        $resp_obj = json_decode($json);
+        if (!is_object($resp_obj)) {
             $this->error = WEATHER_ERR_API;
             COM_errorLog("error decoding json: $json");
             return false;
         }
-        $this->response = $A;
+        $this->response = $resp_obj;
         if (!$this->Parse()) {
             $this->error = WEATHER_ERR_API;
             return false;
@@ -241,7 +242,7 @@ class API
             /*curl_setopt($ch, CURLOPT_HTTPHEADER, array(
                         'Accept-Charset: utf-8',
             ) );*/
-            curl_setopt($ch, CURLOPT_VERBOSE,        1);
+            //curl_setopt($ch, CURLOPT_VERBOSE,        1);
             if (isset($_CONF_WEATHER['curlopts']) &&
                     is_array($_CONF_WEATHER['curlopts'])) {
             foreach ($_CONF_WEATHER['curlopts'] as $name=>$value) {
@@ -326,7 +327,7 @@ class API
     {
         global $_TABLES, $_CONF_WEATHER;
 
-        $key = $loc;
+        $key = md5(@serialize($loc));
         if ($extra != '') {
             $key .= '_' . $extra;
         }
@@ -372,6 +373,67 @@ class API
         }
         return $var;
     }
+
+
+    /**
+     * Convert Celsius to Farenheight.
+     *
+     * @param   float   $temp       Temperature in Celsius
+     * @return  float       Temperature in Farenheight
+     */
+    public static function CtoF($temp)
+    {
+        return (9/5) * $temp + 32;
+    }
+
+
+    /**
+     * Convert Kilometers to Miles.
+     *
+     * @param   float   $speed      Speed in KPH
+     * @return  float       Speed in MPH
+     */
+    public static function KtoM($speed)
+    {
+        return sprintf('%.1f', $speed * 0.6213712);
+    }
+
+
+    /**
+     * Convert compass degrees to text description.
+     *
+     * @param   float   $degrees    Compass degrees
+     * @return  float       Textual representation of the degrees
+     */
+    public static function Deg2Dir($degrees)
+    {
+        $map = array(
+            11.25 => 'N',
+            33.75 => 'NNE',
+            56.25 => 'NE',
+            78.75 => 'ENE',
+            101.25 => 'E',
+            123.75 => 'ESE',
+            146.25 => 'SE',
+            168.75 => 'SE',
+            191.25 => 'S',
+            213.75 => 'SSW',
+            236.25 => 'SW',
+            258.75 => 'SSW',
+            281.25 => 'W',
+            303.75 => 'WNW',
+            326.25 => 'NW',
+            348.75 => 'NNW',
+            360 => 'N',
+        );
+        foreach ($map as $deg=>$dir) {
+            if ($degrees <= $deg) {
+                break;
+            }
+        }
+        return $dir;
+    }
+
 
 }   // class Weather\API
 

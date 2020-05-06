@@ -57,7 +57,7 @@ function weather_do_upgrade($dvlp=false)
     }
 
     if (!COM_checkVersion($current_ver, '1.1.2')) {
-        $current_ver = '1.1.2';
+        $current_ver = '2.0.0';
         if (!weather_do_upgrade_sql($current_ver, $dvlp)) return false;
         if (!weather_do_set_version($current_ver)) return false;
     }
@@ -209,14 +209,12 @@ function weather_remove_old_files()
     $paths = array(
         // private/plugins/weather
         __DIR__ => array(
-            'classes/api_apixu.class.php',
+            //2.0.0
             'classes/apiBase.class.php',
+            'classes/api_apixu.class.php',
             'classes/api_wu.class.php',
-            'classes/api_wunlocked.class.php',
             'classes/api_wwo.class.php',
             'classes/google_api.inc.php',
-            'classes/worldweather_api.class.php',
-            'classes/wunderground_api.class.php',
         ),
         // public_html/paypal
         $_CONF['path_html'] . 'weather' => array(

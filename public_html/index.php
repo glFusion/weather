@@ -5,9 +5,9 @@
  * to minimize calls to the weather API
  *
  * @author      Lee Garner <lee@leegarner.com>
- * @copyright   Copyright (c) 2011-2012 Lee Garner <lee@leegarner.com>
+ * @copyright   Copyright (c) 2011-2020 Lee Garner <lee@leegarner.com>
  * @package     weather
- * @version     v0.1.3
+ * @version     v2.0.0
  * @license     http://opensource.org/licenses/gpl-2.0.php 
  *              GNU Public License v2 or later
  * @filesource
@@ -16,9 +16,9 @@
 // Import glFusion core
 require_once '../lib-common.php';
 
-if (!in_array('weather', $_PLUGINS)) {
+//if (!in_array('weather', $_PLUGINS)) {
     COM_404();
-}
+//}
 
 $isAnon = COM_isAnonUser() ? true : false;
 if (SEC_hasRights('weather.view')) {

@@ -1,28 +1,32 @@
 # Weather plugin for glFusion
-Copyright (C) 2011-2018 by Lee Garner  lee@leegarner.com
+Copyright (C) 2011-2020 by Lee Garner  lee@leegarner.com
 
-The Weather plugin allows you to display weather forecasts on your
-glFusion site, and integrate weather displays with other plugins such
-as Locator and Evlist.
+The Weather plugin allows you to integrate weather informationwith other
+plugins such as Locator and Evlist. As of version 2.0.0 there is no longer
+a public-facing page for users to look up weather. All access is via API
+calls.
 
 The Weather plugin requires either Curl support or `allow_url_fopen` set in php.ini.
 
 ## Providers
-#### Weather Underground
-Weather Underground is the default and recommended provider.
-You need to create an account at http://wunderground.com and obtain
-an API key which must be entered in the plugin's configuration. The
-free developer plan allows up to 10 requests per minute or 500 per day.
+#### Weatherstack
+The free plan only provides for current weather. See https://weatherstack.com
+to sign up for a free API key.
 
-#### World Weather Online
-World Weather Online (http://worldweatheronline.com) is still included
-but no longer offers a free API key and is no longer being tested.
-You should switch to Weather Underground if you observe any issues getting
-weather data.
+#### OpenWeather
+OpenWeather provides current and forecast data under the free plan. Visit
+https://openweathermap.org/api to sign up for a free API key.
 
-#### APIXU
-http://apixu.com has been added in version 1.0.4 and offers a free API with
-up to 5000 requests per month.
+#### Weather Unlocked
+OpenWeather provides current and forecast data under the free plan. Visit
+https://developer.weatherunlocked.com/ to sign up for a free API key.
+
+## Deprecated Providers
+As of version 2.0.0, the following providers have been deprecates as they
+are no longer available:
+  * Weather Underground
+  * World Weather Online
+  * APIXU (now Weatherstack)
 
 ## Administration
 There is no administration interface provided other than a link to purge the cache.

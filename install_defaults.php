@@ -1,26 +1,26 @@
 <?php
 /**
-*   Configuration defaults for the Weather plugin.
-*
-*   @author     Lee Garner <lee@leegarner.com>
-*   @copyright  Copyright (c) 2011-2012 Lee Garner <lee@leegarner.com>
-*   @package    weather
-*   @version    1.0.1
-*   @license    http://opensource.org/licenses/gpl-2.0.php
-*               GNU Public License v2 or later
-*   @filesource
-*/
+ * Configuration defaults for the Weather plugin.
+ *
+ * @author      Lee Garner <lee@leegarner.com>
+ * @copyright   Copyright (c) 2011-2020 Lee Garner <lee@leegarner.com>
+ * @package     weather
+ * @version     v2.0.0
+ * @license     http://opensource.org/licenses/gpl-2.0.php
+ *              GNU Public License v2 or later
+ * @filesource
+ */
 
 if (!defined ('GVERSION')) {
     die('This file can not be used on its own!');
 }
 
 /**
-*   Weather default settings
-*
-*   Initial Installation Defaults used when loading the online configuration
-*   records. These settings are only used during the initial installation
-*   and not referenced any more once the plugin is installed
+ * Weather default settings.
+ *
+ * Initial Installation Defaults used when loading the online configuration
+ * records. These settings are only used during the initial installation
+ * and not referenced any more once the plugin is installed
  */
 global $weatherConfigData;
 $weatherConfigData = array(
@@ -146,7 +146,19 @@ $weatherConfigData = array(
         'group' => 'weather',
     ),
     array(
-        'name' => 'fs_provider_wu',
+        'name' => 'def_country',
+        'default_value' => 'US',
+        'type' => 'text',
+        'subgroup' => 0,
+        'fieldset' => 0,
+        'selection_array' => 0,
+        'sort' => 90,
+        'set' => true,
+        'group' => 'weather',
+    ),
+
+    array(
+        'name' => 'fs_provider_openweather',
         'default_value' => NULL,
         'type' => 'fieldset',
         'subgroup' => 0,
@@ -157,7 +169,7 @@ $weatherConfigData = array(
         'group' => 'weather',
     ),
     array(
-        'name' => 'api_key_wu',
+        'name' => 'api_key_openweather',
         'default_value' => '',
         'type' => 'text',
         'subgroup' => 0,
@@ -167,19 +179,9 @@ $weatherConfigData = array(
         'set' => true,
         'group' => 'weather',
     ),
+
     array(
-        'name' => 'ref_key_wu',
-        'default_value' => '',
-        'type' => 'text',
-        'subgroup' => 0,
-        'fieldset' => 10,
-        'selection_array' => 0,
-        'sort' => 20,
-        'set' => true,
-        'group' => 'weather',
-    ),
-    array(
-        'name' => 'fs_provider_apixu',
+        'name' => 'fs_provider_wunlocked',
         'default_value' => NULL,
         'type' => 'fieldset',
         'subgroup' => 0,
@@ -190,11 +192,45 @@ $weatherConfigData = array(
         'group' => 'weather',
     ),
     array(
-        'name' => 'api_key_apixu',
+        'name' => 'api_key_wunlocked',
         'default_value' => '',
         'type' => 'text',
         'subgroup' => 0,
         'fieldset' => 20,
+        'selection_array' => 0,
+        'sort' => 10,
+        'set' => true,
+        'group' => 'weather',
+    ),
+    array(
+        'name' => 'app_id_wunlocked',
+        'default_value' => '',
+        'type' => 'text',
+        'subgroup' => 0,
+        'fieldset' => 20,
+        'selection_array' => 0,
+        'sort' => 20,
+        'set' => true,
+        'group' => 'weather',
+    ),
+
+    array(
+        'name' => 'fs_provider_weatherstack',
+        'default_value' => NULL,
+        'type' => 'fieldset',
+        'subgroup' => 0,
+        'fieldset' => 30,
+        'selection_array' => NULL,
+        'sort' => 0,
+        'set' => true,
+        'group' => 'weather',
+    ),
+    array(
+        'name' => 'api_key_weatherstack',
+        'default_value' => '',
+        'type' => 'text',
+        'subgroup' => 0,
+        'fieldset' => 30,
         'selection_array' => 0,
         'sort' => 10,
         'set' => true,
@@ -204,12 +240,12 @@ $weatherConfigData = array(
 
 
 /**
-*   Initialize Weather plugin configuration
-*   Creates the entries for the configuration if they don't already
-*   exist.
-*
-*   @return boolean     true: success; false: an error occurred
-*/
+ * Initialize Weather plugin configuration.
+ * Creates the entries for the configuration if they don't already
+ * exist.
+ *
+ * @return boolean     true: success; false: an error occurred
+ */
 function plugin_initconfig_weather()
 {
     global $weatherConfigData;

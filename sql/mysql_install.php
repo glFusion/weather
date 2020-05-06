@@ -1,15 +1,15 @@
 <?php
 /**
-*   Database installation for the Weather plugin.
-*
-*   @author     Lee Garner <lee@leegarner.com>
-*   @copyright  Copyright (c) 2011 Lee Garner <lee@leegarner.com>
-*   @package    weather
-*   @version    0.1.0
-*   @license    http://opensource.org/licenses/gpl-2.0.php
-*               GNU Public License v2 or later
-*   @filesource
-*/
+ * Database installation for the Weather plugin.
+ *
+ * @author      Lee Garner <lee@leegarner.com>
+ * @copyright   Copyright (c) 2011-2020 Lee Garner <lee@leegarner.com>
+ * @package     weather
+ * @version     v2.0.0
+ * @license     http://opensource.org/licenses/gpl-2.0.php
+ *              GNU Public License v2 or later
+ * @filesource
+ */
 global $_TABLES;
 $_SQL = array(
     // Create the cache table
@@ -23,7 +23,7 @@ $_SQL = array(
 );
 
 $_SQL_UPGRADE = array(
-    '1.1.2' => array(
+    '2.0.0' => array(
         "ALTER TABLE {$_TABLES['weather_cache']}
             CHANGE location location varchar(100) NOT NULL",
     ),
