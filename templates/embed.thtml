@@ -1,39 +1,35 @@
 {# begin {templatelocation} #}
-<table border="0" align="center" width="80%">
-  <tr>
-    <td valign="middle" width="64px" class="uk-hidden-small">
-      {!if curr_icon_url}
-      <img src="{curr_icon_url}" alt="{curr_icon_name}" />
-      {!endif}
-    </td>
-    <td align="left" class="uk-hidden-small">
-      {!if city}
+<div class="uk-grid">
+    <div class="uk-width-1-5 uk-width-medium-1-10">
+{!if curr_icon_url}
+        <img src="{curr_icon_url}" alt="{curr_icon_name}" />
+{!endif}
+    </div>
+    <div class="uk-width-4-5 uk-width-medium-4-10">
+{!if city}
         {$LANG_WEATHER['curr_cond_for']} <b>{city}</b><br />
-      {!endif}
-      {temp_f} F / {temp_c} C<br />
-      {curr_cond}, {$LANG_WEATHER['wind']} {curr_wind}<br />
-      <span class="piWeatherDateTime"><i>{date}</i></span>
-    </td>
-    <!-- BEGIN ForeCastItem -->
-    <td width="64px" valign="top">
-      <b>{day}</b><br />
-      <img src="{icon_url}" alt="{icon_name}"
-      {!if fc_text}
-      title="{fc_text}" class="gl_mootip" data-uk-tooltip
-      {!endif}
-      /><br />
-      {low}/{high}<br />
-      {condition}<br />
-      {wind}
-    </td>
-    <!-- END ForeCastItem -->
-  </tr>
-  {!if linkback}
-  <tr>
-    <td colspan="19" class="piWeatherLinkback">
-      {$LANG_WEATHER['powered_by']} {linkback}
-    </td>
-  </tr>
-  {!endif}
-</table>
+{!endif}
+        {temp_f} F / {temp_c} C<br />
+        {curr_cond}, {$LANG_WEATHER['wind']} {curr_wind}<br />
+        <span class="piWeatherDateTime"><i>{date}</i></span>
+    </div>
+<!-- BEGIN ForeCastItem -->
+    <div class="uk-width-1-3 uk-width-medium-1-10">
+        <b>{day}</b><br />
+        <img src="{icon_url}" alt="{icon_name}"
+{!if fc_text}
+            title="{fc_text}" class="gl_mootip" data-uk-tooltip
+{!endif}
+        /><br />
+        {low}/{high}<br />
+        {condition}<br />
+        {wind}
+    </div>
+<!-- END ForeCastItem -->
+</div>
+{!if linkback}
+<div class="piWeatherLinkback">
+    {$LANG_WEATHER['powered_by']} {linkback}
+</div>
+{!endif}
 {# end {templatelocation} #}
