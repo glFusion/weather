@@ -92,24 +92,16 @@ class wunlocked extends \Weather\API
      */
     protected function Parse()
     {
-        //var_dump($this->response);die;
-        /*if (is_object($this->response->current)) {
-            $tmp = $this->response->response->error;
-            COM_errorLog("WU error: {$tmp->type} - {$tmp->description}");
-            COM_errorLog("Searching for {$this->location}");
-        }*/
-
         $this->info = NULL;
         $this->current = $this->response->Days[0];
         $this->forecast = $this->response->Days;
-        //$this->fc_text = $this->response->forecast->txt_forecast->forecastday;
         if (!is_object($this->current)) {
             COM_errorLog('Invalid current data, should be object ');
-            //COM_errorLog('Current object: ' . print_r($this->current, true));
+            $this->error = 1;
             return false;
         } elseif (!is_array($this->forecast)) {
             COM_errorLog('Invalid forecast data, should be array:');
-            //COM_errorLog('Forecaset array: ' . print_r($this->forecast, true));
+            $this->error = 1;
             return false;
         } else {
             return true;

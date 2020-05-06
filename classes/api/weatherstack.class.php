@@ -90,17 +90,19 @@ class weatherstack extends \Weather\API
             $tmp = $this->response->error;
             COM_errorLog("WS error: {$tmp->type} - {$tmp->description}");
             COM_errorLog("Searching for {$this->location}");
-        }
-        $this->info = $this->response->current_observation->display_location;
-        $this->current = $this->response->current;
-        $this->location = $this->response->location;
-        if (!is_object($this->current)) {
-            COM_errorLog('Invalid current data, should be object ');
-            //COM_errorLog('Current object: ' . print_r($this->current, true));
-            return false;
+            $this->error = 1;
         } else {
-            $this->fc_text = $this->response->current->weather_description[0];
-            return true;
+            $this->info = $this->response->current_observation->display_location;
+            $this->current = $this->response->current;
+            $this->location = $this->response->location;
+            if (!is_object($this->current)) {
+                COM_errorLog('Invalid current data, should be object ');
+                $this->error = 1;
+                return false;
+            } else {
+                $this->fc_text = $this->response->current->weather_description[0];
+                return true;
+            }
         }
     }
 

@@ -91,18 +91,19 @@ class openweather extends \Weather\API
         if ($this->response->cod != '200') {
             COM_errorLog("OpenWeather error: {$this->response->message}");
             COM_errorLog("Searching for {$this->location}");
-        }
-
-        $this->info = $this->response->city;
-        $this->current = $this->response->list[0];
-        $this->location = $this->response->city;
-        if (!is_object($this->location)) {
-            COM_errorLog('Invalid current data, should be object ');
-            //COM_errorLog('Current object: ' . print_r($this->current, true));
-            return false;
+            $this->error = 1;
         } else {
-            $this->fc_text = $this->current->weather[0]->description;
-            return true;
+            $this->info = $this->response->city;
+            $this->current = $this->response->list[0];
+            $this->location = $this->response->city;
+            if (!is_object($this->location)) {
+                COM_errorLog('Invalid current data, should be object ');
+                $this->error = 1;
+                return false;
+            } else {
+                $this->fc_text = $this->current->weather[0]->description;
+                return true;
+            }
         }
     }
 
