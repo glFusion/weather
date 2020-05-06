@@ -92,7 +92,6 @@ class weatherstack extends \Weather\API
             COM_errorLog("Searching for {$this->location}");
             $this->error = 1;
         } else {
-            $this->info = $this->response->current_observation->display_location;
             $this->current = $this->response->current;
             $this->location = $this->response->location;
             if (!is_object($this->current)) {
@@ -124,7 +123,7 @@ class weatherstack extends \Weather\API
             'info' => array(
                 'city'  => $city,
                 'date_time' => date('Y-m-d H:i:s'),
-                'ts' => $this->current->observation_time,
+                'ts' => $this->location->localtime_epoch,
             ),
             'current' => array(
                 'temp_f'   => self::CtoF((float)$this->current->temperature),
