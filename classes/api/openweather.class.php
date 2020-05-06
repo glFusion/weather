@@ -68,7 +68,7 @@ class openweather extends \Weather\API
                 if (!isset($parts['country']) || empty($parts['country'])) {
                     $parts['country'] = $_CONF_WEATHER['def_country'];
                 }
-                $this->locaton = implode(',', $parts);
+                $this->location = implode(',', $parts);
                 $query = 'q=' . $this->location;
             }
         } elseif ($loc['type'] == 'coord') {
