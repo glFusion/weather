@@ -30,3 +30,18 @@ are no longer available:
 
 ## Administration
 There is no administration interface provided other than a link to purge the cache.
+
+## API Usage
+To get an embeddable eather widget, call
+```PLG_invokeService('weather', 'embed', $args_array, $ouput_var, $svc_msg);
+```
+The argument array may contain the following elements:
+  * `lat` : The location's latitude coordinate
+  * `lng` : The location's longitude coordinate
+  * `street` : Street address
+  * `city` : City name
+  * `province` : State or Province name
+  * `country` : ISO-3166-1 2-letter Country Code
+  * `postal` : Postal code
+
+If both Latitude and Longitude are present then they will generally be used. Otherwise a query will be created from the address fields depending on the weather provider. If not provided, the configured default country will be included for disambiguation.
