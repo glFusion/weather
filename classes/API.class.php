@@ -163,7 +163,12 @@ class API
      */
     public function Get($loc = '')
     {
+        $loc = self::makeParams($loc);
         $url = $this->_makeUrl($loc);
+        if (!$url) {
+            return false;
+        }
+
         $json = $this->FetchWeather($url);
         if (empty($json)) {
             $this->error = WEATHER_ERR_API;
@@ -434,6 +439,55 @@ class API
         return $dir;
     }
 
+
+    /**
+     * Format the parameters into the expected array format.
+     * Expected format is
+     *
+     * ```
+     *  'loc' => array(
+     *      'type' => coord|address,
+     *      'parts' => array(
+     *          'street' => street_address,
+     *          'city' => city_name,
+     *          'state' => state_name,
+     *          'country' => country_code,
+     *          'postal' => postal_code,
+     *      ),
+     *  );
+     * ```
+     *
+     * @param   array   $args   Argument array passed from the caller
+     * @return  array       Array of properly-formatted arguments for the API
+     */
+    public static function makeParams($args)
+    {
+        // Move the arguments under the 'loc' element if not done by
+        // the caller.
+        if (!isset($args['loc'])) {
+            $args = array(
+                'loc' => $args,
+            );
+        }
+
+        if (isset($args['type'])) {
+            // Already been processed
+            return $args;
+        } elseif (isset($args['loc']['lat']) && isset($args['loc']['lng'])) {
+            $loc = array(
+                'type' => 'coord',
+                'parts' => $args['loc'],
+            );
+        } else {
+            // assume address parts. Should already be keyed by
+            // field name.
+            $loc = array(
+                'type' => 'address',
+                'parts' => $args['loc'],
+            );
+        }
+        return $loc;
+    }
 
 }   // class Weather\API
 

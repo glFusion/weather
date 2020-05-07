@@ -362,12 +362,7 @@ function WEATHER_embed($loc, $linkback = true)
     $retval = '';
     $T = new Template(WEATHER_PI_PATH . '/templates');
     $T->set_file('embed', 'embed.thtml');
-    if (is_array($loc) && !isset($loc['type'])) {
-        // Already got the weather into this array
-        $A = $loc;
-    } else {                    // Need to read the location's weather
-        $A = \Weather\API::getInstance()->getWeather($loc);
-    }
+    $A = \Weather\API::getInstance()->getWeather($loc);
 
     if (is_array($A)) {
         $dt = COM_getUserDateTimeFormat($A['info']['ts']);
@@ -611,7 +606,7 @@ function plugin_isadmin_weather()
  * Get the display for a single weather item.
  * Includes description and forecast.
  *
- * @param   array   $args       array('loc'=>address string)
+ * @param   array   $args       array('loc'=>address info)
  * @param   mixed   $output     HTML for display
  * @param   mixed   $svc_msg    Not used
  * @return  string      Our configured currency code.
@@ -623,7 +618,7 @@ function service_embed_weather($args, &$output, &$svc_msg)
     if (!isset($args['linkback'])) {
         $args['linkback'] = true;
     }
-    $output = WEATHER_embed($args['loc'], $args['linkback']);
+    $output = WEATHER_embed($args, $args['linkback']);
     return PLG_RET_OK;
 }
 
