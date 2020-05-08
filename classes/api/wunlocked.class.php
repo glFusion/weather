@@ -120,20 +120,10 @@ class wunlocked extends \Weather\API
     {
         global $_CONF, $_CONF_WEATHER;
 
-        $city = '';
-        if (!empty($this->city)) {
-            $city = $this->city;
-        }
-        if (!empty($this->province)) {
-            $city .= ', ' . $this->province;
-        }
-        if (!empty($this->country)) {
-            $city .= ' ' . $this->country;
-        }
         $icon = $this->current->Timeframes[0]->wx_icon;
         $data = array(
             'info' => array(
-                'city'  => $city,
+                'city'  => '',
                 'date_time' => date('Y-m-d H:i:s'),
                 'ts' => time(),
             ),
