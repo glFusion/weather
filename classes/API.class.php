@@ -366,7 +366,7 @@ class API
         if (is_array($var)) {
             //run each array item through this function (by reference)
             foreach ($var as &$val) {
-                COM_errorLog("Sanitizing $val");
+                //COM_errorLog("Sanitizing $val");
                 $val = self::_sanitize($val);
             }
         } else if (is_string($var)) {   //clean strings
@@ -474,16 +474,36 @@ class API
             // Already been processed
             return $args;
         } elseif (isset($args['loc']['lat']) && isset($args['loc']['lng'])) {
-            $loc = array(
-                'type' => 'coord',
-                'parts' => $args['loc'],
-            );
+            $type = 'coord';
+            $final_parts = $args['loc'];
         } else {
+            $parts = preg_split('/[\s,]+/', $args['loc']);
+            // Check if latitude and longitude are specified
+            if (
+                count($parts) == 2 &&
+                is_numeric($parts[0]) &&
+                is_numeric($parts[1])
+            ) {
+                $type = 'coord';
+                $final_parts = array(
+                    'lat' => (float)$parts[0],
+                    'lng' => (float)$parts[1],
+                );
+            } else {
+                // TODO: possible address parsing
+                $type = 'address';
+                if (is_array($args['loc'])) {
+                    if (!isset($args['loc']['country'])) {
+                        $args['loc']['country'] = $_CONF_WEATHER['def_country'];
+                    }
+                }
+                $final_parts = $args['loc'];
+            }
             // assume address parts. Should already be keyed by
             // field name.
             $loc = array(
-                'type' => 'address',
-                'parts' => $args['loc'],
+                'type' => $type,
+                'parts' => $final_parts,
             );
         }
         return $loc;

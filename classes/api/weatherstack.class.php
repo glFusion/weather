@@ -39,8 +39,7 @@ class weatherstack extends \Weather\API
 
         $this->url = 'http://api.weatherstack.com/current?' .
             'access_key=' . $_CONF_WEATHER['api_key_weatherstack'] .
-            '&units=m' .
-            '&query=';
+            '&units=m';
 
         if (!empty($loc)) {
             // Get the weather for the specified location, if requested
@@ -58,22 +57,27 @@ class weatherstack extends \Weather\API
     protected function _makeUrl($loc)
     {
         global $_CONF_WEATHER;
-
         if ($loc['type'] == 'coord') {
             $this->location = implode(',', $loc['parts']);
-        } elseif ($loc['type'] = 'city') {
+            $type = 'LatLon';
+        } elseif ($loc['type'] == 'address') {
             $parts = $loc['parts'];
-            if (!empty($parts['postsl'])) {
+            if (isset($parts['postal']) && !empty($parts['postsl'])) {
+                $type = 'Zipcode';
                 $this->location = $parts['postal'];
             } else {
-                unset($parts['postal']);
+                $type = 'city';
+                if (isset($parts['postal'])) {
+                    // remove if present but empty
+                    unset($parts['postal']);
+                }
                 if (empty($parts['country'])) {
                     $parts['country'] = $_CONF_WEATHER['def_country'];
                 }
                 $this->location = implode(',', $parts);
             }
         }
-        return $this->url . $this->location;
+        return $this->url . "&type=$type&query={$this->location}";
     }
 
 
