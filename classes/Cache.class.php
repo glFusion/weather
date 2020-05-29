@@ -13,6 +13,7 @@
  */
 namespace Weather;
 
+
 /**
  * Class for Weather Cache.
  * @package weather
@@ -55,20 +56,24 @@ class Cache
         if (version_compare(GVERSION, self::MIN_GVERSION, '<')) {
             global $_TABLES, $_USER;
 
-           $data = DB_escapeString(serialize(API::_sanitize($data)));
+            $data = DB_escapeString(serialize(API::_sanitize($data)));
             $db_loc = self::_makeCacheKey($loc);
 
             // Delete any stale entries and the current location to be replaced
             // cache_minutes is already sanitized as an intgeger
-            DB_query("DELETE FROM {$_TABLES['weather_cache']}
-                        WHERE ts < NOW() - INTERVAL $cache_mins MINUTE
-                        OR location = '$db_loc'");
+            DB_query(
+                "DELETE FROM {$_TABLES['weather_cache']}
+                WHERE ts < NOW() - INTERVAL $cache_mins MINUTE
+                OR location = '$db_loc'"
+            );
 
             // Insert the new record to be cached
-            DB_query("INSERT INTO {$_TABLES['weather_cache']}
-                            (location, uid, data)
-                        VALUES
-                            ('$db_loc', '{$_USER['uid']}', '$data')");
+            DB_query(
+                "INSERT INTO {$_TABLES['weather_cache']}
+                    (location, uid, data)
+                VALUES
+                    ('$db_loc', '{$_USER['uid']}', '$data')"
+            );
         } else {
             $ttl = (int)$cache_mins * 60;   // convert to seconds
             // Always make sure the base tag is included
@@ -153,8 +158,8 @@ class Cache
             $retval = array();
             $db_loc = self::_makeCacheKey($loc);
             $sql = "SELECT * FROM {$_TABLES['weather_cache']}
-                        WHERE location = '$db_loc'
-                        AND ts > NOW() - INTERVAL $cache_mins MINUTE";
+                WHERE location = '$db_loc'
+                AND ts > NOW() - INTERVAL $cache_mins MINUTE";
             $res = DB_query($sql);
             if ($res && DB_numRows($res) == 1) {
                 $A = DB_fetchArray($res, false);
