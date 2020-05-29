@@ -126,6 +126,7 @@ class wunlocked extends \Weather\API
                 'city'  => '',
                 'date_time' => date('Y-m-d H:i:s'),
                 'ts' => time(),
+                'api' => $this->api_code,
             ),
             'current' => array(
                 'temp_f'   => (string)$this->current->Timeframes[0]->temp_f,
