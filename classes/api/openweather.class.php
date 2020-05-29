@@ -117,6 +117,8 @@ class openweather extends \Weather\API
      */
     public function getData()
     {
+        global $_CONF;
+
         $city = $this->location->name;
         if (!empty($this->location->country)) {
             $city .= ', ' . $this->location->country;
@@ -127,6 +129,7 @@ class openweather extends \Weather\API
                 'city'  => $city,
                 'date_time' => date('Y-m-d H:i:s'),
                 'ts' => $this->current->dt,
+                'api' => $this->api_code,
             ),
             'current' => array(
                 'temp_f'   => self::CtoF((float)$this->current->main->temp),
