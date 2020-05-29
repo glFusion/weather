@@ -57,6 +57,7 @@ class weatherstack extends \Weather\API
     protected function _makeUrl($loc)
     {
         global $_CONF_WEATHER;
+
         if ($loc['type'] == 'coord') {
             $this->location = implode(',', $loc['parts']);
             $type = 'LatLon';
@@ -92,7 +93,7 @@ class weatherstack extends \Weather\API
     {
         if (isset($this->response->error)) {
             $tmp = $this->response->error;
-            COM_errorLog("WS error: {$tmp->type} - {$tmp->description}");
+            COM_errorLog("WS error: {$tmp->type} - {$tmp->info}");
             COM_errorLog("Searching for {$this->location}");
             $this->error = 1;
         } else {
@@ -103,7 +104,7 @@ class weatherstack extends \Weather\API
                 $this->error = 1;
                 return false;
             } else {
-                $this->fc_text = $this->response->current->weather_description[0];
+                $this->fc_text = $this->response->current->weather_descriptions[0];
                 return true;
             }
         }
@@ -125,6 +126,7 @@ class weatherstack extends \Weather\API
         }
         $data = array(
             'info' => array(
+                'api' => $this->api_code,
                 'city'  => $city,
                 'date_time' => date('Y-m-d H:i:s'),
                 'ts' => $this->location->localtime_epoch,
