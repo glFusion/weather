@@ -63,10 +63,10 @@ class API
      * @var string */
     public $api_name;
 
-    /**
-     * Short code of api provicer, e.g. `wu` for `Weather Underground`.
+    /** Short code of api provider, e.g. `wu` for `Weather Underground`.
+     * NULL if an invalid provider was requested.
      * @var string */
-    public $api_code;
+    public $api_code = NULL;
 
     /**
      * API provider endpoing.
@@ -143,8 +143,12 @@ class API
         if ($provider === NULL) $provider = $_CONF_WEATHER['provider'];
 
         if (!array_key_exists($provider, $inst)) {
-            $cls = __NAMESPACE__ . '\\api\\' . $provider;
-            $inst[$provider] = new $cls;
+            if (is_file(__DIR__ . '/api/' . $provider . '.class.php')) {
+                $cls = __NAMESPACE__ . '\\api\\' . $provider;
+                $inst[$provider] = new $cls;
+            } else {
+                $inst[$provider] = new self;
+            }
         }
         return $inst[$provider];
     }
@@ -469,14 +473,15 @@ class API
                 'loc' => $args,
             );
         }
-
         if (isset($args['type'])) {
             // Already been processed
             return $args;
-        } elseif (isset($args['loc']['lat']) && isset($args['loc']['lng'])) {
+        } elseif (
+            isset($args['loc']['parts']['lat']) &&
+            isset($args['loc']['parts']['lng'])) {
             $type = 'coord';
-            $final_parts = $args['loc'];
-        } else {
+            $final_parts = $args['loc']['parts'];
+        } elseif (isset($args['loc']) && is_string($args['loc'])) {
             $parts = preg_split('/[\s,]+/', $args['loc']);
             // Check if latitude and longitude are specified
             if (
@@ -499,14 +504,28 @@ class API
                 }
                 $final_parts = $args['loc'];
             }
-            // assume address parts. Should already be keyed by
-            // field name.
-            $loc = array(
-                'type' => $type,
-                'parts' => $final_parts,
-            );
+        } else {
+            $type = 'address';
+            $final_parts = array();
         }
+        // assume address parts. Should already be keyed by
+        // field name.
+        $loc = array(
+            'type' => $type,
+            'parts' => $final_parts,
+        );
         return $loc;
+    }
+
+
+    /**
+     * Check if a valid provider was instantiated.
+     *
+     * @return  boolean     True if valid, False if not
+     */
+    public function isValid()
+    {
+        return $this->api_code !== NULL;
     }
 
 }   // class Weather\API
