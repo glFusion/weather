@@ -73,11 +73,15 @@ class wunlocked extends \Weather\API
 
         if ($loc['type'] == 'coord') {
             $this->location = implode(',', $loc['parts']);
-        } elseif ($loc['type'] = 'city' && !empty($loc['parts']['postal'])) {
-            if (empty($loc['parts']['country'])) {
-                $loc['parts']['country'] = $_CONF_WEATHER['def_country'];
+        } elseif ($loc['type'] = 'city' && is_array($loc['parts'])) {
+            if (!empty($loc['parts']['postal'])) {
+                if (empty($loc['parts']['country'])) {
+                    $loc['parts']['country'] = $_CONF_WEATHER['def_country'];
+                }
+                $this->location = $loc['parts']['country'] . '.' . $loc['parts']['postal'];
             }
-            $this->location = $loc['parts']['country'] . '.' . $loc['parts']['postal'];
+        } else {
+            $this->location = urlencode($loc['parts']);
         }
         return $this->url . $this->location . $this->params;
     }
