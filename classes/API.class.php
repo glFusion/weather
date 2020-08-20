@@ -28,38 +28,31 @@ class API
      * @var string */
     public $response;
 
-    /**
-     * Location being requested.
+    /** Location being requested.
      * @var string */
     public $location;
 
-    /**
-     * Current weather info.
+    /** Current weather info.
      * @var object */
     public $current;
 
-    /**
-     * Weather forcast.
+    /** Weather forcast.
      * @var object */
     public $forecast;
 
-    /**
-     * Information returned from API provider.
+    /** Information returned from API provider.
      * @var object */
     public $info;
 
-    /**
-     * Error status.
+    /** Error status.
      * @var integer */
     public $error = 0;
 
-    /**
-     * Raw data received from provider.
+    /** Raw data received from provider.
      * @var array */
     public $data = array();     // Standard data array
 
-    /**
-     * Name of api provider.
+    /** Name of api provider.
      * @var string */
     public $api_name;
 
@@ -68,33 +61,27 @@ class API
      * @var string */
     public $api_code = NULL;
 
-    /**
-     * API provider endpoing.
+    /** API provider endpoint.
      * @var string */
-    public $url;
+    public $url = '';
 
-    /**
-     * HTTP coded returned by provider.
+    /** HTTP coded returned by provider.
      * @var integer */
-    public $http_code;
+    public $http_code = 0;
 
-    /**
-     * Number of days to retrieve in forecast.
+    /** Number of days to retrieve in forecast.
      * @var interger */
     public $fc_days = 5;
 
-    /**
-     * Provider configuration items.
+    /** Provider configuration items.
      * @var array */
     public $configs = array();
 
-    /**
-     * Flag to indicate that fopen() can be used.
+    /** Flag to indicate that fopen() can be used.
      * @var boolean */
     protected $have_fopen = false;
 
-    /**
-     * Flag to indicate that Curl is available.
+    /** Flag to indicate that Curl is available.
      * @var boolean */
     protected $have_curl = false;
 
@@ -160,7 +147,7 @@ class API
      * Creates the URL, fetches the weather data, then parses it.
      *
      * @uses    self::_makeUrl()
-     * @uses    self::FetchWeather()
+     * @uses    self::fetchWeather()
      * @uses    self::Parse()
      * @param   string  $loc    Optional location to retrieve.
      * @return  boolean     True on success, False on failure
@@ -173,7 +160,7 @@ class API
             return false;
         }
 
-        $json = $this->FetchWeather($url);
+        $json = $this->fetchWeather($url);
         if (empty($json)) {
             $this->error = WEATHER_ERR_API;
             COM_errorLog('Empty weather data from ' . $this->api_name);
@@ -229,7 +216,7 @@ class API
      * @param   string  $url    URL to retrieve
      * @return  string      Data from website
      */
-    protected function FetchWeather($url)
+    protected function fetchWeather($url)
     {
         global $_CONF_WEATHER;
 
@@ -252,8 +239,10 @@ class API
                         'Accept-Charset: utf-8',
             ) );*/
             //curl_setopt($ch, CURLOPT_VERBOSE,        1);
-            if (isset($_CONF_WEATHER['curlopts']) &&
-                    is_array($_CONF_WEATHER['curlopts'])) {
+            if (
+                isset($_CONF_WEATHER['curlopts']) &&
+                is_array($_CONF_WEATHER['curlopts'])
+            ) {
             foreach ($_CONF_WEATHER['curlopts'] as $name=>$value) {
                     curl_setopt($ch, $name, $value);
                 }
@@ -262,7 +251,7 @@ class API
             // Check the return value of curl_exec(), too
             $this->http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             if (curl_errno($ch) || $result == false) {
-                COM_errorLog(sprintf('Weather\API::FetchWeather() Error: %d %s',
+                COM_errorLog(sprintf('Weather\API::fetchWeather() Error: %d %s',
                     curl_errno($ch), curl_error($ch)));
             }
             curl_close($ch);
