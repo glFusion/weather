@@ -59,26 +59,36 @@ class weatherstack extends \Weather\API
         global $_CONF_WEATHER;
 
         if ($loc['type'] == 'coord') {
-            $this->location = implode(',', $loc['parts']);
+            $this->setLocation(implode(',', $loc['parts']));
             $type = 'LatLon';
         } elseif ($loc['type'] == 'address') {
             $parts = $loc['parts'];
             if (isset($parts['postal']) && !empty($parts['postsl'])) {
                 $type = 'Zipcode';
-                $this->location = $parts['postal'];
+                $this->setLocation($parts['postal']);
             } else {
                 $type = 'city';
+                if (is_string($parts)) {
+                    $parts = array('city' => $parts);
+                }
                 if (isset($parts['postal'])) {
                     // remove if present but empty
                     unset($parts['postal']);
                 }
-                if (empty($parts['country'])) {
+                if (empty($parts['country']) && isset($_CONF_WEATHER['def_country'])) {
                     $parts['country'] = $_CONF_WEATHER['def_country'];
                 }
-                $this->location = implode(',', $parts);
+                $this->setLocation(implode(',', $parts));
             }
         }
         return $this->url . "&type=$type&query={$this->location}";
+    }
+
+
+    private function setLocation($loc_string)
+    {
+        $this->location = urlencode($loc_string);
+        return $this;
     }
 
 
