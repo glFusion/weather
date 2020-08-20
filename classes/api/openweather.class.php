@@ -58,6 +58,7 @@ class openweather extends \Weather\API
     {
         global $_CONF_WEATHER;
 
+        $query = '';
         $parts = $loc['parts']; // for clarity
         if ($loc['type'] == 'city') {
             if (isset($parts['postal']) && !empty($parts['postal'])) {
