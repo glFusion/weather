@@ -113,7 +113,7 @@ function plugin_chkVersion_weather()
  *
  * @return  array   Associative array of menu items to be added to menu
  */
-function plugin_getmenuitems_weather()
+function Xplugin_getmenuitems_weather()
 {
     global $LANG_WEATHER, $_CONF_WEATHER;
 
@@ -220,8 +220,9 @@ function phpblock_weather_current($A=array(), $loc='')
     }
 
     $A = \Weather\API::getInstance()->getWeather($loc);
-    if (!is_array($A) || !isset($A['current']))
+    if (!is_array($A) || !isset($A['current'])) {
         return '';
+    }
 
     $dt = COM_getUserDateTimeFormat($A['info']['ts']);
     $T = new Template(WEATHER_PI_PATH . '/templates');
@@ -362,7 +363,12 @@ function WEATHER_embed($loc, $linkback = true)
     $retval = '';
     $T = new Template(WEATHER_PI_PATH . '/templates');
     $T->set_file('embed', 'embed.thtml');
-    $A = \Weather\API::getInstance()->getWeather($loc);
+
+    $API = Weather\API::getInstance();
+    if (!$API->isValid()) {
+        return '';
+    }
+    $A = $API->getWeather($loc['loc']);
 
     if (is_array($A)) {
         $dt = COM_getUserDateTimeFormat($A['info']['ts']);
@@ -370,8 +376,7 @@ function WEATHER_embed($loc, $linkback = true)
         $KM = $_CONF_WEATHER['k_m'] == 'K' ? 'K' : 'M';
         $T->set_var(array(
             'curr_wind' => $A['current']['wind_' . $KM],
-            //'curr_icon_url' => Weather\api::getIcon($A['current']['icon']),
-            'curr_icon_url' => \Weather\API::getInstance()->getIcon($A['current']['icon']),
+            'curr_icon_url' => $API->getIcon($A['current']['icon']),
             'curr_icon_name' => $A['current']['icon_name'],
             'temp_f'    => $A['current']['temp_f'],
             'temp_c'    => $A['current']['temp_c'],
@@ -379,19 +384,17 @@ function WEATHER_embed($loc, $linkback = true)
             'city'      => $A['info']['city'],
             'date'      => $dt[0],
             'curr_humidity' => $A['current']['humidity'],
-            //'linkback'  => $linkback ? Weather\api::linkback() : '',
-            'linkback'  => $linkback ? \Weather\API::getInstance()->linkback() : '',
+            'linkback'  => $linkback ? $API->linkback() : '',
         ) );
         $T->set_block('embed', 'ForeCastItem', 'fcItem');
         foreach ($A['forecast'] as $day) {
             $T->set_var(array(
-                'high'  => $day['high' . $FC],
-                'low'   => $day['low' . $FC],
+                'high'  => round($day['high' . $FC]),
+                'low'   => round($day['low' . $FC]),
                 'day'   => $day['day'],
                 'condition' => $day['condition'],
                 'icon_name' => $day['icon_name'],
-                //'icon_url' => Weather\api::getIcon($day['icon']),
-                'icon_url' => \Weather\API::getInstance()->getIcon($day['icon']),
+                'icon_url' => $API->getIcon($day['icon']),
                 'wind'  => $day['wind_' . $KM],
                 'humidity' => isset($day['humidity']) ? $day['humidity'] : '',
                 'fc_text' => !empty($day['fc_text_' . $FC]) ? $day['fc_text_' . $FC] : '',
