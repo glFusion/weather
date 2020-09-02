@@ -23,11 +23,11 @@ $_SQL = array(
 );
 
 $_SQL_UPGRADE = array(
-    '2.0.0' => array(
+    '1.1.2' => array(
         "ALTER TABLE {$_TABLES['weather_cache']}
             CHANGE location location varchar(100) NOT NULL",
     ),
-// Drop table when glFusion 1.8.0+ is targeted
+// Drop table when glFusion 2.0.0+ is targeted
 /*    '1.1.0' => array(
         "DROP TABLE IF EXISTS {$_TABLES['weather_cache']}",
     ),

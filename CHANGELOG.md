@@ -1,6 +1,6 @@
 # Changelog - Weather plugin for glFusion
 
-## Version 2.0.0 - 2020-05-10
+## Version 2.0.0 - 2020-09-02
 - Remove public index.php interface, only used for API access now.
 - Add dvlpupdate.php for tracking develop branch
 - Improve class namespacing
