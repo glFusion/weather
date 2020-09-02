@@ -26,23 +26,23 @@ class API
     /**
      * Response from the API provider.
      * @var string */
-    public $response;
+    public $response = '';
 
     /** Location being requested.
      * @var string */
-    public $location;
+    public $location = '';
 
     /** Current weather info.
      * @var object */
-    public $current;
+    public $current = NULL;
 
     /** Weather forcast.
      * @var object */
-    public $forecast;
+    public $forecast = NULL;
 
     /** Information returned from API provider.
      * @var object */
-    public $info;
+    public $info = NULL;
 
     /** Error status.
      * @var integer */
@@ -54,7 +54,7 @@ class API
 
     /** Name of api provider.
      * @var string */
-    public $api_name;
+    public $api_name = '';
 
     /** Short code of api provider, e.g. `wu` for `Weather Underground`.
      * NULL if an invalid provider was requested.
@@ -103,15 +103,15 @@ class API
             } else {
                 $this->error = WEATHER_ERR_API;
             }
-            return false;
+            return;
         }
+
         if (in_array('curl', get_loaded_extensions())) {
             // CURL is preferred since it handles other character sets better.
             $this->have_curl = true;
         } elseif (ini_get('allow_url_fopen') == 1) {
             $this->have_fopen = true;
         }
-        return true;
     }
 
 
@@ -220,6 +220,10 @@ class API
     {
         global $_CONF_WEATHER;
 
+        if (!$this->isValid()) {
+            return false;
+        }
+
         if ($this->have_curl) {
             $agent = 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB; ' .
                 'rv:1.9.1) Gecko/20090624 Firefox/3.5 (.NET CLR ' .
@@ -324,6 +328,10 @@ class API
     public function getWeather($loc, $extra='')
     {
         global $_TABLES, $_CONF_WEATHER;
+
+        if (!$this->isValid()) {
+            return false;
+        }
 
         $key = md5(@serialize($loc));
         if ($extra != '') {
@@ -514,7 +522,7 @@ class API
      */
     public function isValid()
     {
-        return $this->api_code !== NULL;
+        return ($this->api_code !== NULL) && ($this->have_fopen || $this->have_curl);
     }
 
 }   // class Weather\API
