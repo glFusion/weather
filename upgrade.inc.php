@@ -57,7 +57,7 @@ function weather_do_upgrade($dvlp=false)
     }
 
     if (!COM_checkVersion($current_ver, '1.1.2')) {
-        $current_ver = '2.0.0';
+        $current_ver = '1.1.2';
         if (!weather_do_upgrade_sql($current_ver, $dvlp)) return false;
         if (!weather_do_set_version($current_ver)) return false;
     }
