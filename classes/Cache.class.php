@@ -57,7 +57,7 @@ class Cache
             global $_TABLES, $_USER;
 
             $data = DB_escapeString(serialize(API::_sanitize($data)));
-            $db_loc = self::makeKey($loc);
+            $db_loc = self::makeKey($key);
 
             // Delete any stale entries and the current location to be replaced
             // cache_minutes is already sanitized as an intgeger
@@ -156,7 +156,7 @@ class Cache
             $cache_mins = (int)$_CONF_WEATHER['cache_minutes'];
             if ($cache_mins < 10) $cache_mins = 30;
             $retval = array();
-            $db_loc = self::makeKey($loc);
+            $db_loc = self::makeKey($key);
             $sql = "SELECT * FROM {$_TABLES['weather_cache']}
                 WHERE location = '$db_loc'
                 AND ts > NOW() - INTERVAL $cache_mins MINUTE";
