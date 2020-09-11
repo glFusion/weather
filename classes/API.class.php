@@ -40,6 +40,11 @@ class API
      * @var object */
     public $forecast = NULL;
 
+    /** Number of forcasts returned.
+     * This is set statically by the child classes.
+     * @var integer */
+    protected $num_forecasts = 5;
+
     /** Information returned from API provider.
      * @var object */
     public $info = NULL;
@@ -281,6 +286,17 @@ class API
      */
     public function getData()
     {
+    }
+
+
+    /**
+     * Get the number of forcasts returned by the API.
+     *
+     * @return  integer     Number of forcast data points
+     */
+    public function getForecastCount()
+    {
+        return (int)$this->num_forecasts;
     }
 
 

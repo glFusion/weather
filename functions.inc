@@ -369,7 +369,6 @@ function WEATHER_embed($loc, $linkback = true)
         return '';
     }
     $A = $API->getWeather($loc['loc']);
-
     if (is_array($A)) {
         $dt = COM_getUserDateTimeFormat($A['info']['ts']);
         $FC = $_CONF_WEATHER['f_c'] == 'C' ? 'C' : 'F';
