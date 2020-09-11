@@ -25,7 +25,7 @@ global $_SQL_UPGRADE;
  */
 function weather_do_upgrade($dvlp=false)
 {
-    global $_CONF_WEATHER, $_PLUGIN_INFO, $_WEA_DEFAULT;
+    global $_CONF_WEATHER, $_PLUGIN_INFO, $_WEA_DEFAULT, $_TABLES;
 
     if (isset($_PLUGIN_INFO[$_CONF_WEATHER['pi_name']])) {
         if (is_array($_PLUGIN_INFO[$_CONF_WEATHER['pi_name']])) {
@@ -69,7 +69,7 @@ function weather_do_upgrade($dvlp=false)
         $res = DB_query($sql);
         while ($A = DB_fetchArray($res, false)) {
             if ($A['type'] != 'passwd') {
-                $value = DB_escapeString(COM_endrypt(@unserialize($A['value'])));
+                $value = DB_escapeString(@serialize(COM_encrypt(@unserialize($A['value']))));
                 DB_query("UPDATE {$_TABLES['conf_values']}
                     SET type = 'passwd', value = '$value'
                     WHERE group_name = 'weather' AND name = '{$A['name']}'");
