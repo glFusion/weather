@@ -54,7 +54,7 @@ if (file_exists(WEATHER_PI_PATH . '/config.php')) {
 $langpath = WEATHER_PI_PATH . '/language';
 $langfile = "{$_CONF['language']}.php";
 if (!is_file("$langpath/$langfile")) {
-    $langfile = 'english.php';
+    $langfile = 'english_utf-8.php';
 }
 include_once "$langpath/$langfile";
 
