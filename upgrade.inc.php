@@ -61,6 +61,22 @@ function weather_do_upgrade($dvlp=false)
         if (!weather_do_upgrade_sql($current_ver, $dvlp)) return false;
         if (!weather_do_set_version($current_ver)) return false;
     }
+    if (!COM_checkVersion($current_ver, '2.0.2')) {
+        $current_ver = '2.0.2';
+        $sql = "SELECT name, value, type FROM {$_TABLES['conf_values']}
+            WHERE group_name = 'weather'
+            AND name IN ('api_key_openweather', 'api_key_weatherstack', 'api_key_wunlocked', 'app_id_wunlocked');";
+        $res = DB_query($sql);
+        while ($A = DB_fetchArray($res, false)) {
+            if ($A['type'] != 'passwd') {
+                $value = DB_escapeString(COM_endrypt(@unserialize($A['value'])));
+                DB_query("UPDATE {$_TABLES['conf_values']}
+                    SET type = 'passwd', value = '$value'
+                    WHERE group_name = 'weather' AND name = '{$A['name']}'");
+            }
+        }
+        if (!weather_do_set_version($current_ver)) return false;
+    }
 
     // Final version update to catch updates that don't go through
     // any of the update functions, e.g. code-only updates

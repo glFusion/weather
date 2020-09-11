@@ -171,7 +171,7 @@ $weatherConfigData = array(
     array(
         'name' => 'api_key_openweather',
         'default_value' => '',
-        'type' => 'text',
+        'type' => 'passwd',
         'subgroup' => 0,
         'fieldset' => 10,
         'selection_array' => 0,
@@ -194,7 +194,7 @@ $weatherConfigData = array(
     array(
         'name' => 'api_key_wunlocked',
         'default_value' => '',
-        'type' => 'text',
+        'type' => 'passwd',
         'subgroup' => 0,
         'fieldset' => 20,
         'selection_array' => 0,
@@ -205,7 +205,7 @@ $weatherConfigData = array(
     array(
         'name' => 'app_id_wunlocked',
         'default_value' => '',
-        'type' => 'text',
+        'type' => 'passwd',
         'subgroup' => 0,
         'fieldset' => 20,
         'selection_array' => 0,
@@ -228,7 +228,7 @@ $weatherConfigData = array(
     array(
         'name' => 'api_key_weatherstack',
         'default_value' => '',
-        'type' => 'text',
+        'type' => 'passwd',
         'subgroup' => 0,
         'fieldset' => 30,
         'selection_array' => 0,
