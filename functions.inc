@@ -45,6 +45,16 @@ define('WEATHER_ERR_NOTFOUND', 1);
 define('WEATHER_ERR_API', 2);
 define('WEATHER_ERR_KEYMISSING', 3);
 
+// Log levels to emulate glFusion 2.0+ logging
+define('WEATHER_LOG_DEBUG',    100);
+define('WEATHER_LOG_INFO',     200);
+define('WEATHER_LOG_NOTICE',   250);
+define('WEATHER_LOG_WARNING',  300);
+define('WEATHER_LOG_ERROR',    400);
+define('WEATHER_LOG_CRITICAL', 500);
+define('WEATHER_LOG_ALERT',    550);
+define('WEATHER_LOG_EMERGENCY', 600);
+
 // Include local configuration overrides
 if (file_exists(WEATHER_PI_PATH . '/config.php')) {
     include_once WEATHER_PI_PATH . '/config.php';

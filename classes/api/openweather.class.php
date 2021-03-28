@@ -3,9 +3,9 @@
  * Class to interface with Weatherstack's API.
  *
  * @author      Lee Garner <lee@leegarner.com>
- * @copyright   Copyright (c) 2020 Lee Garner <lee@leegarner.com>
+ * @copyright   Copyright (c) 2020-2021 Lee Garner <lee@leegarner.com>
  * @package     weather
- * @version     v1.1.2
+ * @version     v2.0.2
  * @since       v1.1.2
  * @license     http://opensource.org/licenses/gpl-2.0.php
  *              GNU Public License v2 or later
@@ -91,15 +91,16 @@ class openweather extends \Weather\API
     protected function Parse()
     {
         if ($this->response->cod != '200') {
-            COM_errorLog("OpenWeather error: {$this->response->message}");
-            COM_errorLog("Searching for {$this->location}");
+            $this->logError("Error: {$this->response->message}");
+            $this->logError("Searching for {$this->location}");
             $this->error = 1;
         } else {
             $this->info = $this->response->city;
             $this->current = $this->response->list[0];
             $this->location = $this->response->city;
             if (!is_object($this->location)) {
-                COM_errorLog('Invalid current data, should be object ');
+                $this->logError('Invalid current data, should be object');
+                $this->logError('received ' . $var_export($this->location,true));
                 $this->error = 1;
                 return false;
             } else {
@@ -202,5 +203,3 @@ class openweather extends \Weather\API
     }
 
 }
-
-?>

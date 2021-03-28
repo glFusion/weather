@@ -3,9 +3,9 @@
  * Class to interface with Weatherstack's API.
  *
  * @author      Lee Garner <lee@leegarner.com>
- * @copyright   Copyright (c) 2020 Lee Garner <lee@leegarner.com>
+ * @copyright   Copyright (c) 2020-2021 Lee Garner <lee@leegarner.com>
  * @package     weather
- * @version     v1.1.2
+ * @version     v2.0.2
  * @since       v1.1.2
  * @license     http://opensource.org/licenses/gpl-2.0.php
  *              GNU Public License v2 or later
@@ -103,14 +103,14 @@ class weatherstack extends \Weather\API
     {
         if (isset($this->response->error)) {
             $tmp = $this->response->error;
-            COM_errorLog("WS error: {$tmp->type} - {$tmp->info}");
-            COM_errorLog("Searching for {$this->location}");
+            $this->logError("Error: {$tmp->type} - {$tmp->info}");
+            $this->logError("Searching for {$this->location}");
             $this->error = 1;
         } else {
             $this->current = $this->response->current;
             $this->location = $this->response->location;
             if (!is_object($this->current)) {
-                COM_errorLog('Invalid current data, should be object ');
+                $this->logError('Invalid current data, should be object ');
                 $this->error = 1;
                 return false;
             } else {
@@ -180,5 +180,3 @@ class weatherstack extends \Weather\API
     }
 
 }
-
-?>

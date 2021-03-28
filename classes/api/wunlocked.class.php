@@ -4,9 +4,9 @@
  * https://developer.weatherunlocked.com/
  *
  * @author      Lee Garner <lee@leegarner.com>
- * @copyright   Copyright (c) 2018-2020 Lee Garner <lee@leegarner.com>
+ * @copyright   Copyright (c) 2018-2021 Lee Garner <lee@leegarner.com>
  * @package     weather
- * @version     v2.0.0
+ * @version     v2.0.2
  * @since       v2.0.0
  * @license     http://opensource.org/licenses/gpl-2.0.php
  *              GNU Public License v2 or later
@@ -100,11 +100,12 @@ class wunlocked extends \Weather\API
         $this->current = $this->response->Days[0];
         $this->forecast = $this->response->Days;
         if (!is_object($this->current)) {
-            COM_errorLog('Invalid current data, should be object ');
+            $this->logError('Invalid current data, should be object ');
             $this->error = 1;
             return false;
         } elseif (!is_array($this->forecast)) {
-            COM_errorLog('Invalid forecast data, should be array:');
+            $this->logError('Invalid forecast data, should be array:');
+            $this->logError('received: ' . var_export($this->forecast),true);
             $this->error = 1;
             return false;
         } else {
@@ -198,5 +199,3 @@ class wunlocked extends \Weather\API
     }
 
 }
-
-?>

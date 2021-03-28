@@ -5,7 +5,7 @@
  * @author      Lee Garner <lee@leegarner.com>
  * @copyright   Copyright (c) 2012-2020 Lee Garner <lee@leegarner.com>
  * @package     weather
- * @version     v2.0.0
+ * @version     v2.0.2
  * @since       v1.0.4
  * @license     http://opensource.org/licenses/gpl-2.0.php
  *              GNU Public License v2 or later
@@ -168,14 +168,15 @@ class API
         $json = $this->fetchWeather($url);
         if (empty($json)) {
             $this->error = WEATHER_ERR_API;
-            COM_errorLog('Empty weather data from ' . $this->api_name);
+            $this->logError('Empty weather data received.', );
+            $this->logError("... Attempted to retrieve url $url", WEATHER_LOG_DEBUG);
             return false;
         }
 
         $resp_obj = json_decode($json);
         if (!is_object($resp_obj)) {
             $this->error = WEATHER_ERR_API;
-            COM_errorLog("error decoding json: $json");
+            $this->logError("Error decoding json: $json");
             return false;
         }
         $this->response = $resp_obj;
@@ -260,8 +261,12 @@ class API
             // Check the return value of curl_exec(), too
             $this->http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             if (curl_errno($ch) || $result == false) {
-                COM_errorLog(sprintf('Weather\API::fetchWeather() Error: %d %s',
-                    curl_errno($ch), curl_error($ch)));
+                $this->logError(
+                    sprintf(
+                        'Weather\API::fetchWeather() Error: %d %s',
+                        curl_errno($ch), curl_error($ch)
+                    )
+                );
             }
             curl_close($ch);
             if ($this->http_code != '200') {
@@ -271,7 +276,7 @@ class API
             $result = file_get_contents($url, 0);
         } else {
             $result = '';
-            COM_errorLog('WEATHER: Missing url_fopen and curl support');
+            $this->logError('WEATHER: Missing url_fopen and curl support');
         }
         return $result;
     }
@@ -383,7 +388,6 @@ class API
         if (is_array($var)) {
             //run each array item through this function (by reference)
             foreach ($var as &$val) {
-                //COM_errorLog("Sanitizing $val");
                 $val = self::_sanitize($val);
             }
         } else if (is_string($var)) {   //clean strings
@@ -541,6 +545,20 @@ class API
         return ($this->api_code !== NULL) && ($this->have_fopen || $this->have_curl);
     }
 
-}   // class Weather\API
 
-?>
+    /**
+     * Standard logging interface to log messages with the API name prepended.
+     *
+     * @param   string  $msg    Message to log
+     * @param   integer $level  Log level
+     */
+    protected function logError($msg, $level=WEATHER_LOG_ERROR)
+    {
+        global $_CONF_WEATHER;
+
+        if ($level >= $_CONF_WEATHER['log_level']) {
+            COM_errorLog($this->api_name . ' ' . $msg);
+        }
+    }
+
+}

@@ -156,6 +156,17 @@ $weatherConfigData = array(
         'set' => true,
         'group' => 'weather',
     ),
+    array(
+        'name' => 'log_level',
+        'default_value' => '200',
+        'type' => 'select',
+        'subgroup' => 0,
+        'fieldset' => 0,
+        'selection_array' => 18,
+        'sort' => 100,
+        'set' => true,
+        'group' => 'weather',
+    ),
 
     array(
         'name' => 'fs_provider_openweather',
