@@ -105,6 +105,16 @@ $LANG_configselects['weather'] = array(
         'OpenWeather' => 'openweather',
         'Weather Unlocked' => 'wunlocked',
     ),
+    18 => array(
+        '100 - DEBUG' => 100,
+        '200 - INFO'  => 200,
+        '250 - NOTICE' => 250,
+        '300 - WARNING' => 300,
+        '400 - ERROR' => 400,
+        '500 - CRITICAL' => 500,
+        '550 - ALERT' => 550,
+        '600 - EMERGENCY' => 600,
+    ),
 );
 
 ?>
