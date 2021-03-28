@@ -1,13 +1,11 @@
 {# begin {templatelocation} #}
-<div class="uk-grid">
-    <div class="uk-width-1-5 uk-width-medium-1-10">
-{!if curr_icon_url}
-        <img src="{curr_icon_url}" alt="{curr_icon_name}" />
-{!endif}
-    </div>
-    <div class="uk-width-4-5 uk-width-medium-4-10">
+<div class="uk-grid piWeatherEmbedBlock">
+    <div class="uk-width-5-5 uk-width-medium-5-10">
 {!if city}
         {$LANG_WEATHER['curr_cond_for']} <b>{city}</b><br />
+{!endif}
+{!if curr_icon_url}
+        <img src="{curr_icon_url}" alt="{curr_icon_name}" />
 {!endif}
         {temp_f} F / {temp_c} C<br />
         {curr_cond}, {$LANG_WEATHER['wind']} {curr_wind}<br />
