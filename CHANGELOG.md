@@ -1,11 +1,6 @@
 # Changelog - Weather plugin for glFusion
 
-<<<<<<< Updated upstream
-## Version 2.1.0 - TBD
-- Use passwords for API keys
-=======
 ## Version 2.0.2 - TBD
->>>>>>> Stashed changes
 
 ## Version 2.0.0 - 2020-09-02
 - Remove public index.php interface, only used for API access now.

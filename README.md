@@ -1,5 +1,5 @@
 # Weather plugin for glFusion
-Copyright (C) 2011-2020 by Lee Garner  lee@leegarner.com
+Copyright (C) 2011-2021 by Lee Garner  lee@leegarner.com
 
 The Weather plugin allows you to integrate weather informationwith other
 plugins such as Locator and Evlist. As of version 2.0.0 there is no longer
@@ -14,19 +14,25 @@ The free plan only provides for current weather. See https://weatherstack.com
 to sign up for a free API key.
 
 #### OpenWeather
-OpenWeather provides current and forecast data under the free plan. Visit
-https://openweathermap.org/api to sign up for a free API key.
+Visit https://openweathermap.org/api to sign up for a free API key.
+  * Current and forecast weather
+  * Free Plan Limits: 60 calls/minute
 
 #### Weather Unlocked
-OpenWeather provides current and forecast data under the free plan. Visit
-https://developer.weatherunlocked.com/ to sign up for a free API key.
+Visit https://developer.weatherunlocked.com/ to sign up for a free API key.
+  * Current and forecast weather
+  * Free Plan Limits: 75 calls/minute, 25000 calls/month
+
+#### Weatherstack
+Visit https://weatherstack.com/product to sign up for a plan.
+  * Current and forecast weather
+  * Free Plan Limits: 1000 calls/month
 
 ## Deprecated Providers
-As of version 2.0.0, the following providers have been deprecates as they
+As of version 2.0.0, the following providers have been deprecated as they
 are no longer available:
   * Weather Underground
   * World Weather Online
-  * APIXU (now Weatherstack)
 
 ## Administration
 There is no administration interface provided other than a link to purge the cache.

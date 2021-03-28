@@ -63,7 +63,7 @@ function weather_do_upgrade($dvlp=false)
     }
     if (!COM_checkVersion($current_ver, '2.0.2')) {
         $current_ver = '2.0.2';
-        $sql = "SELECT name, value, type FROM {$_TABLES['conf_values']}
+        /*$sql = "SELECT name, value, type FROM {$_TABLES['conf_values']}
             WHERE group_name = 'weather'
             AND name IN ('api_key_openweather', 'api_key_weatherstack', 'api_key_wunlocked', 'app_id_wunlocked');";
         $res = DB_query($sql);
@@ -74,7 +74,7 @@ function weather_do_upgrade($dvlp=false)
                     SET type = 'passwd', value = '$value'
                     WHERE group_name = 'weather' AND name = '{$A['name']}'");
             }
-        }
+        }*/
         if (!weather_do_set_version($current_ver)) return false;
     }
 
@@ -111,8 +111,9 @@ function weather_do_upgrade_sql($version, $ignore_errors=false)
     global $_TABLES, $_CONF_WEATHER, $_SQL_UPGRADE;
 
     // If no sql statements passed in, return success
-    if (!is_array($_SQL_UPGRADE[$version]))
+    if (!isset($_SQL_UPGRADE[$version]) || !is_array($_SQL_UPGRADE[$version])) {
         return true;
+    }
 
     // Execute SQL now to perform the upgrade
     COM_errorLOG("--Updating Weather Plugin to version $version");
