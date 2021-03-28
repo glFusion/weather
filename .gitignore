@@ -4,3 +4,4 @@ test/
 distrib.sh
 .gitignore
 deprecate/
+weather.po~

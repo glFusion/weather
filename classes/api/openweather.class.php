@@ -45,6 +45,7 @@ class openweather extends \Weather\API
             // Get the weather for the specified location, if requested
             $this->Get($loc);
         }
+        $this->num_forecasts = 4;
     }
 
 
