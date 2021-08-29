@@ -3,9 +3,9 @@
  * Table definitions and other static config variables.
  *
  * @author      Lee Garner <lee@leegarner.com>
- * @copyright   Copyright (c) 2009-2020 Lee Garner <lee@leegarner.com>
+ * @copyright   Copyright (c) 2009-2021 Lee Garner <lee@leegarner.com>
  * @package     weather
- * @version     v2.0.2
+ * @version     v2.0.1
  * @license     http://opensource.org/licenses/gpl-2.0.php
  *              GNU Public License v2 or later
  * @filesource
