@@ -34,8 +34,8 @@ function WEA_adminMenu($view = '')
     $menu_arr = array (
         array('url' => $_CONF['site_admin_url'],
               'text' => $LANG_ADMIN['admin_home']),
-        array('url' => WEATHER_ADMIN_URL . '/index.php?purge=x',
-              'text' => $LANG_WEATHER['purge_cache']),
+        //array('url' => WEATHER_ADMIN_URL . '/index.php?purge=x',
+        //      'text' => $LANG_WEATHER['purge_cache']),
     );
 
     $header_str = $LANG_WEATHER['pi_title'] . ' ' . $LANG_WEATHER['version'] .
@@ -83,12 +83,20 @@ $content = '';      // initialize variable for page content
 switch ($action) {
 case 'purge':       // Purge the cache
     Weather\Cache::clear();
+    COM_setMsg($LANG_WEATHER['cache_purged']);
+    COM_refresh(WEATHER_ADMIN_URL . '/index.php');
     break;
 
 default:
+    $T = new Template($_CONF['path'] . '/plugins/weather/templates');
+    $T->set_file('admin', 'admin_options.thtml');
+    $T->set_var(array(
+        'dscp_purge' => $LANG_WEATHER['menu_hlp']['default'],
+    ) );
+    $T->parse('output', 'admin');
+    $content .= $T->finish($T->get_var('output'));
     break;
 }
-
 $display = COM_siteHeader();
 if (!empty($msg)) {
     $display .= COM_showMessageText($msg);

@@ -1,0 +1,10 @@
+{# begin {templatelocation} #}
+<div uk-grid class="uk-grid">
+	<div class="uk-width-1-1 uk-width-medium-2-3 uk-width-2-3@m">
+		{dscp_purge}
+	</div>
+	<div class="uk-width-1-1 uk-width-medium-1-3 uk-width-1-3@m">
+        <a class="uk-button uk-width-1-1 uk-button-primary" href="{site_admin_url}/plugins/weather/index.php?purge=x">{$LANG_WEATHER['purge_cache']}</a>
+	</div>
+</div>
+{# end {templatelocation} #}
