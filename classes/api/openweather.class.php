@@ -61,7 +61,7 @@ class openweather extends \Weather\API
 
         $query = '';
         $parts = $loc['parts']; // for clarity
-        if ($loc['type'] == 'city') {
+        if ($loc['type'] == 'city' || $loc['type'] == 'address') {
             if (isset($parts['postal']) && !empty($parts['postal'])) {
                 $this->location = $parts['postal'];
                 $query = 'zip=' . $this->location;

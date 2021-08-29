@@ -73,7 +73,7 @@ class wunlocked extends \Weather\API
 
         if ($loc['type'] == 'coord') {
             $this->location = implode(',', $loc['parts']);
-        } elseif ($loc['type'] = 'city' && is_array($loc['parts'])) {
+        } elseif (($loc['type'] = 'city' || $loc['type'] == 'address') && is_array($loc['parts'])) {
             if (!empty($loc['parts']['postal'])) {
                 if (empty($loc['parts']['country'])) {
                     $loc['parts']['country'] = $_CONF_WEATHER['def_country'];
@@ -167,7 +167,7 @@ class wunlocked extends \Weather\API
                     'icon_name' => $icon,
                     'wind_M' => (string)$fc->Timeframes[3]->windspd_mph . 'mph ' .
                                 (string)$fc->Timeframes[3]->winddir_compass,
-                    'wind_K' => (string)$fc->Timeframes[3]->windspd_kph . 'kph ' .
+                    'wind_K' => (string)$fc->Timeframes[3]->windspd_kmh . 'kph ' .
                                 (string)$fc->Timeframes[3]->winddir_compass,
                     'fc_text_F' => '',
                     'fc_text_C' => '',

@@ -371,7 +371,7 @@ function WEATHER_embed($loc, $linkback = true)
     global $_CONF, $_CONF_WEATHER;
 
     $retval = '';
-    $T = new Template(WEATHER_PI_PATH . '/templates');
+    $T = new Template(__DIR__ . '/templates');
     $T->set_file('embed', 'embed.thtml');
 
     $API = Weather\API::getInstance();

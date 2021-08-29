@@ -495,7 +495,8 @@ class API
             return $args;
         } elseif (
             isset($args['loc']['parts']['lat']) &&
-            isset($args['loc']['parts']['lng'])) {
+            isset($args['loc']['parts']['lng'])
+        ) {
             $type = 'coord';
             $final_parts = $args['loc']['parts'];
         } elseif (isset($args['loc']) && is_string($args['loc'])) {
@@ -523,7 +524,11 @@ class API
             }
         } else {
             $type = 'address';
-            $final_parts = array();
+            if (isset($args['loc'])) {
+                $final_parts = $args['loc'];
+            } else {
+                $final_parts = array();
+            }
         }
         // assume address parts. Should already be keyed by
         // field name.
