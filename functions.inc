@@ -3,9 +3,9 @@
  * Common functions for the Weather plugin.
  *
  * @author      Lee Garner <lee@leegarner.com>
- * @copyright   Copyright (c) 2011-2020 Lee Garner <lee@leegarner.com>
+ * @copyright   Copyright (c) 2011-2021 Lee Garner <lee@leegarner.com>
  * @package     weather
- * @version     v2.0.0
+ * @version     v2.0.2
  * @license     http://opensource.org/licenses/gpl-2.0.php
  *              GNU Public License v2 or later
  * @filesource
@@ -23,8 +23,7 @@ $_CONF_WEATHER = $w_config->get_config('weather');
 require_once __DIR__ . '/weather.php';
 
 // Define commonly-used paths
-define('WEATHER_PI_PATH',
-        $_CONF['path'] . 'plugins/' . $_CONF_WEATHER['pi_name']);
+define('WEATHER_PI_PATH', __DIR__);
 define('WEATHER_URL',
         $_CONF['site_url'] . '/' . $_CONF_WEATHER['pi_name']);
 define('WEATHER_ADMIN_URL',
@@ -327,7 +326,6 @@ function plugin_autotags_weather($op, $content = '', $autotag = '')
                     'temp_c'    => $A['current']['temp_c'],
                     'curr_cond' => $A['current']['condition'],
                     'city'      => $A['info']['city'],
-                    //'icon_url'  => Weather\api::getIcon($A['current']['icon']),
                     'icon_url'  => \Weather\API::getInstance()->getIcon($A['current']['icon']),
                     'icon_name' => $A['current']['icon_name'],
                     'date'      => $dt[0],
@@ -343,7 +341,7 @@ function plugin_autotags_weather($op, $content = '', $autotag = '')
                 $HTML = WEATHER_embed($loc);
             }
             break;
-        } // switch($option)
+        }
 
         $retval = str_replace($autotag['tagstr'], $HTML, $content);
         break;
@@ -378,7 +376,11 @@ function WEATHER_embed($loc, $linkback = true)
     if (!$API->isValid()) {
         return '';
     }
-    $A = $API->getWeather($loc['loc']);
+
+    if (is_array($loc) && isset($loc['loc'])) {
+        $loc = $loc['loc'];
+    }
+    $A = $API->getWeather($loc);
     if (is_array($A)) {
         $dt = COM_getUserDateTimeFormat($A['info']['ts']);
         $FC = $_CONF_WEATHER['f_c'] == 'C' ? 'C' : 'F';
@@ -633,5 +635,3 @@ function service_embed_weather($args, &$output, &$svc_msg)
     $output = WEATHER_embed($args, $args['linkback']);
     return PLG_RET_OK;
 }
-
-?>
