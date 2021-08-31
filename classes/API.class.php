@@ -168,7 +168,7 @@ class API
         $json = $this->fetchWeather($url);
         if (empty($json)) {
             $this->error = WEATHER_ERR_API;
-            $this->logError('Empty weather data received.', );
+            $this->logError('Empty weather data received.', WEATHER_LOG_ERROR);
             $this->logError("... Attempted to retrieve url $url", WEATHER_LOG_DEBUG);
             return false;
         }
