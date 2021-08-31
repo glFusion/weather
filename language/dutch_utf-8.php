@@ -64,6 +64,7 @@ $LANG_confignames['weather'] = array(
 'api_key_wunlocked' => 'API Key',
 'app_id_wunlocked' => 'Application ID',
 'def_country' => 'Default Country (2-letter code)',
+'log_level'         => 'Log Level',
 );
 
 $LANG_configselects['weather'] = array(
