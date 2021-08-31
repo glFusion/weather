@@ -1,5 +1,8 @@
 # Changelog - Weather plugin for glFusion
 
+## Version 2.0.2 - 2021-08-31
+- Fix bad call to logging function
+
 ## Version 2.0.1 - 2021-08-29
 - Fix passing location arguments to API classes
 
