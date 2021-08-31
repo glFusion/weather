@@ -65,12 +65,15 @@ class openweather extends \Weather\API
             if (isset($parts['postal']) && !empty($parts['postal'])) {
                 $this->location = $parts['postal'];
                 $query = 'zip=' . $this->location;
-            } else {
+            } elseif (is_array($parts)) {
                 unset($parts['postal']); // not used
                 if (!isset($parts['country']) || empty($parts['country'])) {
                     $parts['country'] = $_CONF_WEATHER['def_country'];
                 }
                 $this->location = implode(',', $parts);
+                $query = 'q=' . $this->location;
+            } else {
+                $this->location = $parts;
                 $query = 'q=' . $this->location;
             }
         } elseif ($loc['type'] == 'coord') {
