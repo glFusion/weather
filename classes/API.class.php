@@ -3,7 +3,7 @@
  * Base class for interfacing with weather providers.
  *
  * @author      Lee Garner <lee@leegarner.com>
- * @copyright   Copyright (c) 2012-2020 Lee Garner <lee@leegarner.com>
+ * @copyright   Copyright (c) 2012-2022 Lee Garner <lee@leegarner.com>
  * @package     weather
  * @version     v2.0.2
  * @since       v1.0.4
@@ -12,6 +12,8 @@
  * @filesource
  */
 namespace Weather;
+use Weather\Models\WeatherData;
+use glFusion\Log\Log;
 
 
 /**
@@ -168,15 +170,15 @@ class API
         $json = $this->fetchWeather($url);
         if (empty($json)) {
             $this->error = WEATHER_ERR_API;
-            $this->logError('Empty weather data received.', WEATHER_LOG_ERROR);
-            $this->logError("... Attempted to retrieve url $url", WEATHER_LOG_DEBUG);
+            $this->logError('Empty weather data received.', Log::ERROR);
+            $this->logError("... Attempted to retrieve url $url", Log::DEBUG);
             return false;
         }
 
         $resp_obj = json_decode($json);
         if (!is_object($resp_obj)) {
             $this->error = WEATHER_ERR_API;
-            $this->logError("Error decoding json: $json");
+            $this->logError("Error decoding json: $json", Log::ERROR);
             return false;
         }
         $this->response = $resp_obj;
@@ -265,7 +267,8 @@ class API
                     sprintf(
                         'Weather\API::fetchWeather() Error: %d %s',
                         curl_errno($ch), curl_error($ch)
-                    )
+                    ),
+                    Log::ERROR
                 );
             }
             curl_close($ch);
@@ -276,7 +279,7 @@ class API
             $result = file_get_contents($url, 0);
         } else {
             $result = '';
-            $this->logError('WEATHER: Missing url_fopen and curl support');
+            $this->logError('WEATHER: Missing url_fopen and curl support', Log::ERROR);
         }
         return $result;
     }
@@ -354,7 +357,7 @@ class API
             return false;
         }
 
-        $key = md5(@serialize($loc));
+        $key = $this->api_code . '_' . md5(@serialize($loc));
         if ($extra != '') {
             $key .= '_' . $extra;
         }
@@ -366,7 +369,9 @@ class API
             // Try to get new data from the provider
             $this->Get($loc);
             if ($this->error > 0) {
-                $retval = $this->error;
+                $retval = new WeatherData;
+                $retval->status = $this->error;
+                Cache::set($key, $retval, 10);  // cache bad data a short time
             } else {
                 // Got good data from the weather API, use it and update cache
                 $retval = $this->getData();
@@ -557,12 +562,12 @@ class API
      * @param   string  $msg    Message to log
      * @param   integer $level  Log level
      */
-    protected function logError($msg, $level=WEATHER_LOG_ERROR)
+    protected function logError($msg, $level=Log::ERROR)
     {
         global $_CONF_WEATHER;
 
         if ($level >= $_CONF_WEATHER['log_level']) {
-            COM_errorLog($this->api_name . ' ' . $msg);
+            Log::write('system', $level, $this->api_name . ' ' . $msg);
         }
     }
 

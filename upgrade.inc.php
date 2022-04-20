@@ -3,7 +3,7 @@
  * Upgrade the plugin.
  *
  * @author      Lee Garner <lee@leegarner.com>
- * @copyright   Copyright (c) 2012-2018 Lee Garner <lee@leegarner.com>
+ * @copyright   Copyright (c) 2012-2022 Lee Garner <lee@leegarner.com>
  * @package     weather
  * @version     v1.1.0
  * @license     http://opensource.org/licenses/gpl-2.0.php
@@ -16,6 +16,7 @@ global $_CONF, $_CONF_WEATHER, $_DB_dbms;
 /** Include default values for new config items */
 require_once __DIR__ . '/sql/mysql_install.php';
 global $_SQL_UPGRADE;
+use glFusion\Log\Log;
 
 /**
  * Sequentially perform version upgrades.
@@ -82,8 +83,10 @@ function weather_do_upgrade($dvlp=false)
     // any of the update functions, e.g. code-only updates
     if (!COM_checkVersion($current_ver, $installed_ver)) {
         if (!weather_do_set_version($installed_ver)) {
-            COM_errorLog($_CONF_WEATHER['pi_display_name'] .
-                    " Error performing final update $current_ver to $installed_ver");
+            Log::write('system', Log::ERROR,
+                $_CONF_WEATHER['pi_display_name'] .
+                " Error performing final update $current_ver to $installed_ver"
+            );
             return false;
         }
     }
@@ -92,7 +95,7 @@ function weather_do_upgrade($dvlp=false)
     require_once __DIR__ . '/install_defaults.php';
     plugin_updateconfig_weather();
 
-    COM_errorLog("Successfully updated the {$_CONF_WEATHER['pi_display_name']} Plugin", 1);
+    Log::write('system', Log::INFO, "Successfully updated the {$_CONF_WEATHER['pi_display_name']} Plugin");
     \Weather\Cache::clear();
     return true;
 }
@@ -116,12 +119,12 @@ function weather_do_upgrade_sql($version, $ignore_errors=false)
     }
 
     // Execute SQL now to perform the upgrade
-    COM_errorLOG("--Updating Weather Plugin to version $version");
+    Log::write('system', Log::INFO, "--Updating Weather Plugin to version $version");
     foreach ($_SQL_UPGRADE[$version] as $sql) {
-        COM_errorLog("Weather Plugin $version update: Executing SQL => $sql");
+        Log::write('system', Log::INFO, "Weather Plugin $version update: Executing SQL => $sql");
         DB_query($sql, '1');
         if (DB_error()) {
-            COM_errorLog("SQL Error during Weather plugin update",1);
+            Log::write('system', Log::ERROR, "SQL Error during Weather plugin update. SQL: $sql");
             if (!$ignore_errors) return false;
         }
     }
@@ -150,7 +153,7 @@ function weather_do_set_version($ver)
 
     $res = DB_query($sql, 1);
     if (DB_error()) {
-        COM_errorLog("Error updating the {$_CONF_WEATHER['pi_display_name']} Plugin version",1);
+        Log::write('system', Log::ERROR, "Error updating the {$_CONF_WEATHER['pi_display_name']} Plugin version");
         return false;
     } else {
         return true;

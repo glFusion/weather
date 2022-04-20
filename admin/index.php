@@ -13,6 +13,7 @@
 
 /** Include required glFusion common functions */
 require_once '../../../lib-common.php';
+use glFusion\Log\Log;
 
 /** Include system admin functions */
 USES_lib_admin();
@@ -61,7 +62,9 @@ if (!in_array('weather', $_PLUGINS)) {
 // Only let admin users access this page
 if (!plugin_isadmin_weather()) {
     // Someone is trying to illegally access this page
-    COM_errorLog("Someone has tried to illegally access the weather Admin page.  User id: {$_USER['uid']}, Username: {$_USER['username']}, IP: $REMOTE_ADDR",1);
+    Log::write('system', Log::ERROR,
+        "Someone has tried to illegally access the weather Admin page.  User id: {$_USER['uid']}, Username: {$_USER['username']}, IP: $REMOTE_ADDR"
+    );
     COM_404();
 }
 

@@ -1,23 +1,26 @@
 <?php
 /**
-*   Installation program for the Weather plugin.
-*
-*   @author     Lee Garner <lee@leegarner.com>
-*   @copyright  Copyright (c) 2011 Lee Garner <lee@leegarner.com>
-*   @package    weather
-*   @version    0.1.0
-*   @license    http://opensource.org/licenses/gpl-2.0.php
-*               GNU Public License v2 or later
-*   @filesource
-*/
+ * Installation program for the Weather plugin.
+ *
+ * @author      Lee Garner <lee@leegarner.com>
+ * @copyright   Copyright (c) 2011-2022 Lee Garner <lee@leegarner.com>
+ * @package     weather
+ * @version     v2.0.2
+ * @license    http://opensource.org/licenses/gpl-2.0.php
+ *              GNU Public License v2 or later
+ * @filesource
+ */
 
 /** Import core glFusion libraries */
 require_once('../../../lib-common.php');
+use glFusion\Log\Log;
 
 // Only let Root users access this page
 if (!SEC_inGroup('Root')) {
     // Someone is trying to illegally access this page
-    COM_errorLog("Someone has tried to illegally access the Weather install/uninstall page.  User id: {$_USER['uid']}, Username: {$_USER['username']}, IP: $REMOTE_ADDR",1);
+    Log::write('system', Log::ERROR,
+        "Someone has tried to illegally access the Weather install/uninstall page.  User id: {$_USER['uid']}, Username: {$_USER['username']}, IP: $REMOTE_ADDR"
+    );
     COM_404();
 }
 

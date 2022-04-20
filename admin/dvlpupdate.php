@@ -7,9 +7,9 @@
  * Only updates from the previous released version.
  *
  * @author      Mark R. Evans mark AT glfusion DOT org
- * @copyright   Copyright (c) 2018 Lee Garner <lee@leegarner.com>
+ * @copyright   Copyright (c) 2018-2022 Lee Garner <lee@leegarner.com>
  * @package     weather
- * @version     v1.1.2
+ * @version     v2.0.2
  * @since       v1.1.2
  * @license     http://opensource.org/licenses/gpl-2.0.php
  *              GNU Public License v2 or later
@@ -17,9 +17,13 @@
  */
 
 require_once '../../../lib-common.php';
+use glFusion\Log\Log;
+
 if (!SEC_inGroup('Root')) {
     // Someone is trying to illegally access this page
-    COM_errorLog("Someone has tried to access the Weather Development Code Upgrade Routine without proper permissions.  User id: {$_USER['uid']}, Username: {$_USER['username']}, IP: " . $_SERVER['REMOTE_ADDR'],1);
+    Log::write('system', Log::ERROR,
+        "Someone has tried to access the Weather Development Code Upgrade Routine without proper permissions.  User id: {$_USER['uid']}, Username: {$_USER['username']}, IP: " . $_SERVER['REMOTE_ADDR']
+    );
     COM_404();
     exit;
 }

@@ -110,7 +110,7 @@ class weatherstack extends \Weather\API
             $this->current = $this->response->current;
             $this->location = $this->response->location;
             if (!is_object($this->current)) {
-                $this->logError('Invalid current data, should be object ');
+                $this->logError('Invalid current data, should be object.');
                 $this->error = 1;
                 return false;
             } else {
