@@ -3,9 +3,9 @@
  * Class to cache weather lookup results.
  *
  * @author      Lee Garner <lee@leegarner.com>
- * @copyright   Copyright (c) 2018 Lee Garner <lee@leegarner.com>
+ * @copyright   Copyright (c) 2018-2022 Lee Garner <lee@leegarner.com>
  * @package     weather
- * @version     v1.1.4
+ * @version     v2.0.3
  * @since       v1.1.4
  * @license     http://opensource.org/licenses/gpl-2.0.php
  *              GNU Public License v2 or later
@@ -24,9 +24,6 @@ class Cache
      * @const string */
     const TAG = 'weather';
 
-    /** Minimum glFusion version that supports caching.
-     * @const string */
-    const MIN_GVERSION = '2.0.0';
 
     /**
      * Update the cache.
@@ -53,38 +50,17 @@ class Cache
             $cache_mins = 30;
         }
 
-        if (version_compare(GVERSION, self::MIN_GVERSION, '<')) {
-            global $_TABLES, $_USER;
-
-            $data = DB_escapeString(serialize(API::_sanitize($data)));
-            $db_loc = self::makeKey($key);
-
-            // Delete any stale entries and the current location to be replaced
-            // cache_minutes is already sanitized as an intgeger
-            DB_query(
-                "DELETE FROM {$_TABLES['weather_cache']}
-                WHERE ts < NOW() - INTERVAL $cache_mins MINUTE
-                OR location = '$db_loc'"
-            );
-
-            // Insert the new record to be cached
-            DB_query(
-                "INSERT INTO {$_TABLES['weather_cache']}
-                    (location, uid, data)
-                VALUES
-                    ('$db_loc', '{$_USER['uid']}', '$data')"
-            );
-        } else {
-            $ttl = (int)$cache_mins * 60;   // convert to seconds
-            // Always make sure the base tag is included
-            $tags = array(self::TAG);
-            if (!empty($tag)) {
-                if (!is_array($tag)) $tag = array($tag);
-                $tags = array_merge($tags, $tag);
+        $ttl = (int)$cache_mins * 60;   // convert to seconds
+        // Always make sure the base tag is included
+        $tags = array(self::TAG);
+        if (!empty($tag)) {
+            if (!is_array($tag)) {
+                $tag = array($tag);
             }
-            $key = self::makeKey($key);
-            return \glFusion\Cache\Cache::getInstance()->set($key, $data, $tags, $ttl);
+            $tags = array_merge($tags, $tag);
         }
+        $key = self::makeKey($key);
+        return \glFusion\Cache\Cache::getInstance()->set($key, $data, $tags, $ttl);
     }
 
 
@@ -96,9 +72,6 @@ class Cache
      */
     public static function delete($key)
     {
-        if (version_compare(GVERSION, self::MIN_GVERSION, '<')) {
-            return;     // glFusion version doesn't support caching
-        }
         $key = self::makeKey($key);
         return \glFusion\Cache\Cache::getInstance()->delete($key);
     }
@@ -113,18 +86,14 @@ class Cache
      */
     public static function clear($tag = array())
     {
-        if (version_compare(GVERSION, self::MIN_GVERSION, '<')) {
-            global $_TABLES;
-
-            DB_query("TRUNCATE {$_TABLES['weather_cache']}");
-        } else {
-            $tags = array(self::TAG);
-            if (!empty($tag)) {
-                if (!is_array($tag)) $tag = array($tag);
-                $tags = array_merge($tags, $tag);
+        $tags = array(self::TAG);
+        if (!empty($tag)) {
+            if (!is_array($tag)) {
+                $tag = array($tag);
             }
-            return \glFusion\Cache\Cache::getInstance()->deleteItemsByTagsAll($tags);
+            $tags = array_merge($tags, $tag);
         }
+        return \glFusion\Cache\Cache::getInstance()->deleteItemsByTagsAll($tags);
     }
 
 
@@ -150,30 +119,12 @@ class Cache
     public static function get($key)
     {
         $retval = NULL;
-        if (version_compare(GVERSION, self::MIN_GVERSION, '<')) {
-            global $_TABLES, $_CONF_WEATHER;
-
-            $cache_mins = (int)$_CONF_WEATHER['cache_minutes'];
-            if ($cache_mins < 10) $cache_mins = 30;
-            $retval = array();
-            $db_loc = self::makeKey($key);
-            $sql = "SELECT * FROM {$_TABLES['weather_cache']}
-                WHERE location = '$db_loc'
-                AND ts > NOW() - INTERVAL $cache_mins MINUTE";
-            $res = DB_query($sql);
-            if ($res && DB_numRows($res) == 1) {
-                $A = DB_fetchArray($res, false);
-                $retval = @unserialize($A['data']);
-            }
-        } else {
-            $key = self::makeKey($key);
-            if (\glFusion\Cache\Cache::getInstance()->has($key)) {
-                $retval = \glFusion\Cache\Cache::getInstance()->get($key);
-            }
+        $key = self::makeKey($key);
+        if (\glFusion\Cache\Cache::getInstance()->has($key)) {
+            $retval = \glFusion\Cache\Cache::getInstance()->get($key);
         }
         return $retval;
     }
 
-}   // class Weather\Cache
+}
 
-?>

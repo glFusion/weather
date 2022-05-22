@@ -145,9 +145,7 @@ function plugin_autouninstall_weather()
     global $_CONF_WEATHER;
 
     $out = array (
-        'tables'    => array(
-                        'weather_cache',
-                    ),
+        'tables'    => array(),
         'groups'    => array($_CONF_WEATHER['pi_name'] . ' Admin'),
         'features'  => array(
                         $_CONF_WEATHER['pi_name'] . '.admin',
@@ -159,7 +157,6 @@ function plugin_autouninstall_weather()
 
     \Weather\Cache::clear();
     return $out;
-
 }
 
 

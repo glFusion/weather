@@ -21,6 +21,7 @@ global $_CONF_WEATHER;
 
 /** Include plugin configuration */
 require_once $_CONF['path'].'plugins/weather/weather.php';
+use glFusion\Log\Log;
 
 /**
  *  Include required glFusion installation library
@@ -33,7 +34,7 @@ require_once $_CONF['path'].'plugins/weather/sql/'.$_DB_dbms.'_install.php';
 $INSTALL_plugin['weather'] = array(
     'installer' => array(
         'type' => 'installer',
-        'version'   => '1',
+        'version'   => '2',
         'mode'      => 'install',
     ),
     'plugin' => array(
@@ -43,11 +44,6 @@ $INSTALL_plugin['weather'] = array(
         'gl_ver'    => $_CONF_WEATHER['gl_version'],
         'url'       => $_CONF_WEATHER['pi_url'],
         'display'   => $_CONF_WEATHER['pi_display_name'],
-    ),
-    array(
-        'type'      => 'table',
-        'table'     => $_TABLES['weather_cache'],
-        'sql'       => $_SQL['weather_cache'],
     ),
     array(
         'type'      => 'group',
@@ -104,7 +100,7 @@ function plugin_install_weather()
 
     $pi_display_name    = $_CONF_WEATHER['pi_display_name'];
 
-    COM_errorLog("Attempting to install the $pi_display_name plugin", 1);
+    Log::write('system', Log::INFO, "Attempting to install the $pi_display_name plugin");
 
     $ret = INSTALLER_install($INSTALL_plugin[$_CONF_WEATHER['pi_name']]);
     if ($ret > 0) {
