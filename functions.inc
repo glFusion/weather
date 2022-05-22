@@ -3,9 +3,9 @@
  * Common functions for the Weather plugin.
  *
  * @author      Lee Garner <lee@leegarner.com>
- * @copyright   Copyright (c) 2011-2021 Lee Garner <lee@leegarner.com>
+ * @copyright   Copyright (c) 2011-2022 Lee Garner <lee@leegarner.com>
  * @package     weather
- * @version     v2.0.2
+ * @version     v2.0.3
  * @license     http://opensource.org/licenses/gpl-2.0.php
  *              GNU Public License v2 or later
  * @filesource
@@ -13,6 +13,8 @@
 if (!defined ('GVERSION')) {
     die ('This file can not be used on its own.');
 }
+
+use glFusion\Database\Database;
 
 // Initialize the configuration
 require_once $_CONF['path_system'] . 'classes/config.class.php';
@@ -43,16 +45,6 @@ define('WEATHER_BLK_PERSONAL', 2);  // Personal
 define('WEATHER_ERR_NOTFOUND', 1);
 define('WEATHER_ERR_API', 2);
 define('WEATHER_ERR_KEYMISSING', 3);
-
-// Log levels to emulate glFusion 2.0+ logging
-define('WEATHER_LOG_DEBUG',    100);
-define('WEATHER_LOG_INFO',     200);
-define('WEATHER_LOG_NOTICE',   250);
-define('WEATHER_LOG_WARNING',  300);
-define('WEATHER_LOG_ERROR',    400);
-define('WEATHER_LOG_CRITICAL', 500);
-define('WEATHER_LOG_ALERT',    550);
-define('WEATHER_LOG_EMERGENCY', 600);
 
 // Include local configuration overrides
 if (file_exists(WEATHER_PI_PATH . '/config.php')) {
@@ -129,9 +121,12 @@ function Xplugin_getmenuitems_weather()
     $menuitems = array();
 	if (
         $_CONF_WEATHER['usermenu_option'] &&
-        ( SEC_hasRights('weather.view') ||
-            ( COM_isAnonUser() &&
-            $_CONF_WEATHER['anon_access'] & WEATHER_ACCESS_VIEW )
+        (
+            SEC_hasRights('weather.view') ||
+            (
+                COM_isAnonUser() &&
+                $_CONF_WEATHER['anon_access'] & WEATHER_ACCESS_VIEW
+            )
         )
     ) {
     	$menuitems[$LANG_WEATHER['pi_title']] = WEATHER_URL . '/index.php';
@@ -182,10 +177,13 @@ function plugin_enablestatechange_weather($enabling)
 
     // turns block off if on, but will not turn it on if off.
     if ($enabling != 1) {
-        DB_query ("UPDATE {$_TABLES['blocks']}
-                    SET is_enabled = 0
-                    WHERE (type = 'phpblock')
-                    AND (phpblockfn LIKE 'phpblock_weather_%')");
+        $db = Database::getInstance();
+        $db->conn->executeUpdate(
+            "UPDATE {$_TABLES['blocks']}
+            SET is_enabled = 0
+            WHERE (type = 'phpblock')
+            AND (phpblockfn LIKE 'phpblock_weather_%')"
+        );
     }
 }
 
@@ -215,40 +213,47 @@ function phpblock_weather_current($A=array(), $loc='')
         } else {
             // Show the personal block, if configured & available
             if ($_CONF_WEATHER['blk_show_loc'] & WEATHER_BLK_PERSONAL) {
-                $loc = DB_getItem($_TABLES['userinfo'], 'location',
-                        "uid='{$_USER['uid']}'");
+                $db = Database::getInstance();
+                $loc = $db->getItem(
+                    $_TABLES['userinfo'],
+                    'location',
+                    ['uid' => $_USER['uid']],
+                    [Database::INTEGER]
+                );
             }
             if (empty($loc)) {
                 // Fallback to default, if allowed
-                if (!($_CONF_WEATHER['blk_show_loc'] & WEATHER_BLK_DEFAULT))
+                if (!($_CONF_WEATHER['blk_show_loc'] & WEATHER_BLK_DEFAULT)) {
                     return '';
-                else
+                } else {
                     $loc = $_CONF_WEATHER['default_loc'];
+                }
             }
         }
     }
 
     $A = \Weather\API::getInstance()->getWeather($loc);
-    if (!is_array($A) || !isset($A['current'])) {
+    if ($A->status > 0) {
         return '';
     }
 
-    $dt = COM_getUserDateTimeFormat($A['info']['ts']);
-    $T = new Template(WEATHER_PI_PATH . '/templates');
+    $dt = COM_getUserDateTimeFormat($A->ts);
+    $T = new Template(__DIR__ . '/templates');
     $T->set_file('block', 'phpblock.thtml');
     $KM = $_CONF_WEATHER['k_m'] == 'K' ? 'K' : 'M';
     $T->set_var(array(
-        'curr_wind' => $A['current']['wind_' . $KM],
-        'temp_f'    => $A['current']['temp_f'],
-        'temp_c'    => $A['current']['temp_c'],
-        'curr_cond' => $A['current']['condition'],
-        'city'      => $A['info']['city'],
+        'curr_wind' => $A->Current->{'wind_' . $KM},
+        'temp_f'    => $A->Current->temp_F,
+        'temp_c'    => $A->Current->temp_C,
+        'curr_cond' => $A->Current->condition,
+        'city'      => $A->city,
         //'icon_url'  => Weather\api::getIcon($A['current']['icon']),
-        'icon_url'  => \Weather\API::getInstance()->getIcon($A['current']['icon']),
-        'icon_name' => $A['current']['icon_name'],
+        'icon_url'  => \Weather\API::getInstance()->getIcon($A->Current->icon),
+        'icon_name' => $A->Current->icon_name,
         'date'      => $dt[0],
         //'linkback'  => Weather\api::linkback('block'),
         'linkback'  => \Weather\API::getInstance()->linkback('block'),
+        'asentered' => $loc,
     ) );
     $T->parse('output', 'block');
     $retval = $T->finish($T->get_var('output'));
@@ -321,13 +326,13 @@ function plugin_autotags_weather($op, $content = '', $autotag = '')
                 $T = new Template(WEATHER_PI_PATH . '/templates');
                 $T->set_file('block', 'autotag_current.thtml');
                 $T->set_var(array(
-                    'curr_wind' => $A['current']['wind_condition'],
-                    'temp_f'    => $A['current']['temp_f'],
-                    'temp_c'    => $A['current']['temp_c'],
-                    'curr_cond' => $A['current']['condition'],
-                    'city'      => $A['info']['city'],
-                    'icon_url'  => \Weather\API::getInstance()->getIcon($A['current']['icon']),
-                    'icon_name' => $A['current']['icon_name'],
+                    'curr_wind' => $A->Current->wind_condition,
+                    'temp_f'    => $A->Current->temp_F,
+                    'temp_c'    => $A->Current->temp_C,
+                    'curr_cond' => $A->Current->condition,
+                    'city'      => $A->city,
+                    'icon_url'  => \Weather\API::getInstance()->getIcon($A->Current->icon),
+                    'icon_name' => $A->current->icon_name,
                     'date'      => $dt[0],
                 ) );
                 $T->parse('output', 'block');
@@ -381,34 +386,35 @@ function WEATHER_embed($loc, $linkback = true)
         $loc = $loc['loc'];
     }
     $A = $API->getWeather($loc);
-    if (is_array($A)) {
-        $dt = COM_getUserDateTimeFormat($A['info']['ts']);
+    if ($A->status == 0) {
+        $dt = COM_getUserDateTimeFormat($A->ts);
         $FC = $_CONF_WEATHER['f_c'] == 'C' ? 'C' : 'F';
         $KM = $_CONF_WEATHER['k_m'] == 'K' ? 'K' : 'M';
         $T->set_var(array(
-            'curr_wind' => $A['current']['wind_' . $KM],
-            'curr_icon_url' => $API->getIcon($A['current']['icon']),
-            'curr_icon_name' => $A['current']['icon_name'],
-            'temp_f'    => $A['current']['temp_f'],
-            'temp_c'    => $A['current']['temp_c'],
-            'curr_cond' => $A['current']['condition'],
-            'city'      => $A['info']['city'],
+            'curr_wind' => $A->Current->{'wind_' . $KM},
+            'curr_icon_url' => $API->getIcon($A->Current->icon),
+            'curr_icon_name' => $A->Current->icon_name,
+            'temp_f'    => $A->Current->temp_F,
+            'temp_c'    => $A->Current->temp_C,
+            'curr_cond' => $A->Current->condition,
+            'city'      => $A->city,
+            'asentered' => isset($loc['asentered']) ? $loc['asentered'] : '',
             'date'      => $dt[0],
-            'curr_humidity' => $A['current']['humidity'],
+            'curr_humidity' => $A->Current->humidity,
             'linkback'  => $linkback ? $API->linkback() : '',
         ) );
         $T->set_block('embed', 'ForeCastItem', 'fcItem');
-        foreach ($A['forecast'] as $day) {
+        foreach ($A->Forecasts as $day) {
             $T->set_var(array(
-                'high'  => round($day['high' . $FC]),
-                'low'   => round($day['low' . $FC]),
-                'day'   => $day['day'],
-                'condition' => $day['condition'],
-                'icon_name' => $day['icon_name'],
-                'icon_url' => $API->getIcon($day['icon']),
-                'wind'  => $day['wind_' . $KM],
-                'humidity' => isset($day['humidity']) ? $day['humidity'] : '',
-                'fc_text' => !empty($day['fc_text_' . $FC]) ? $day['fc_text_' . $FC] : '',
+                'high'  => round($day->{'high' . $FC}),
+                'low'   => round($day->{'low' . $FC}),
+                'day'   => $day->day,
+                'condition' => $day->condition,
+                'icon_name' => $day->icon_name,
+                'icon_url' => $API->getIcon($day->icon),
+                'wind'  => $day->{'wind_' . $KM},
+                'humidity' => isset($day->humidity) ? $day->humidity : '',
+                'fc_text' => !empty($day->{'fc_text_' . $FC}) ? $day->{'fc_text_' . $FC} : '',
             ) );
             $T->parse('fcItem', 'ForeCastItem', true);
         }

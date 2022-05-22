@@ -12,6 +12,8 @@
  * @filesource
  */
 namespace Weather\api;
+use Weather\Models\WeatherData;
+use Weather\Models\Forecast;
 
 
 /**
@@ -134,29 +136,21 @@ class weatherstack extends \Weather\API
         if (!empty($this->location->region)) {
             $city .= ', ' . $this->location->region;
         }
-        $data = array(
-            'info' => array(
-                'api' => $this->api_code,
-                'city'  => $city,
-                'date_time' => date('Y-m-d H:i:s'),
-                'ts' => $this->location->localtime_epoch,
-            ),
-            'current' => array(
-                'temp_f'   => self::CtoF((float)$this->current->temperature),
-                'temp_c'  => (string)$this->current->temperature,
-                'condition' => (string)$this->current->weather_descriptions[0],
-                'icon'  => (string)$this->current->weather_icons[0],
-                'icon_name' => (string)$this->current->weather_descriptions[0],
-                'humidity' => (string)$this->current->humidity,
-                'wind_M' => self::KtoM($this->current->wind_speed) . 'mph ' .
-                        (string)$this->current->wind_dir,
-                'wind_K' => (string)$this->current->wind_speed . 'kph ' .
-                        (string)$this->current->wind_dir,
-            ),
-            'forecast' => array(),
-        );
-        $this->data = $data;
-        return $data;
+        $this->data = new WeatherData;
+        $this->data->status = 0;    // got good weather
+        $this->data->city = $city;
+        $this->data->api = $this->api_code;
+        $this->data->Current->temp_F = self::CtoF((float)$this->current->temperature);
+        $this->data->Current->temp_C = $this->current->temperature;
+        $this->data->Current->condition = (string)$this->current->weather_descriptions[0];
+        $this->data->Current->icon = (string)$this->current->weather_icons[0];
+        $this->data->Current->icon_name = (string)$this->current->weather_descriptions[0];
+        $this->data->Current->humidity = (string)$this->current->humidity;
+        $this->data->Current->wind_M = self::KtoM($this->current->wind_speed) . 'mph ' .
+            self::Deg2Dir($this->current->wind_dir);
+        $this->data->Current->wind_K = (string)$this->current->wind_speed . 'kph ' .
+            self::Deg2Dir($this->current->wind_dir);
+        return $this->data;
     }
 
 

@@ -12,6 +12,8 @@
  * @filesource
  */
 namespace Weather\api;
+use Weather\Models\WeatherData;
+use Weather\Models\Forecast;
 
 
 /**
@@ -37,7 +39,7 @@ class openweather extends \Weather\API
         );
         parent::__construct($loc);
 
-        $this->url = 'http://api.openweathermap.org/data/2.5/forecast?' .
+        $this->url = 'https://api.openweathermap.org/data/2.5/forecast?' .
             'appid=' . $_CONF_WEATHER['api_key_openweather'] .
             '&units=metric';
 
@@ -45,7 +47,7 @@ class openweather extends \Weather\API
             // Get the weather for the specified location, if requested
             $this->Get($loc);
         }
-        $this->num_forecasts = 4;
+        $this->fc_days = 4;     // Only get 4 days of forecasts
     }
 
 
@@ -130,27 +132,21 @@ class openweather extends \Weather\API
             $city .= ', ' . $this->location->country;
         }
         $icon = $this->current->weather[0]->icon;
-        $data = array(
-            'info' => array(
-                'city'  => $city,
-                'date_time' => date('Y-m-d H:i:s'),
-                'ts' => $this->current->dt,
-                'api' => $this->api_code,
-            ),
-            'current' => array(
-                'temp_f'   => self::CtoF((float)$this->current->main->temp),
-                'temp_c'  => (string)$this->current->main->temp,
-                'condition' => (string)$this->current->weather[0]->description,
-                'icon'  => '//openweathermap.org/img/wn/' . $icon . '@2x.png',
-                'icon_name' => (string)$this->current->weather[0]->description,
-                'humidity' => (string)$this->current->main->humidity,
-                'wind_M' => self::KtoM($this->current->wind->speed) . 'mph ' .
-                    self::Deg2Dir($this->current->wind->deg),
-                'wind_K' => (string)$this->current->wind->speed . 'kph ' .
-                    self::Deg2Dir($this->current->wind->deg),
-            ),
-            'forecast' => array(),
-        );
+        $this->data = new WeatherData;
+        $this->data->status = 0;    // got good weather
+        $this->data->city = $city;
+        $this->data->ts = $this->current->dt;
+        $this->data->api = $this->api_code;
+        $this->data->Current->temp_F = self::CtoF((float)$this->current->main->temp);
+        $this->data->Current->temp_C = (string)$this->current->main->temp;
+        $this->data->Current->condition = (string)$this->current->weather[0]->description;
+        $this->data->Current->icon = '//openweathermap.org/img/wn/' . $icon . '@2x.png';
+        $this->data->Current->icon_name = (string)$this->current->weather[0]->description;
+        $this->data->Current->humidity = (string)$this->current->main->humidity;
+        $this->data->Current->wind_M = self::KtoM($this->current->wind->speed) . 'mph ' .
+            self::Deg2Dir($this->current->wind->deg);
+        $this->data->Current->wind_K = (string)$this->current->wind->speed . 'kph ' .
+            self::Deg2Dir($this->current->wind->deg);
         $days = 0;
         $cbrk_dt = '';
         for ($i = 1; $i < (int)$this->response->cnt && $days < $this->fc_days; $i++) {
@@ -164,25 +160,22 @@ class openweather extends \Weather\API
             $days++;
             $cbrk_dt = $dt_str;
             $icon = $fc->weather[0]->icon;
-            $data['forecast'][] = array(
-                'day'    => $Dt->format('D'),
-                'lowF'   => self::CtoF($fc->main->temp_min),
-                'highF'  => self::CtoF($fc->main->temp_max),
-                'lowC'   => $fc->main->temp_min,
-                'highC'  => $fc->main->temp_max,
-                'condition' => $fc->weather[0]->description,
-                'icon'  => '//openweathermap.org/img/wn/' . $icon . '@2x.png',
-                'icon_name' => (string)$fc->weather[0]->description,
-                'wind_M' => self::KtoM($fc->wind->speed) . 'mph ' .
-                    self::Deg2Dir($fc->wind->deg),
-                'wind_K' => (string)$fc->wind->speed . 'kph ' .
-                    self::Deg2Dir($fc->wind->deg),
-                'fc_text_F' => '',
-                'fc_text_C' => '',
-            );
+            $Forecast = new Forecast;
+            $Forecast->day = $Dt->format('D');
+            $Forecast->lowF = self::CtoF($fc->main->temp_min);
+            $Forecast->highF = self::CtoF($fc->main->temp_max);
+            $Forecast->lowC = $fc->main->temp_min;
+            $Forecast->highC = $fc->main->temp_max;
+            $Forecast->condition = $fc->weather[0]->description;
+            $Forecast->icon = '//openweathermap.org/img/wn/' . $icon . '@2x.png';
+            $Forecast->icon_name = (string)$fc->weather[0]->description;
+            $Forecast->wind_M = self::KtoM($fc->wind->speed) . 'mph ' .
+                    self::Deg2Dir($fc->wind->deg);
+            $Forecast->wind_K = (string)$fc->wind->speed . 'kph ' .
+                    self::Deg2Dir($fc->wind->deg);
+            $this->data->Forecasts[] = $Forecast;
         }
-        $this->data = $data;
-        return $data;
+        return $this->data;
     }
 
 

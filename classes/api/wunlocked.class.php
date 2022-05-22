@@ -13,6 +13,8 @@
  * @filesource
  */
 namespace Weather\api;
+use Weather\Models\WeatherData;
+use Weather\Models\Forecast;
 
 
 /**
@@ -73,12 +75,19 @@ class wunlocked extends \Weather\API
 
         if ($loc['type'] == 'coord') {
             $this->location = implode(',', $loc['parts']);
-        } elseif (($loc['type'] = 'city' || $loc['type'] == 'address') && is_array($loc['parts'])) {
-            if (!empty($loc['parts']['postal'])) {
-                if (empty($loc['parts']['country'])) {
-                    $loc['parts']['country'] = $_CONF_WEATHER['def_country'];
+        } elseif (($loc['type'] = 'city' || $loc['type'] == 'address')) {
+            if (is_array($loc['parts'])) {
+                if (!empty($loc['parts']['postal'])) {
+                    if (empty($loc['parts']['country'])) {
+                        $loc['parts']['country'] = $_CONF_WEATHER['def_country'];
+                    }
+                    $this->location = $loc['parts']['country'] . '.' . $loc['parts']['postal'];
                 }
-                $this->location = $loc['parts']['country'] . '.' . $loc['parts']['postal'];
+            } else {
+                $status = LGLIB_invokeService('locator', 'getCoords', $loc['parts'], $coords, $svc_msg);
+                if ($status == PLG_RET_OK) {
+                    $this->location = implode(',', $coords);
+                }
             }
         } else {
             $this->location = urlencode($loc['parts']);
@@ -126,56 +135,49 @@ class wunlocked extends \Weather\API
         global $_CONF, $_CONF_WEATHER;
 
         $icon = $this->current->Timeframes[0]->wx_icon;
-        $data = array(
-            'info' => array(
-                'city'  => '',
-                'date_time' => date('Y-m-d H:i:s'),
-                'ts' => time(),
-                'api' => $this->api_code,
-            ),
-            'current' => array(
-                'temp_f'   => (string)$this->current->Timeframes[0]->temp_f,
-                'temp_c'  => (string)$this->current->Timeframes[0]->temp_c,
-                'condition' => (string)$this->current->Timeframes[0]->wx_desc,
-                'icon'  => WEATHER_URL . '/images/icons/' . $icon,
-                'icon_name' => $icon,
-                'humidity' => (string)$this->current->Timeframes[0]->humid_pct,
-                'wind_M' => (string)$this->current->Timeframes[0]->windspd_mph . 'mph ' .
-                        (string)$this->current->Timeframes[0]->winddir_compass,
-                'wind_K' => (string)$this->current->Timeframes[0]->windspd_kmh . 'kph ' .
-                        (string)$this->current->Timeframes[0]->winddir_compass,
-            ),
-            'forecast' => array(),
-        );
+        $this->data = new WeatherData;
+        $this->data->status = 0;    // got good weather
+        $this->data->city  = '';
+        $this->data->api = $this->api_code;
+        $this->data->Current->temp_F = (string)$this->current->Timeframes[0]->temp_f;
+        $this->data->Current->temp_C = (string)$this->current->Timeframes[0]->temp_c;
+        $this->data->Current->condition = (string)$this->current->Timeframes[0]->wx_desc;
+        $this->data->Current->icon = WEATHER_URL . '/images/icons/' . $icon;
+        $this->data->Current->icon_name = $icon;
+        $this->data->Current->humidity = (string)$this->current->Timeframes[0]->humid_pct;
+        $this->data->Current->wind_M = (string)$this->current->Timeframes[0]->windspd_mph . 'mph ' .
+                        (string)$this->current->Timeframes[0]->winddir_compass;
+        $this->data->Current->wind_K = (string)$this->current->Timeframes[0]->windspd_kmh . 'kph ' .
+                        (string)$this->current->Timeframes[0]->winddir_compass;
+
         if (is_array($this->forecast)) {
             // Weather Underground provides only 3 or 10-day forecasts.
             // We want 5 days.
             for ($i = 1; $i < $this->fc_days; $i++) {
-                if (!isset($this->forecast[$i])) break;
+                if (!isset($this->forecast[$i])) {
+                    break;
+                }
                 $fc = $this->forecast[$i];
                 list($day, $month, $year) = explode('/', $fc->date);
                 $Dt = new \Date($year . '-' . $month . '-' . $day, $_CONF['timezone']);
                 $icon = (string)$fc->Timeframes[3]->wx_icon;
-                $data['forecast'][] = array(
-                    'day'    => $Dt->format('D'),
-                    'lowF'   => (string)$fc->temp_min_f,
-                    'highF'  => (string)$fc->temp_max_f,
-                    'lowC'   => (string)$fc->temp_min_c,
-                    'highC'  => (string)$fc->temp_max_c,
-                    'condition' => (string)$fc->Timeframes[3]->wx_desc,
-                    'icon'  => WEATHER_URL . '/images/icons/' . $icon,
-                    'icon_name' => $icon,
-                    'wind_M' => (string)$fc->Timeframes[3]->windspd_mph . 'mph ' .
-                                (string)$fc->Timeframes[3]->winddir_compass,
-                    'wind_K' => (string)$fc->Timeframes[3]->windspd_kmh . 'kph ' .
-                                (string)$fc->Timeframes[3]->winddir_compass,
-                    'fc_text_F' => '',
-                    'fc_text_C' => '',
-                );
+                $Forecast = new Forecast;
+                $Forecast->day = $Dt->format('D');
+                $Forecast->lowF = (string)$fc->temp_min_f;
+                $Forecast->highF = (string)$fc->temp_max_f;
+                $Forecast->lowC = (string)$fc->temp_min_c;
+                $Forecast->highC = (string)$fc->temp_max_c;
+                $Forecast->condition = (string)$fc->Timeframes[3]->wx_desc;
+                $Forecast->icon = WEATHER_URL . '/images/icons/' . $icon;
+                $Forecast->icon_name = $icon;
+                $Forecast->wind_M = (string)$fc->Timeframes[3]->windspd_mph . 'mph ' .
+                    (string)$fc->Timeframes[3]->winddir_compass;
+                $Forecast->wind_K = (string)$fc->Timeframes[3]->windspd_kmh . 'kph ' .
+                    (string)$fc->Timeframes[3]->winddir_compass;
+                $this->data->Forecasts[] = $Forecast;
             }
         }
-        $this->data = $data;
-        return $data;
+        return $this->data;
     }
 
 
