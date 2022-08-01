@@ -54,6 +54,8 @@ class WeatherData
      */
     public function __construct()
     {
+        global $_CONF;
+
         $this->date_time = $_CONF['_now']->toMySQL(true);
         $this->ts = time();
         $this->Current = new CurrentWeather;
