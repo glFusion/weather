@@ -5,7 +5,7 @@
  * to minimize calls to the weather API
  *
  * @author      Lee Garner <lee@leegarner.com>
- * @copyright   Copyright (c) 2011-2020 Lee Garner <lee@leegarner.com>
+ * @copyright   Copyright (c) 2011-2023 Lee Garner <lee@leegarner.com>
  * @package     weather
  * @version     v2.0.0
  * @license     http://opensource.org/licenses/gpl-2.0.php 
@@ -15,10 +15,15 @@
 
 // Import glFusion core
 require_once '../lib-common.php';
+use glFusion\Database\Database;
+use glFusion\Log\Log;
 
-//if (!in_array('weather', $_PLUGINS)) {
+if (
+    !in_array('weather', $_PLUGINS) ||
+    !SEC_hasRights('weather.view')
+) {
     COM_404();
-//}
+}
 
 $isAnon = COM_isAnonUser() ? true : false;
 if (SEC_hasRights('weather.view')) {
@@ -58,8 +63,11 @@ if (empty($loc)) {
         // Show the personal block, if configured & available
         if ($_CONF_WEATHER['blk_show_loc'] & WEATHER_BLK_PERSONAL) {
             $loc = strtolower(
-                    DB_getItem($_TABLES['userinfo'], 'location',
-                    "uid='{$_USER['uid']}'"));
+                Database::getInstance()->getItem(
+                    $_TABLES['userinfo'],
+                    'location',
+                    array('uid' => $_USER['uid'])
+                );
         }
         if (empty($loc) && 
                 ($_CONF_WEATHER['blk_show_loc'] & WEATHER_BLK_DEFAULT)) {
@@ -91,20 +99,24 @@ $T->set_file('index', 'index.thtml');
 $T->set_block('index', 'EmbedBlock', 'eBlk');
 $msg = '';
 foreach ($Session as $key=>$loc) {
-    $weather = \Weather\API::getInstance()->getWeather($loc);
-    if (!is_array($weather)) {
-        unset($Session[$key]);    // how'd bad weather get here?
-        //$msg = $weather;
-        continue;
+    $status = LGLIB_invokeService('locator', 'getCoords', $loc, $output, $svc_msg);
+    if ($status == PLG_RET_OK) {
+        $loc = array(
+            'type' => 'coords',
+            'asentered' => $loc,
+            'parts' => array(
+                'lat' => $output['lat'],
+                'lng' => $output['lng'],
+            ),
+        );
+        $embed = WEATHER_embed($loc, false);
+        $T->set_var(array(
+            'embed' => $embed,
+            'divid' => $key,
+            'linkback' => \Weather\API::getInstance()->linkback(),
+        ) );
+        $T->parse('eBlk', 'EmbedBlock', true);
     }
-    $embed = WEATHER_embed($weather, false);
-    $T->set_var(array(
-        'embed' => $embed,
-        'divid' => $key,
-        'linkback' => \Weather\API::getInstance()->linkback(),
-        'iconset' => $_CONF_WEATHER['_iconset'],
-    ) );
-    $T->parse('eBlk', 'EmbedBlock', true);
 }
 // Save the session var. Should have only valid locations now.
 SESS_setVar('glWeather', $Session);
@@ -120,5 +132,3 @@ $display .= $content;
 $display .= WEATHER_siteFooter();
 echo $display;
 exit;
-
-?>
