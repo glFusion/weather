@@ -3,6 +3,8 @@
   <a href="{site_url}/weather/index.php" class="piWeatherLink">
   {!if city}
     <b>{city}</b><br />
+  {!elseif asentered}
+    <b>{asentered}</b><br />
   {!endif}
   <img class="piWeatherBlock" src="{icon_url}" alt="{curr_cond}" /><br />
   {temp_f} F / {temp_c} C<br />
