@@ -5,17 +5,18 @@
  * @author      Lee Garner <lee@leegarner.com>
  * @copyright   Copyright (c) 2012-2022 Lee Garner <lee@leegarner.com>
  * @package     weather
- * @version     v1.1.0
+ * @version     v2.0.3
  * @license     http://opensource.org/licenses/gpl-2.0.php
  *              GNU Public License v2 or later
  * @filesource
  */
 
-global $_CONF, $_CONF_WEATHER, $_DB_dbms;
+global $_CONF, $_CONF_WEATHER;
 
 /** Include default values for new config items */
 require_once __DIR__ . '/sql/mysql_install.php';
 global $_SQL_UPGRADE;
+use glFusion\Database\Database;
 use glFusion\Log\Log;
 
 /**
@@ -64,29 +65,13 @@ function weather_do_upgrade($dvlp=false)
     }
     if (!COM_checkVersion($current_ver, '2.0.2')) {
         $current_ver = '2.0.2';
-        /*$sql = "SELECT name, value, type FROM {$_TABLES['conf_values']}
-            WHERE group_name = 'weather'
-            AND name IN ('api_key_openweather', 'api_key_weatherstack', 'api_key_wunlocked', 'app_id_wunlocked');";
-        $res = DB_query($sql);
-        while ($A = DB_fetchArray($res, false)) {
-            if ($A['type'] != 'passwd') {
-                $value = DB_escapeString(@serialize(COM_encrypt(@unserialize($A['value']))));
-                DB_query("UPDATE {$_TABLES['conf_values']}
-                    SET type = 'passwd', value = '$value'
-                    WHERE group_name = 'weather' AND name = '{$A['name']}'");
-            }
-        }*/
         if (!weather_do_set_version($current_ver)) return false;
     }
 
     // Final version update to catch updates that don't go through
     // any of the update functions, e.g. code-only updates
-    if (!COM_checkVersion($current_ver, $installed_ver)) {
+    if ($current_ver != $installed_ver) {
         if (!weather_do_set_version($installed_ver)) {
-            Log::write('system', Log::ERROR,
-                $_CONF_WEATHER['pi_display_name'] .
-                " Error performing final update $current_ver to $installed_ver"
-            );
             return false;
         }
     }
@@ -109,7 +94,7 @@ function weather_do_upgrade($dvlp=false)
  * @param   boolean $ignore_errors  True to ignore sql errors and continue
  * @return  boolean     True for success, False for failure
  */
-function weather_do_upgrade_sql($version, $ignore_errors=false)
+function weather_do_upgrade_sql(string $version, bool $ignore_errors=false) : bool
 {
     global $_TABLES, $_CONF_WEATHER, $_SQL_UPGRADE;
 
@@ -120,12 +105,16 @@ function weather_do_upgrade_sql($version, $ignore_errors=false)
 
     // Execute SQL now to perform the upgrade
     Log::write('system', Log::INFO, "--Updating Weather Plugin to version $version");
+    $db = Database::getInstance();
     foreach ($_SQL_UPGRADE[$version] as $sql) {
         Log::write('system', Log::INFO, "Weather Plugin $version update: Executing SQL => $sql");
-        DB_query($sql, '1');
-        if (DB_error()) {
-            Log::write('system', Log::ERROR, "SQL Error during Weather plugin update. SQL: $sql");
-            if (!$ignore_errors) return false;
+        try {
+            $db->conn->executeStatement($sql);
+        } catch (\Throwable $e) {
+            Log::write('system', Log::ERROR, __FUNCTION__ . ': ' . $e->getMessage());
+            if (!$ignore_errors) {
+                return false;
+            }
         }
     }
     return true;
@@ -144,20 +133,27 @@ function weather_do_set_version($ver)
 {
     global $_TABLES, $_CONF_WEATHER;
 
-    // now update the current version number.
-    $sql = "UPDATE {$_TABLES['plugins']} SET
-            pi_version = '{$_CONF_WEATHER['pi_version']}',
-            pi_gl_version = '{$_CONF_WEATHER['gl_version']}',
-            pi_homepage = '{$_CONF_WEATHER['pi_url']}'
-        WHERE pi_name = '{$_CONF_WEATHER['pi_name']}'";
-
-    $res = DB_query($sql, 1);
-    if (DB_error()) {
-        Log::write('system', Log::ERROR, "Error updating the {$_CONF_WEATHER['pi_display_name']} Plugin version");
+    try {
+        Database::getInstance()->conn->update(
+            $_TABLES['plugins'],
+            array(
+                'pi_version' => $_CONF_WEATHER['pi_version'],
+                'pi_gl_version' => $_CONF_WEATHER['gl_version'],
+                'pi_homepage' => $_CONF_WEATHER['pi_url'],
+            ),
+            array('pi_name' => $_CONF_WEATHER['pi_name']),
+            array(
+                Database::STRING,
+                Database::STRING,
+                Database::STRING,
+                Database::STRING,
+            )
+        );
+    } catch (\Throwable $e) {
+        Log::write('system', Log::ERROR, __FUNCTION__ . ': ' . $e->getMessage());
         return false;
-    } else {
-        return true;
     }
+    return true;
 }
 
 
